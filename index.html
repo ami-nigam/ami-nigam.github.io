@@ -24,10 +24,10 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      animation: fadeIn 2s ease;
+      padding: 2rem;
     }
     header h1 {
-      font-size: 4.5rem;
+      font-size: 4rem;
       font-weight: 800;
       color: #e6007e;
       margin-bottom: 1rem;
@@ -36,42 +36,47 @@
       font-size: 1.4rem;
       color: #333;
       max-width: 700px;
-      animation: slideIn 1.2s ease;
     }
-    section {
-      padding: 4rem 2rem;
-      max-width: 960px;
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1200px;
       margin: 0 auto;
     }
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 1.2rem;
-      color: #e6007e;
-      position: relative;
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
-    h2::after {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 3px;
-      background: #e6007e;
-      margin-top: 8px;
+    @media (min-width: 1024px) {
+      .grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .tile {
+      border: 1px solid #eee;
+      padding: 2rem;
+      background: #fdfdfd;
+      transition: all 0.3s ease;
+    }
+    .tile:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #e6007e;
     }
     ul {
       list-style: none;
       padding-left: 0;
     }
     li {
-      margin-bottom: 1.2rem;
-      font-size: 1.05rem;
-      line-height: 1.5;
-      transition: all 0.3s ease;
-    }
-    li:hover {
-      transform: scale(1.02);
-      background: #ffe6f0;
-      padding: 0.3rem 0.5rem;
-      border-left: 3px solid #e6007e;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
     }
     .footer {
       text-align: center;
@@ -86,14 +91,6 @@
     a:hover {
       text-decoration: underline;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
   </style>
 </head>
 <body>
@@ -101,62 +98,61 @@
     <h1>Ami Nigam</h1>
     <p>Head of Technology, Benoy | Design Technologist | Emerging Tech in the Built Environment</p>
   </header>
-  <section>
-    <h2>About Me</h2>
-    <p>I’m a design technologist with a background in architecture, passionate about integrating emerging technologies into the built environment. With experience across Europe and Asia, I’ve led digital strategy, BIM implementation, and computational design on projects ranging from cultural landmarks to complex mixed-use developments. I thrive at the intersection of design and technology—building tools, teams, and workflows that push creative and technical boundaries. Whether mentoring teams, crafting automation pipelines, or exploring the potential of AI in design, my focus is always on elevating both process and product.</p>
-  </section>
-  <section>
-    <h2>Experience</h2>
-    <ul>
-      <li><strong>Benoy, London — Head of Technology (2022–Present):</strong> Leading global digital strategy, implementation of BIM (ISO19650), computational design, AI, and cross-platform digital delivery. Mentoring international teams and shaping internal tools and workflows. Tech Lead on award-winning projects: OSUS Tower (2024), Ritz Carlton Tashkent (2025).</li>
-      <li><strong>UNStudio, Hong Kong — Design Technology Specialist / Architectural Designer (2020–2022):</strong> Led APAC BIM + computation, developed Revit–Rhino workflows. Delivered large-scale towers and façades across East Asia.</li>
-      <li><strong>Enzyme APD, Hong Kong — Architectural / Computational Designer (2019–2020):</strong> Created tools across Archicad, Rhino, Unreal; led R&D in visualization and automation.</li>
-      <li><strong>DeFacto, Beijing — Co-founder (2014–2016):</strong> 3D printing collective in fashion, product & food design.</li>
-      <li><strong>Various Studios, UK & China (2013–2016):</strong> WVA, LCC, XD, DPA – Architectural Designer across multiple project phases.</li>
-    </ul>
-  </section>
-  <section>
-    <h2>Education & Membership</h2>
-    <ul>
-      <li>Institute for Advanced Architecture of Catalonia (IAAC), Barcelona — Master in Advanced Architecture (2016–2018)<br><em>CFD in Early Design | Computation | Fabrication</em></li>
-      <li>Arts University Bournemouth, UK — BA (Hons.) Architecture (2010–2013)<br><em>RIBA / ARB Part I</em></li>
-      <li>New London Architecture (NLA) — Expert Panel Member: Built Environment Technology (2023–Present)</li>
-    </ul>
-  </section>
-  <section>
-    <h2>Skills</h2>
-    <ul>
-      <li>Design Technology Strategy</li>
-      <li>Leadership & Management</li>
-      <li>Digital Design – Computation, Sustainability, Data-Driven</li>
-      <li>Digital Delivery – BIM, Automation</li>
-      <li>Emerging Technology Implementation</li>
-      <li>Artificial Intelligence in AEC</li>
-    </ul>
-  </section>
-  <section>
-    <h2>Mentorship</h2>
-    <ul>
-      <li><strong>Novatr (2022–Present):</strong> Lead Mentor – BIM & Computational Design. Mentored 100+ professionals worldwide, contributed to curriculum, blogs, and podcast appearances.</li>
-    </ul>
-  </section>
-  <section>
-    <h2>Press & Recognition</h2>
-    <ul>
-      <li>Asia Pacific Property Awards 2025–2026</li>
-      <li>Design Middle East Awards KSA 2024</li>
-      <li>NLA Expert Panel Appointment (2023–2025)</li>
-      <li>Disrupt Mag: Leadership Profile</li>
-      <li>Arch Talk: Tank #109</li>
-      <li>Benoy Insights: Innovation & Sustainability</li>
-      <li>Pecha Kucha – Design Technology in Practice</li>
-      <li>Novatr: Computational BIM Guide 2025</li>
-    </ul>
-  </section>
-  <section>
-    <h2>Contact</h2>
-    <p>12A Teesdale Close<br>E2 6GU, London, UK<br>+44 7463 509499<br>ami.nigam92@gmail.com<br><a href="https://www.linkedin.com/in/ami-nigam/">LinkedIn</a></p>
-  </section>
+  <div class="grid">
+    <div class="tile">
+      <h2>About</h2>
+      <p>I’m a design technologist with a background in architecture, passionate about integrating emerging technologies into the built environment. With experience across Europe and Asia, I’ve led digital strategy, BIM implementation, and computational design on projects ranging from cultural landmarks to complex mixed-use developments.</p>
+    </div>
+    <div class="tile">
+      <h2>Press / Recognition / Awards</h2>
+      <ul>
+        <li>Asia Pacific Property Awards 2025–2026</li>
+        <li>Design Middle East Awards KSA 2024</li>
+        <li>NLA Expert Panel Appointment (2023–2025)</li>
+        <li>Disrupt Mag: Leadership Profile</li>
+        <li>Arch Talk: Tank #109</li>
+        <li>Benoy Insights: Innovation & Sustainability</li>
+        <li>Pecha Kucha – Design Technology in Practice</li>
+        <li>Novatr: Computational BIM Guide 2025</li>
+      </ul>
+    </div>
+    <div class="tile">
+      <h2>Experience</h2>
+      <ul>
+        <li><strong>Benoy:</strong> Head of Technology, global strategy and delivery (2022–Present)</li>
+        <li><strong>UNStudio:</strong> BIM & computation lead (2020–2022)</li>
+        <li><strong>Enzyme:</strong> Computational Designer (2019–2020)</li>
+        <li><strong>DeFacto:</strong> Co-founder, experimental 3D design (2014–2016)</li>
+        <li><strong>Various Studios (UK & China):</strong> Designer (2013–2016)</li>
+      </ul>
+    </div>
+    <div class="tile">
+      <h2>Education</h2>
+      <ul>
+        <li><strong>IAAC, Barcelona:</strong> Master in Advanced Architecture (2016–2018)</li>
+        <li><strong>Arts University Bournemouth:</strong> BA (Hons.) Architecture (2010–2013)</li>
+        <li><strong>NLA:</strong> Expert Panel Member – Built Environment Technology</li>
+      </ul>
+    </div>
+    <div class="tile">
+      <h2>Skills</h2>
+      <ul>
+        <li>Design Technology Strategy</li>
+        <li>Leadership & Management</li>
+        <li>Computation, Sustainability, Data</li>
+        <li>BIM & Automation</li>
+        <li>Emerging Tech & AI in AEC</li>
+      </ul>
+    </div>
+    <div class="tile">
+      <h2>Mentorship</h2>
+      <p>Lead Mentor at Novatr (2022–Present). Mentored 100+ professionals globally, developed learning content and contributed to public tech discourse in architecture.</p>
+    </div>
+    <div class="tile">
+      <h2>Contact</h2>
+      <p>12A Teesdale Close<br>E2 6GU, London, UK<br>+44 7463 509499<br>ami.nigam92@gmail.com<br><a href="https://www.linkedin.com/in/ami-nigam/">LinkedIn</a></p>
+    </div>
+  </div>
   <div class="footer">&copy; 2025 Ami Nigam</div>
 </body>
 </html>
