@@ -9,12 +9,12 @@
   <body class="bg-white text-black font-sans pb-40">
     <div class="relative z-10 pt-20 px-8 max-w-7xl mx-auto">
       <div class="text-left mb-12">
-        <h1 class="text-[7vw] leading-none tracking-tight font-serif italic">
+        <h1 class="text-[7vw] leading-none tracking-tight font-serif italic uppercase">
           <span class="font-extrabold not-italic">Ami </span> Nigam
         </h1>
-        <p class="text-2xl font-semibold mt-4">Design Technology Specialist</p>
-        <p class="text-2xl font-semibold mt-4">
-          Head of Technology, <a href="https://www.benoy.com/" class="underline">Benoy</a>, London
+        <p class="text-2xl font-semibold mt-4 uppercase">Design Technology Specialist</p>
+        <p class="text-2xl font-semibold mt-4 uppercase">
+          Head of Technology, <a href="https://www.benoy.com/" class="underline" target="_blank" rel="noopener noreferrer">Benoy</a>, London
         </p>
       </div>
 
@@ -31,55 +31,73 @@
       <h2 class="text-2xl font-semibold uppercase tracking-wide mb-6">What I do</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 text-base uppercase">
         <div>
-          <h3 class="text-base font-medium tracking-wide mb-1">Design Technology Strategy</h3>
-          <p class="font-light leading-snug normal-case">
+          <h3 class="text-base font-medium tracking-wide mb-1 uppercase">Design Technology Strategy</h3>
+          <p class="font-light leading-snug uppercase">
             Driving design technology strategy across global studios—aligning project needs with business objectives through scalable systems, cross-team collaboration, and progressive digital agendas.
           </p>
         </div>
         <div>
-          <h3 class="text-base font-medium tracking-wide mb-1">Digital Design</h3>
-          <p class="font-light leading-snug normal-case">
+          <h3 class="text-base font-medium tracking-wide mb-1 uppercase">Digital Design</h3>
+          <p class="font-light leading-snug uppercase">
             Delivering high-performance, sustainable design using computational methods, data-driven analysis, and custom toolsets—enhancing design precision and creativity at all stages.
           </p>
         </div>
         <div>
-          <h3 class="text-base font-medium tracking-wide mb-1">Digital Delivery</h3>
-          <p class="font-light leading-snug normal-case">
+          <h3 class="text-base font-medium tracking-wide mb-1 uppercase">Digital Delivery</h3>
+          <p class="font-light leading-snug uppercase">
             Leading BIM implementation and digital delivery at scale—developing ISO19650-compliant standards, automating documentation, and supporting teams from concept through bid.
           </p>
         </div>
         <div>
-          <h3 class="text-base font-medium tracking-wide mb-1">Emerging Tech Implementation</h3>
-          <p class="font-light leading-snug normal-case">
+          <h3 class="text-base font-medium tracking-wide mb-1 uppercase">Emerging Tech Implementation</h3>
+          <p class="font-light leading-snug uppercase">
             Deploying AI tools, Rhino–Revit interoperability, and custom automation into live projects—translating innovation into measurable impact across disciplines.
           </p>
         </div>
         <div>
-          <h3 class="text-base font-medium tracking-wide mb-1">Team & Capability Building</h3>
-          <p class="font-light leading-snug normal-case">
+          <h3 class="text-base font-medium tracking-wide mb-1 uppercase">Team & Capability Building</h3>
+          <p class="font-light leading-snug uppercase">
             Building and managing global tech teams—mentoring staff, creating training content, and embedding technical excellence across product, building, and masterplanning scales.
           </p>
         </div>
         <div>
-          <h3 class="text-base font-medium tracking-wide mb-1">Process & Workflow Development</h3>
-          <p class="font-light leading-snug normal-case">
+          <h3 class="text-base font-medium tracking-wide mb-1 uppercase">Process & Workflow Development</h3>
+          <p class="font-light leading-snug uppercase">
             Designing and maintaining cross-platform workflows—developing Rhino.Inside, Dynamo, and Grasshopper pipelines, with detailed documentation, templates, and script libraries.
           </p>
         </div>
       </div>
     </div>
 
-    <div class="fixed top-8 right-8 z-50">
-      <a
-        href="https://www.linkedin.com/in/ami-nigam-4325256a/"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white hover:bg-[#0077b5] transition"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
-          <path d="M20.45 20.45h-3.6v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.07 1.4-2.07 2.85v5.5h-3.6v-11h3.45v1.5h.05c.48-.9 1.65-1.8 3.4-1.8 3.64 0 4.3 2.4 4.3 5.4v5.9zM5.4 8.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM3.6 20.45h3.6v-11H3.6v11zM22.2 0H1.8C.8 0 0 .8 0 1.8v20.4C0 23.2.8 24 1.8 24h20.4c1 0 1.8-.8 1.8-1.8V1.8c0-1-.8-1.8-1.8-1.8z"/>
-        </svg>
-      </a>
-    </div>
+    <div class="fixed top-8 right-8 z-50 flex gap-3">
+  <button id="toggle-theme" class="w-12 h-12 rounded-full bg-white text-black border border-black hover:bg-gray-200 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-10H21M3 12H2m15.36 6.36l-.7-.7M5.64 5.64l-.7-.7m12.02 0l.7.7M5.64 18.36l.7.7M12 5a7 7 0 000 14a7 7 0 000-14z" />
+    </svg>
+  </button>
+  <a
+    href="https://www.linkedin.com/in/ami-nigam-4325256a/"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white hover:bg-[#0077b5] transition"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
+      <path d="M20.45 20.45h-3.6v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.07 1.4-2.07 2.85v5.5h-3.6v-11h3.45v1.5h.05c.48-.9 1.65-1.8 3.4-1.8 3.64 0 4.3 2.4 4.3 5.4v5.9zM5.4 8.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM3.6 20.45h3.6v-11H3.6v11zM22.2 0H1.8C.8 0 0 .8 0 1.8v20.4C0 23.2.8 24 1.8 24h20.4c1 0 1.8-.8 1.8-1.8V1.8c0-1-.8-1.8-1.8-1.8z"/>
+    </svg>
+  </a>
+</div>
+  <script>
+      const toggle = document.getElementById('toggle-theme');
+      const body = document.body;
+      toggle.addEventListener('click', () => {
+        if (body.classList.contains('bg-white')) {
+          body.classList.remove('bg-white', 'text-black');
+          body.classList.add('bg-black', 'text-white');
+        } else {
+          body.classList.remove('bg-black', 'text-white');
+          body.classList.add('bg-white', 'text-black');
+        }
+      });
+    </script>
   </body>
 </html>
