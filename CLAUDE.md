@@ -8,31 +8,52 @@ This is a GitHub Pages personal portfolio website for Ami Nigam (ami-nigam.com).
 
 ## Architecture
 
-- **Single-page application**: Built as a standalone HTML file with inline CSS (Tailwind) and JavaScript
-- **Styling**: Uses Tailwind CSS via CDN for responsive design and utilities
+- **Split-screen application**: Two-column layout with portfolio content (left) and Prism Labs showcase (right)
+- **Styling**: Combines Tailwind CSS via CDN with custom CSS variables and animations
 - **Deployment**: GitHub Pages with custom domain configured via CNAME file
-- **Theme**: Implements a simple light/dark mode toggle via vanilla JavaScript
+- **Theme**: CSS custom properties-based light/dark mode with localStorage persistence
 
 ## File Structure
 
 ```
 /
 ├── CNAME           # Custom domain configuration (ami-nigam.com)
-└── index.html      # Main website file containing all HTML, CSS, and JS
+├── index.html      # Main website file with HTML structure and JavaScript
+└── styles.css      # Custom CSS with variables, animations, and component styles
 ```
 
 ## Key Components
 
-- **Header section**: Name, title, and company with responsive typography
-- **About section**: Professional description with mixed font styling
-- **Services grid**: 6-item responsive grid showcasing expertise areas
+### Left Section - Portfolio Content
+- **Header**: Large typography with mixed font styles (serif/sans-serif, italic/normal)
+- **About**: Extensive description with highlighted technology keywords
+- **Services grid**: 6-item responsive grid with hover effects and animations
+- **Typography**: Uppercase styling throughout with varied font weights
+
+### Right Section - Prism Labs
+- **Prism Notes**: Live AI-powered visual learning application with launch link
+- **Prism Viz**: Work-in-progress AI model aggregator platform
+- **Project cards**: Interactive hover effects with gradient overlays
+
+### Global Features
+- **Split layout**: CSS Grid-based responsive layout (stacks on mobile)
 - **Fixed controls**: Top-right theme toggle and LinkedIn link
-- **Theme system**: JavaScript-based toggle between light/dark modes
+- **Animations**: Intersection Observer-based fade-in and slide-up effects
+- **Theme system**: CSS custom properties with smooth transitions
+
+## Technology Stack
+
+- **Frontend**: HTML5, vanilla JavaScript, CSS Grid/Flexbox
+- **Styling**: Tailwind CSS (CDN) + custom CSS with CSS variables
+- **Animations**: CSS keyframes + Intersection Observer API
+- **Theme**: CSS custom properties with localStorage persistence
+- **Typography**: Mixed serif/sans-serif with extensive uppercase styling
 
 ## Development Notes
 
-- No build process required - direct HTML editing
-- Changes are deployed automatically when pushed to main branch
-- Tailwind classes are loaded via CDN (not processed locally)
-- All interactions handled by vanilla JavaScript
-- Site uses semantic HTML with accessibility considerations
+- **Build process**: None required - direct HTML/CSS editing
+- **Deployment**: Automatic via GitHub Pages on main branch push
+- **Responsive**: Mobile-first with CSS Grid breakpoints
+- **Accessibility**: Reduced motion preferences, focus states, semantic HTML
+- **Performance**: Lightweight with minimal dependencies (only Tailwind CDN)
+- **Theme management**: CSS custom properties for consistent theming across components

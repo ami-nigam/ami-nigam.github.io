@@ -217,3 +217,12 @@ a:focus-visible {
 .hover-glow:hover {
   box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
+
+/* Prism Animation Container */
+.prism-animation-container {
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.prism-animation-container:hover {
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+}
