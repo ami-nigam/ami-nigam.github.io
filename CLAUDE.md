@@ -31,15 +31,18 @@ This is a GitHub Pages personal portfolio website for Ami Nigam (ami-nigam.com).
 - **Typography**: Uppercase styling throughout with varied font weights
 
 ### Right Section - Prism Labs
-- **Prism Notes**: Live AI-powered visual learning application with launch link
-- **Prism Viz**: Work-in-progress AI model aggregator platform
-- **Project cards**: Interactive hover effects with gradient overlays
+- **Brand alignment**: Matches exact styling from official Prism Labs website
+- **Interactive showcase**: Mouse-responsive spectral gradient effects
+- **Typography**: Inter font family with exact color system from source
+- **Layout**: Vertically centered content linking to GitHub repository
+- **Spectral effects**: "Human Intent" and "AI" text with dynamic color gradients
 
 ### Global Features
 - **Split layout**: CSS Grid-based responsive layout (stacks on mobile)
 - **Fixed controls**: Top-right theme toggle and LinkedIn link
 - **Animations**: Intersection Observer-based fade-in and slide-up effects
 - **Theme system**: CSS custom properties with smooth transitions
+- **Mouse interactivity**: Spectral gradient system responds to cursor movement
 
 ## Technology Stack
 
@@ -47,7 +50,8 @@ This is a GitHub Pages personal portfolio website for Ami Nigam (ami-nigam.com).
 - **Styling**: Tailwind CSS (CDN) + custom CSS with CSS variables
 - **Animations**: CSS keyframes + Intersection Observer API
 - **Theme**: CSS custom properties with localStorage persistence
-- **Typography**: Mixed serif/sans-serif with extensive uppercase styling
+- **Typography**: Mixed serif/sans-serif with extensive uppercase styling, Inter font for Prism Labs section
+- **Interactive effects**: Mouse-responsive spectral gradients with CSS custom properties
 
 ## Development Notes
 
