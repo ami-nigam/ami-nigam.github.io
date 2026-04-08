@@ -352,6 +352,15 @@ a {
   color: var(--text-tertiary);
   white-space: nowrap;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
+}
+
+.li-icon {
+  width: 10px;
+  height: 10px;
+  flex-shrink: 0;
 }
 
 /* ===== Contact ===== */
