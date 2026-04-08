@@ -3,16 +3,16 @@
   --primary-bg: #ffffff;
   --primary-text: #0d0d0d;
   --text-secondary: #555555;
-  --text-tertiary: #999999;
-  --border-tertiary: rgba(0, 0, 0, 0.12);
+  --text-tertiary: #575757;
+  --border-tertiary: rgba(0, 0, 0, 0.19);
 }
 
 [data-theme="dark"] {
   --primary-bg: #0d0d0d;
   --primary-text: #f0ede8;
   --text-secondary: #a0a0a0;
-  --text-tertiary: #555555;
-  --border-tertiary: rgba(255, 255, 255, 0.1);
+  --text-tertiary: #838383;
+  --border-tertiary: rgba(255, 255, 255, 0.16);
 }
 
 /* ===== Base ===== */
@@ -260,11 +260,15 @@ a {
 }
 
 .press-source {
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-tertiary);
   margin-bottom: 0.3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .press-row {
@@ -288,6 +292,16 @@ a {
   color: var(--text-tertiary);
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.press-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-tertiary);
+  vertical-align: middle;
 }
 
 /* ===== Thinking ===== */
