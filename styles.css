@@ -307,8 +307,7 @@ a {
 /* ===== Thinking ===== */
 .thinking-item {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   gap: 1.5rem;
   padding: 1rem 0;
   transition: opacity 0.2s ease;
@@ -320,6 +319,23 @@ a {
 
 .thinking-item:hover {
   opacity: 0.5;
+}
+
+.thinking-row {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+}
+
+.thinking-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 2px;
 }
 
 .thinking-title {

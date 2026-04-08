@@ -242,64 +242,58 @@
       });
 
       // ===== Thinking: LinkedIn RSS Feed =====
-      // To enable live posts:
-      // 1. Go to https://rss.app and create a free account
-      // 2. Create a new feed from Ami's LinkedIn profile URL
-      // 3. Copy the RSS feed URL and paste it into LINKEDIN_FEED_URL below
-      const LINKEDIN_FEED_URL = ''; // e.g. 'https://rss.app/feeds/XXXXXXXXXXXXXXXX.xml'
-
-      // Static fallback — replace placeholder URLs with actual LinkedIn post URLs before shipping
-      const THINKING_FALLBACK = [
-        {
-          title: 'Head of Technology > Global Head of Design AI & Technology at Benoy',
-          date: 'Apr 2026',
-          url: 'https://www.linkedin.com/feed/update/urn:li:activity:7447297623574745088/',
-        },
-        {
-          title: 'ArchiTech Network Summit - What stood out to me',
-          date: 'Mar 2026',
-          url: 'https://www.linkedin.com/posts/ami-nigam-4325256a_the-first-atn-summit-landed-last-week-in-activity-7441886096952737792-A2fI?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAA6r4iYB2ZIU-orimSkPWq9L8O0Mfuy6Wjw',
-        },
-        {
-          title: 'What AI should buy us is more design time',
-          date: '2025',
-          url: 'https://www.linkedin.com/in/ami-nigam-4325256a/',
-        },
-      ];
+      const LINKEDIN_FEED_URL = 'https://rss.app/feeds/OFYG5gZjTmzOJsUF.xml';
+      const CORS_PROXY_URL = 'https://api.allorigins.win/get?url=';
 
       function renderThinkingPosts(posts) {
         const container = document.getElementById('thinking-posts');
         container.innerHTML = posts.map(post => `
           <div class="thinking-item">
-            <a href="${post.url}" target="_blank" rel="noopener noreferrer" class="thinking-title">${post.title}</a>
-            <span class="thinking-date">${post.date}</span>
+            <div class="thinking-row">
+              <a href="${post.url}" target="_blank" rel="noopener noreferrer" class="thinking-title">${post.title}</a>
+              <span class="thinking-date">${post.date}</span>
+            </div>
+            ${post.image ? `<img class="thinking-thumb" src="${post.image}" alt="" loading="lazy" />` : ''}
           </div>
         `).join('');
       }
 
+      function parseRSSItems(xml) {
+        return [...xml.querySelectorAll('item')]
+          .map(item => {
+            const url = item.querySelector('link')?.textContent?.trim() || '';
+            if (!url.includes('ami-nigam-4325256a')) return null;
+            const mediaEl = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
+            return {
+              title: item.querySelector('title')?.textContent?.trim() || '',
+              url,
+              date: (() => {
+                const pub = item.querySelector('pubDate')?.textContent;
+                if (!pub) return '';
+                return new Date(pub).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+              })(),
+              image: mediaEl?.getAttribute('url') || '',
+            };
+          })
+          .filter(p => p && p.title)
+          .slice(0, 10);
+      }
+
       async function loadThinking() {
-        if (!LINKEDIN_FEED_URL) {
-          renderThinkingPosts(THINKING_FALLBACK);
-          return;
-        }
+        let xml;
         try {
           const res = await fetch(LINKEDIN_FEED_URL);
-          if (!res.ok) throw new Error('Feed fetch failed');
+          if (!res.ok) throw new Error('not ok');
           const text = await res.text();
-          const xml = new DOMParser().parseFromString(text, 'application/xml');
-          const items = [...xml.querySelectorAll('item')].slice(0, 5).map(item => ({
-            title: item.querySelector('title')?.textContent?.trim() || '',
-            url: item.querySelector('link')?.textContent?.trim() || 'https://www.linkedin.com/in/ami-nigam-4325256a/',
-            date: (() => {
-              const pub = item.querySelector('pubDate')?.textContent;
-              if (!pub) return '';
-              return new Date(pub).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
-            })(),
-          })).filter(p => p.title);
-          renderThinkingPosts(items.length ? items : THINKING_FALLBACK);
+          xml = new DOMParser().parseFromString(text, 'application/xml');
         } catch {
-          renderThinkingPosts(THINKING_FALLBACK);
+          const proxyRes = await fetch(CORS_PROXY_URL + encodeURIComponent(LINKEDIN_FEED_URL));
+          if (!proxyRes.ok) return;
+          const json = await proxyRes.json();
+          xml = new DOMParser().parseFromString(json.contents, 'application/xml');
         }
+        const items = parseRSSItems(xml);
+        if (items.length) renderThinkingPosts(items);
       }
 
       loadThinking();
