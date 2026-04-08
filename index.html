@@ -7,213 +7,281 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            animation: {
-              'fade-in': 'fadeIn 0.6s ease-out',
-              'slide-up': 'slideUp 0.8s ease-out',
-              'typing': 'typing 3.5s steps(40, end), blink-caret .75s step-end infinite'
-            }
-          }
-        }
-      }
-    </script>
   </head>
-  <body style="background-color: var(--primary-bg); color: var(--primary-text);" class="font-sans">
-    <div class="section-divider"></div>
-    
-    <div class="split-container">
-      <!-- Left Half - Portfolio Content -->
-      <section class="relative px-8 py-16 lg:px-12">
-        <div class="max-w-4xl mx-auto">
-          <div class="text-left mb-12 animate-fade-in">
-            <h1 class="text-[7vw] lg:text-6xl leading-none tracking-tight font-serif italic uppercase">
-              <span class="font-extrabold not-italic">Ami </span> Nigam
-            </h1>
-            <p class="text-xl lg:text-2xl font-semibold mt-4 uppercase">Design Technology Specialist</p>
-            <p class="text-xl lg:text-2xl font-semibold mt-2 uppercase">
-              Head of Technology, <a href="https://www.benoy.com/" class="underline hover:text-blue-600 transition-colors" target="_blank" rel="noopener noreferrer">Benoy</a>, London
-            </p>
-          </div>
+  <body>
 
-          <div class="mt-10 mb-20 max-w-3xl animate-slide-up">
-            <p class="text-2xl lg:text-3xl italic font-light leading-relaxed uppercase">
-              I'M A <span class="font-mono not-italic font-normal">DESIGN TECHNOLOGIST</span> INTEGRATING
-              <span class="font-mono not-italic font-normal">EMERGING TECHNOLOGIES</span> IN THE DESIGN OF THE BUILT ENVIRONMENT. WITH EXPERIENCE ACROSS EUROPE AND ASIA, I'VE LED
-              <span class="font-mono not-italic font-normal">DIGITAL STRATEGY</span>, <span class="font-mono not-italic font-normal">BIM IMPLEMENTATION</span>, AND
-              <span class="font-mono not-italic font-normal">COMPUTATIONAL DESIGN</span> ON CULTURAL LANDMARKS AND COMPLEX DEVELOPMENTS. I THRIVE WHERE DESIGN MEETS TECHNOLOGY - BUILDING TOOLS, LEADING TEAMS, AND PUSHING CREATIVE AND TECHNICAL BOUNDARIES. FROM MENTORING TO AUTOMATION PIPELINES AND EXPLORING AI.
-              <span class="font-mono not-italic font-normal">I FOCUS ON ELEVATING BOTH PROCESS AND PRODUCT</span>.
-            </p>
-          </div>
+    <!-- Navigation -->
+    <nav class="nav">
+      <span class="nav-name">Ami Nigam</span>
+      <div class="nav-right">
+        <ul class="nav-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#press">Press</a></li>
+          <li><a href="#thinking">Thinking</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button id="toggle-theme" class="theme-toggle" aria-label="Toggle light/dark mode">
+          <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </nav>
 
-          <h2 class="text-2xl font-semibold uppercase tracking-wide mb-8 animate-fade-in">What I do</h2>
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 text-base uppercase">
-            <div class="service-card group p-6 rounded-lg animate-fade-in">
-              <h3 class="text-base font-medium tracking-wide mb-3 uppercase transition-colors">Design Technology Strategy</h3>
-              <p class="font-light leading-snug uppercase">
-                Driving design technology strategy across global studios-aligning project needs with business objectives through scalable systems, cross-team collaboration, and progressive digital agendas.
-              </p>
+    <!-- Spectral gradient line — runs continuously, no scroll trigger -->
+    <div class="spectral-line" aria-hidden="true"></div>
+
+    <!-- Hero -->
+    <section class="hero">
+      <p class="kicker fade-up">Global Head of Design AI &amp; Technology</p>
+      <h1 class="headline">
+        <span class="headline-bold fade-up">Design Technology &amp; AI infrastructure for design practices.</span>
+        <span class="headline-italic fade-up">Built from the inside.</span>
+      </h1>
+      <p class="hero-body fade-up">Most firms treat AI as a technology problem. It isn't. It's a practice problem. I build the tools, teams, and training that make it land — because understanding the business of architecture is what determines what to build, where to deploy it, and how to make it stick.</p>
+      <p class="hero-meta fade-up"><a href="https://www.benoy.com" target="_blank" rel="noopener noreferrer">Benoy</a>, London &nbsp;&middot;&nbsp; <a href="https://iaac.net" target="_blank" rel="noopener noreferrer">IAAC</a> Barcelona &nbsp;&middot;&nbsp; <a href="https://nla.london/nla-expert-panel-on-built-environment-technology" target="_blank" rel="noopener noreferrer">NLA Expert Panel</a></p>
+    </section>
+
+    <!-- About -->
+    <div class="section-border">
+      <section id="about" class="section">
+        <div class="two-col">
+          <div class="section-label fade-up">About</div>
+          <!-- Placeholder copy — Ami to rewrite in own voice before shipping.
+               150–200 words, first person, mixed case, no em-dashes. -->
+          <div class="about-body fade-up">
+            <p>Raised in <span class="city">Bombay</span>. Studied architecture at <a href="https://aub.ac.uk" target="_blank" rel="noopener noreferrer">AUB</a>, in <span class="city">Bournemouth</span>, UK. Then moved to <span class="city">Beijing</span>, <span class="city">Barcelona</span>, <span class="city">Hong Kong</span>, <span class="city">London</span>. Each city built a different layer.</p>
+            <p>In <span class="city">Beijing</span>, worked as an Architectural Assistant and Designer across various practices, and co-founded <a href="https://www.linkedin.com/in/ami-nigam-4325256a/" target="_blank" rel="noopener noreferrer">de facto</a>, a small design collective experimenting with 3D printing and digital fabrication, applying architectural thinking to fashion, food, and installations.</p>
+            <p>In <span class="city">Barcelona</span>, studied at <a href="https://iaac.net" target="_blank" rel="noopener noreferrer">IAAC</a> (the Institute for Advanced Architecture of Catalonia), focusing on computational design, smart materials, and advanced fabrication.</p>
+            <p>In <span class="city">Hong Kong</span>, worked first at <a href="https://www.weareenzyme.com" target="_blank" rel="noopener noreferrer">Enzyme APD</a>, then at <a href="https://www.unstudio.com" target="_blank" rel="noopener noreferrer">UNStudio</a>. That is where the shift happened: from architect who uses technology to technologist who understands architecture.</p>
+            <p>In <span class="city">London</span>, joined <a href="https://www.benoy.com" target="_blank" rel="noopener noreferrer">Benoy</a> in 2022 and built the Design Technology function from zero. BIM infrastructure, ISO 19650 standards, and then VizAI, an AI visualisation platform now used across the practice globally. Today: Global Head of Design AI &amp; Technology, running AI strategy and delivery across EMEA, measuring commercial impact, building the infrastructure that makes adoption self-sustaining.</p>
+            <p>Serves on the <a href="https://nla.london/nla-expert-panel-on-built-environment-technology" target="_blank" rel="noopener noreferrer">NLA Expert Panel</a> on Built Environment Technology. Collaborates with <a href="https://iaac.net" target="_blank" rel="noopener noreferrer">IAAC Barcelona</a>.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Press & Appearances -->
+    <div class="section-border">
+      <section id="press" class="section">
+        <div class="two-col">
+          <div class="section-label fade-up">Press &amp; Appearances</div>
+          <div class="press-list">
+            <div class="press-item fade-up">
+              <div class="press-source">World Landscape Architecture</div>
+              <div class="press-row">
+                <a href="https://worldlandscapearchitect.com/how-benoy-is-navigating-the-ai-shift-in-modern-practice/?v=7885444af42e" target="_blank" rel="noopener noreferrer" class="press-title">How Benoy is Navigating the AI Shift in Modern Practice </a>
+                <span class="press-date">Mar 2026</span>
+              </div>
             </div>
-            <div class="service-card group p-6 rounded-lg animate-fade-in">
-              <h3 class="text-base font-medium tracking-wide mb-3 uppercase transition-colors">Digital Design</h3>
-              <p class="font-light leading-snug uppercase">
-                Delivering high-performance, sustainable design using computational methods, data-driven analysis, and custom toolsets-enhancing design precision and creativity at all stages.
-              </p>
+            <div class="press-item fade-up">
+              <div class="press-source">Arch Social Podcast</div>
+              <div class="press-row">
+                <!-- Note: verify/replace URL before shipping -->
+                <a href="https://archsocial.com" target="_blank" rel="noopener noreferrer" class="press-title">Global Head of Design AI &amp; Technology, Benoy</a>
+                <span class="press-date">2026</span>
+              </div>
             </div>
-            <div class="service-card group p-6 rounded-lg animate-fade-in">
-              <h3 class="text-base font-medium tracking-wide mb-3 uppercase transition-colors">Digital Delivery</h3>
-              <p class="font-light leading-snug uppercase">
-                Leading BIM implementation and digital delivery at scale-developing ISO19650-compliant standards, automating documentation, and supporting teams from concept through bid.
-              </p>
+            <div class="press-item fade-up">
+              <div class="press-source">ATN x Thornton Tomasetti</div>
+              <div class="press-row">
+                <!-- Note: verify/replace URL before shipping -->
+                <a href="https://archi-tech.network" target="_blank" rel="noopener noreferrer" class="press-title">Hackathon Judge — Martha Tsigkari, Shajay Bhooshan, Pablo Zamorano</a>
+                <span class="press-date">2025</span>
+              </div>
             </div>
-            <div class="service-card group p-6 rounded-lg animate-fade-in">
-              <h3 class="text-base font-medium tracking-wide mb-3 uppercase transition-colors">Emerging Tech Implementation</h3>
-              <p class="font-light leading-snug uppercase">
-                Deploying AI tools, Rhino–Revit interoperability, and custom automation into live projects-translating innovation into measurable impact across disciplines.
-              </p>
+            <div class="press-item fade-up">
+              <div class="press-source">RIBA AI Summit</div>
+              <div class="press-row">
+                <!-- Note: verify/replace URL before shipping -->
+                <a href="https://www.architecture.com" target="_blank" rel="noopener noreferrer" class="press-title">Speaker Panel</a>
+                <span class="press-date">2024</span>
+              </div>
             </div>
-            <div class="service-card group p-6 rounded-lg animate-fade-in">
-              <h3 class="text-base font-medium tracking-wide mb-3 uppercase transition-colors">Team & Capability Building</h3>
-              <p class="font-light leading-snug uppercase">
-                Building and managing global tech teams-mentoring staff, creating training content, and embedding technical excellence across product, building, and masterplanning scales.
-              </p>
+            <div class="press-item fade-up">
+              <div class="press-source">Disrupt Magazine</div>
+              <div class="press-row">
+                <a href="https://disruptmag.com/ami-nigam-pioneering-design-technology-strategy-in-architecture-at-benoy/" target="_blank" rel="noopener noreferrer" class="press-title">Pioneering Design Technology Strategy in Architecture</a>
+                <span class="press-date">2024</span>
+              </div>
             </div>
-            <div class="service-card group p-6 rounded-lg animate-fade-in">
-              <h3 class="text-base font-medium tracking-wide mb-3 uppercase transition-colors">Process & Workflow Development</h3>
-              <p class="font-light leading-snug uppercase">
-                Designing and maintaining cross-platform workflows-developing Rhino.Inside, Dynamo, and Grasshopper pipelines, with detailed documentation, templates, and script libraries.
-              </p>
+            <div class="press-item fade-up">
+              <div class="press-source">Benoy Design Insights</div>
+              <div class="press-row">
+                <a href="https://www.benoy.com/design-insights/using-ai-to-supercharge-creativity-with-ami-nigam/" target="_blank" rel="noopener noreferrer" class="press-title">Using AI to Supercharge Creativity</a>
+                <span class="press-date">2024</span>
+              </div>
+            </div>
+            <div class="press-item fade-up">
+              <div class="press-source">Benoy Design Insights</div>
+              <div class="press-row">
+                <a href="https://www.benoy.com/design-insights/ami-nigam-on-the-importance-of-technology-in-driving-design-innovation/" target="_blank" rel="noopener noreferrer" class="press-title">On the Importance of Technology in Driving Design Innovation</a>
+                <span class="press-date">2022</span>
+              </div>
+            </div>
+            <div class="press-item fade-up">
+              <div class="press-source">Novatr</div>
+              <div class="press-row">
+                <a href="https://www.novatr.com/blog/career-in-bim-and-computational-design" target="_blank" rel="noopener noreferrer" class="press-title">Careers in BIM and Computational Design</a>
+                <span class="press-date">2024</span>
+              </div>
             </div>
           </div>
         </div>
       </section>
-      
-      <!-- Right Half - Prism Labs -->
-      <section class="relative min-h-screen" style="background-color: var(--secondary-bg); display: flex; align-items: center; justify-content: center;">
-        <a 
-          href="https://ami-nigam.com/prism-labs" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          class="block transition-all duration-300 hover:opacity-90 px-8"
-          style="font-family: 'Inter', system-ui, -apple-system, sans-serif; margin-top: -50vh;"
-        >
-          <div class="max-w-2xl mx-auto text-center">
-            <div class="flex items-center justify-center gap-3 mb-4">
-              <div class="h-8 w-8 rounded-md spectral-gradient"></div>
-              <span class="text-3xl font-semibold tracking-tight uppercase" style="color: rgba(17, 24, 39, 0.87); font-family: Inter, system-ui, sans-serif;">PRISM LABS</span>
-            </div>
-            <h1 class="text-5xl md:text-7xl font-bold leading-tight tracking-tight mb-6 text-center" style="color: rgba(17, 24, 39, 0.87); font-family: Inter, system-ui, sans-serif;">
-              Amplifying <span class="spectral-text">Human Intent</span> through <span class="spectral-text">AI</span>
-            </h1>
-            <!-- <p class="text-lg max-w-xl mx-auto text-center" style="color: rgb(55, 65, 81); font-family: Inter, system-ui, sans-serif;">
-              A <span style="font-weight: 700;">research lab × creative studio</span>. We refract messy ideas into structured clarity, expanding them into their full spectrum.
-            </p> -->
-          </div>
-        </a>
+    </div>
+
+    <!-- Thinking -->
+    <div class="section-border">
+      <section id="thinking" class="section">
+        <div class="two-col">
+          <div class="section-label fade-up">Thinking</div>
+          <!-- Posts loaded from LinkedIn RSS feed; falls back to static list if feed is unavailable -->
+          <div id="thinking-posts" class="fade-up"></div>
+        </div>
       </section>
     </div>
 
-    <div class="fixed top-8 right-8 z-50 flex gap-3">
-      <button id="toggle-theme" class="theme-toggle w-12 h-12 rounded-full">
-        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto transition-opacity duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-10H21M3 12H2m15.36 6.36l-.7-.7M5.64 5.64l-.7-.7m12.02 0l.7.7M5.64 18.36l.7.7M12 5a7 7 0 000 14a7 7 0 000-14z" />
-        </svg>
-        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mx-auto transition-opacity duration-300 opacity-0 absolute inset-0 m-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-        </svg>
-      </button>
-      <a
-        href="https://www.linkedin.com/in/ami-nigam-4325256a/"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-black text-white hover:bg-[#0077b5] transition-all duration-300 hover:scale-110"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
-          <path d="M20.45 20.45h-3.6v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.07 1.4-2.07 2.85v5.5h-3.6v-11h3.45v1.5h.05c.48-.9 1.65-1.8 3.4-1.8 3.64 0 4.3 2.4 4.3 5.4v5.9zM5.4 8.4a2.1 2.1 0 1 1 0-4.2 2.1 2.1 0 0 1 0 4.2zM3.6 20.45h3.6v-11H3.6v11zM22.2 0H1.8C.8 0 0 .8 0 1.8v20.4C0 23.2.8 24 1.8 24h20.4c1 0 1.8-.8 1.8-1.8V1.8c0-1-.8-1.8-1.8-1.8z"/>
-        </svg>
-      </a>
+    <!-- Contact -->
+    <div class="section-border">
+      <section id="contact" class="section">
+        <div class="two-col">
+          <div class="section-label fade-up">Contact</div>
+          <p class="contact-line fade-up">For speaking, collaboration, or press — <a href="https://www.linkedin.com/in/ami-nigam-4325256a/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+        </div>
+      </section>
     </div>
-    
-    <script>
-      // Mouse-controlled spectral gradient
-      function initSpectralMouse() {
-        let mouseX = 0;
-        
-        // Smooth interpolation for gradient position
-        function updateGradientPosition() {
-          const viewportWidth = window.innerWidth;
-          const gradientX = (mouseX / viewportWidth) * 100;
-          
-          // Update CSS custom property
-          document.documentElement.style.setProperty('--spectral-x', `${gradientX}%`);
-        }
-        
-        // Track mouse movement
-        document.addEventListener('mousemove', (e) => {
-          mouseX = e.clientX;
-          updateGradientPosition();
-        });
-        
-        // Initialize gradient position
-        updateGradientPosition();
-      }
 
-      const toggle = document.getElementById('toggle-theme');
+    <!-- Footer -->
+    <div class="section-border">
+      <footer class="footer">
+        <span class="footer-copy">© 2026 Ami Nigam</span>
+        <a href="https://ami-nigam.com/prism-labs" target="_blank" rel="noopener noreferrer" class="footer-prism">PRISM Labs →</a>
+      </footer>
+    </div>
+
+    <script>
+      // ===== Theme Toggle =====
+      const html = document.documentElement;
+      const toggleBtn = document.getElementById('toggle-theme');
       const sunIcon = document.getElementById('sun-icon');
       const moonIcon = document.getElementById('moon-icon');
-      const html = document.documentElement;
-      
-      // Initialize spectral mouse on page load
-      initSpectralMouse();
 
-      // Check for saved theme preference
-      const currentTheme = localStorage.getItem('theme') || 'light';
-      if (currentTheme === 'dark') {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      if (savedTheme === 'dark') {
         html.setAttribute('data-theme', 'dark');
-        sunIcon.classList.add('opacity-0');
-        moonIcon.classList.remove('opacity-0');
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
       }
-      
-      toggle.addEventListener('click', () => {
+
+      toggleBtn.addEventListener('click', () => {
         const isDark = html.getAttribute('data-theme') === 'dark';
-        
         if (isDark) {
           html.removeAttribute('data-theme');
-          sunIcon.classList.remove('opacity-0');
-          moonIcon.classList.add('opacity-0');
+          sunIcon.style.display = 'block';
+          moonIcon.style.display = 'none';
           localStorage.setItem('theme', 'light');
         } else {
           html.setAttribute('data-theme', 'dark');
-          sunIcon.classList.add('opacity-0');
-          moonIcon.classList.remove('opacity-0');
+          sunIcon.style.display = 'none';
+          moonIcon.style.display = 'block';
           localStorage.setItem('theme', 'dark');
         }
       });
-      
-      // Intersection Observer for animations
-      const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-      };
-      
+
+      // ===== Thinking: LinkedIn RSS Feed =====
+      // To enable live posts:
+      // 1. Go to https://rss.app and create a free account
+      // 2. Create a new feed from Ami's LinkedIn profile URL
+      // 3. Copy the RSS feed URL and paste it into LINKEDIN_FEED_URL below
+      const LINKEDIN_FEED_URL = ''; // e.g. 'https://rss.app/feeds/XXXXXXXXXXXXXXXX.xml'
+
+      // Static fallback — replace placeholder URLs with actual LinkedIn post URLs before shipping
+      const THINKING_FALLBACK = [
+        {
+          title: 'Head of Technology > Global Head of Design AI & Technology at Benoy',
+          date: 'Apr 2026',
+          url: 'https://www.linkedin.com/feed/update/urn:li:activity:7447297623574745088/',
+        },
+        {
+          title: 'ArchiTech Network Summit - What stood out to me',
+          date: 'Mar 2026',
+          url: 'https://www.linkedin.com/posts/ami-nigam-4325256a_the-first-atn-summit-landed-last-week-in-activity-7441886096952737792-A2fI?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAA6r4iYB2ZIU-orimSkPWq9L8O0Mfuy6Wjw',
+        },
+        {
+          title: 'What AI should buy us is more design time',
+          date: '2025',
+          url: 'https://www.linkedin.com/in/ami-nigam-4325256a/',
+        },
+      ];
+
+      function renderThinkingPosts(posts) {
+        const container = document.getElementById('thinking-posts');
+        container.innerHTML = posts.map(post => `
+          <div class="thinking-item">
+            <a href="${post.url}" target="_blank" rel="noopener noreferrer" class="thinking-title">${post.title}</a>
+            <span class="thinking-date">${post.date}</span>
+          </div>
+        `).join('');
+      }
+
+      async function loadThinking() {
+        if (!LINKEDIN_FEED_URL) {
+          renderThinkingPosts(THINKING_FALLBACK);
+          return;
+        }
+        try {
+          const res = await fetch(LINKEDIN_FEED_URL);
+          if (!res.ok) throw new Error('Feed fetch failed');
+          const text = await res.text();
+          const xml = new DOMParser().parseFromString(text, 'application/xml');
+          const items = [...xml.querySelectorAll('item')].slice(0, 5).map(item => ({
+            title: item.querySelector('title')?.textContent?.trim() || '',
+            url: item.querySelector('link')?.textContent?.trim() || 'https://www.linkedin.com/in/ami-nigam-4325256a/',
+            date: (() => {
+              const pub = item.querySelector('pubDate')?.textContent;
+              if (!pub) return '';
+              return new Date(pub).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+            })(),
+          })).filter(p => p.title);
+          renderThinkingPosts(items.length ? items : THINKING_FALLBACK);
+        } catch {
+          renderThinkingPosts(THINKING_FALLBACK);
+        }
+      }
+
+      loadThinking();
+
+      // ===== Scroll Animations =====
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('opacity-100', 'translate-y-0');
-            entry.target.classList.remove('opacity-0', 'translate-y-8');
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
           }
         });
-      }, observerOptions);
-      
-      // Observe animated elements
-      document.querySelectorAll('.animate-fade-in, .animate-slide-up').forEach(el => {
-        el.classList.add('opacity-0', 'translate-y-8');
-        observer.observe(el);
+      }, { threshold: 0.05 });
+
+      document.querySelectorAll('section').forEach(section => {
+        section.querySelectorAll('.fade-up').forEach((el, i) => {
+          el.style.transitionDelay = `${i * 100}ms`;
+          observer.observe(el);
+        });
       });
     </script>
+
   </body>
 </html>
