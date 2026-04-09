@@ -242,11 +242,31 @@
         }
       });
 
-      // ===== Thinking: LinkedIn RSS Feed =====
+      // THINKING SECTION — AUTHORED POSTS
+      // To add a new authored post:
+      // 1. Create a new folder under /posts/ e.g. /posts/my-new-post/
+      // 2. Add post.json with fields: title, date, source, url, text, images (array of filenames)
+      // 3. Add images directly to the folder, reference by filename e.g. "images": ["image1.jpg"]
+      // 4. Add the folder name to /posts/index.json array
+      // 5. Push — it will appear automatically sorted by date
+
       const LINKEDIN_FEED_URL = 'https://rss.app/feeds/OFYG5gZjTmzOJsUF.xml';
       const CORS_PROXY_URL = 'https://api.allorigins.win/get?url=';
 
       const FILTER_TERMS = ['apply', 'hiring', 'applications close', 'bim manager', 'vacancy', 'vacancies', "we're looking for", 'we are looking for', 'join our team', 'lnkd.in/e5j'];
+
+      const STATIC_FALLBACK = [
+        {
+          title: "Placeholder title — Ami to replace",
+          date: "2026-04-07",
+          dateDisplay: "APR 2026",
+          source: "LinkedIn",
+          url: "https://www.linkedin.com/posts/ami-nigam-4325256a_",
+          text: "Placeholder text — Ami to replace with full post copy.",
+          images: [],
+          _sortDate: new Date("2026-04-07").getTime()
+        }
+      ];
 
       function esc(s) {
         return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -259,16 +279,30 @@
         return (tmp.textContent || tmp.innerText || '').replace(/\n{3,}/g, '\n\n').trim();
       }
 
+      function formatDateDisplay(isoDate) {
+        const d = new Date(isoDate + 'T00:00:00');
+        return d.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
+      }
+
       function renderThinkingPosts(posts) {
         const container = document.getElementById('thinking-posts');
-        container.innerHTML = posts.map(post => `
-          <a class="thinking-item fade-up" href="${esc(post.url)}" target="_blank" rel="noopener noreferrer">
-            ${post.image ? `<div class="thinking-img-wrap"><img src="${esc(post.image)}" alt="" loading="lazy" /></div>` : ''}
-            <div class="thinking-date">${esc(post.date)}</div>
-            <div class="thinking-body">${esc(post.text)}</div>
-            <div class="thinking-source">LinkedIn ↗</div>
-          </a>
-        `).join('');
+        container.innerHTML = posts.map((post) => {
+          let imgHtml = '';
+          if (post.images.length === 1) {
+            imgHtml = `<div class="thinking-img-wrap"><img src="${esc(post.images[0])}" alt="" loading="lazy" /></div>`;
+          } else if (post.images.length > 1) {
+            imgHtml = `<div class="thinking-img-grid">${post.images.map(img => `<img src="${esc(img)}" alt="" loading="lazy" />`).join('')}</div>`;
+          }
+          const headlineHtml = post.headline ? `<div class="thinking-headline">${esc(post.headline)}</div>` : '';
+          const sourceLabel = post.url
+            ? `<div class="thinking-source">${esc(post.source)} ↗</div>`
+            : `<div class="thinking-source">${esc(post.source)}</div>`;
+          const inner = `${imgHtml}<div class="thinking-date">${esc(post.dateDisplay)}</div>${headlineHtml}<div class="thinking-body">${esc(post.text)}</div>${sourceLabel}`;
+          if (post.url) {
+            return `<a class="thinking-item fade-up" href="${esc(post.url)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
+          }
+          return `<div class="thinking-item fade-up">${inner}</div>`;
+        }).join('');
         observeElements(container);
       }
 
@@ -285,37 +319,72 @@
             const searchText = (title + ' ' + text).toLowerCase().replace(/[\u2018\u2019\u201a\u201b]/g, "'");
             if (FILTER_TERMS.some(t => searchText.includes(t))) return null;
             const mediaEl = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
+            const imageUrl = mediaEl?.getAttribute('url') || '';
+            const pubDate = item.querySelector('pubDate')?.textContent;
+            const dateObj = pubDate ? new Date(pubDate) : new Date(0);
             return {
+              title,
+              date: pubDate || '',
+              dateDisplay: pubDate ? new Date(pubDate).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase() : '',
+              source: 'LinkedIn',
               url,
               text,
-              date: (() => {
-                const pub = item.querySelector('pubDate')?.textContent;
-                if (!pub) return '';
-                return new Date(pub).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
-              })(),
-              image: mediaEl?.getAttribute('url') || '',
+              images: imageUrl ? [imageUrl] : [],
+              _sortDate: dateObj.getTime()
             };
           })
-          .filter(Boolean)
-          .slice(0, 5);
+          .filter(Boolean);
+      }
+
+      async function fetchAuthoredPosts() {
+        const indexRes = await fetch('/posts/index.json');
+        if (!indexRes.ok) throw new Error('index fetch failed');
+        const folders = await indexRes.json();
+        const results = await Promise.allSettled(
+          folders.map(async folder => {
+            const postRes = await fetch(`/posts/${folder}/post.json`);
+            if (!postRes.ok) throw new Error(`post fetch failed: ${folder}`);
+            const data = await postRes.json();
+            return {
+              title: data.title,
+              date: data.date,
+              dateDisplay: formatDateDisplay(data.date),
+              source: data.source,
+              url: data.url,
+              headline: data.headline || '',
+              text: data.text,
+              images: (data.images || []).map(img => `/posts/${folder}/${img}`),
+              _sortDate: new Date(data.date).getTime()
+            };
+          })
+        );
+        return results.filter(r => r.status === 'fulfilled').map(r => r.value);
+      }
+
+      async function fetchRSSPosts() {
+        let xml;
+        try {
+          const res = await fetch(LINKEDIN_FEED_URL);
+          if (!res.ok) throw new Error('not ok');
+          xml = new DOMParser().parseFromString(await res.text(), 'application/xml');
+        } catch {
+          const proxyRes = await fetch(CORS_PROXY_URL + encodeURIComponent(LINKEDIN_FEED_URL));
+          if (!proxyRes.ok) throw new Error('proxy failed');
+          const json = await proxyRes.json();
+          xml = new DOMParser().parseFromString(json.contents, 'application/xml');
+        }
+        return parseRSSItems(xml);
       }
 
       async function loadThinking() {
-        try {
-          let xml;
-          try {
-            const res = await fetch(LINKEDIN_FEED_URL);
-            if (!res.ok) throw new Error('not ok');
-            xml = new DOMParser().parseFromString(await res.text(), 'application/xml');
-          } catch {
-            const proxyRes = await fetch(CORS_PROXY_URL + encodeURIComponent(LINKEDIN_FEED_URL));
-            if (!proxyRes.ok) throw new Error('proxy failed');
-            const json = await proxyRes.json();
-            xml = new DOMParser().parseFromString(json.contents, 'application/xml');
-          }
-          const items = parseRSSItems(xml);
-          if (items.length) renderThinkingPosts(items);
-        } catch { /* silent fail */ }
+        const [authoredResult, rssResult] = await Promise.allSettled([
+          fetchAuthoredPosts(),
+          fetchRSSPosts()
+        ]);
+        const authored = authoredResult.status === 'fulfilled' ? authoredResult.value : [];
+        const rss = rssResult.status === 'fulfilled' ? rssResult.value : [];
+        const merged = [...authored, ...rss].sort((a, b) => b._sortDate - a._sortDate).slice(0, 5);
+        renderThinkingPosts(merged.length ? merged : STATIC_FALLBACK);
       }
 
       loadThinking();

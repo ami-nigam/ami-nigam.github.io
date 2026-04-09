@@ -323,14 +323,25 @@ a {
 
 .thinking-img-wrap {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  overflow: hidden;
   margin-bottom: 1.25rem;
 }
 
 .thinking-img-wrap img {
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
+}
+
+.thinking-img-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 1.25rem;
+}
+
+.thinking-img-grid img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
 }
@@ -341,6 +352,16 @@ a {
   letter-spacing: 0.1em;
   color: var(--text-tertiary);
   margin-bottom: 0.75rem;
+}
+
+.thinking-headline {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin-bottom: calc(1.75 * 14px);
 }
 
 .thinking-body {
