@@ -411,5 +411,178 @@
       });
     </script>
 
+    <script>
+      // ===== Link Hover Previews =====
+      (function () {
+        const ogCache = {};
+        let card = null;
+        let hideTimer = null;
+        let hoveredUrl = null;
+
+        function esc(s) {
+          return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function getDomain(url) {
+          try { return new URL(url).hostname; } catch { return url; }
+        }
+
+        function faviconUrl(d) {
+          return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(d)}&sz=32`;
+        }
+
+        function getCard() {
+          if (!card) {
+            card = document.createElement('div');
+            card.setAttribute('aria-hidden', 'true');
+            card.style.cssText = [
+              'position:fixed',
+              'width:300px',
+              'z-index:9999',
+              'pointer-events:none',
+              'opacity:0',
+              'transform:translateY(6px)',
+              'transition:opacity 0.15s ease,transform 0.15s ease',
+              "border:0.5px solid var(--border-tertiary)",
+              'border-radius:8px',
+              'background:var(--primary-bg)',
+              'box-shadow:0 8px 32px rgba(0,0,0,0.08)',
+              'overflow:hidden',
+              "font-family:'DM Sans',system-ui,sans-serif"
+            ].join(';');
+            document.body.appendChild(card);
+          }
+          return card;
+        }
+
+        function renderCard(data) {
+          const c = getCard();
+          let html = '';
+          if (data.image) {
+            html += `<img src="${esc(data.image)}" style="width:100%;height:140px;object-fit:cover;display:block;" alt="" onerror="this.style.display='none'" />`;
+          }
+          html += `<div style="padding:12px 14px;">`;
+          html += `<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">`;
+          html += `<img src="${esc(faviconUrl(data.domain))}" width="14" height="14" style="width:14px;height:14px;flex-shrink:0;" alt="" />`;
+          html += `<span style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-tertiary);line-height:1;font-weight:400;">${esc(data.domain)}</span>`;
+          html += `</div>`;
+          html += `<div style="font-family:'Playfair Display',serif;font-size:13px;line-height:1.4;color:var(--primary-text);${data.desc ? 'margin-bottom:6px;' : ''}">${esc(data.title)}</div>`;
+          if (data.desc) {
+            html += `<div style="font-size:12px;font-weight:300;color:var(--text-secondary);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${esc(data.desc)}</div>`;
+          }
+          html += `</div>`;
+          c.innerHTML = html;
+        }
+
+        function positionCard(x, y) {
+          const c = getCard();
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          const cw = 300;
+          const ch = c.offsetHeight || 180;
+          const gap = 14;
+          const pad = 12;
+          let left = x + gap;
+          let top = y + gap;
+          if (left + cw + pad > vw) left = x - cw - gap;
+          if (top + ch + pad > vh) top = y - ch - gap;
+          c.style.left = `${Math.max(pad, left)}px`;
+          c.style.top = `${Math.max(pad, top)}px`;
+        }
+
+        function showCard(url, x, y) {
+          hoveredUrl = url;
+          const d = getDomain(url);
+          const data = ogCache[url] || { title: d, desc: '', image: '', domain: d };
+          renderCard(data);
+          positionCard(x, y);
+          const c = getCard();
+          c.style.opacity = '1';
+          c.style.transform = 'translateY(0)';
+        }
+
+        function hideCard() {
+          if (card) {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(6px)';
+          }
+        }
+
+        function shouldSkip(el) {
+          const href = el.getAttribute('href') || '';
+          if (!href.startsWith('http')) return true;
+          if (el.closest('#thinking')) return true;
+          if (el.closest('.contact-line')) return true;
+          if (el.classList.contains('footer-prism')) return true;
+          return false;
+        }
+
+        function attachHover(el) {
+          const url = el.href;
+          el.addEventListener('mouseenter', (e) => {
+            clearTimeout(hideTimer);
+            showCard(url, e.clientX, e.clientY);
+          });
+          el.addEventListener('mousemove', (e) => {
+            positionCard(e.clientX, e.clientY);
+          });
+          el.addEventListener('mouseleave', () => {
+            hoveredUrl = null;
+            hideTimer = setTimeout(hideCard, 80);
+          });
+        }
+
+        async function fetchOG(url) {
+          if (ogCache[url] !== undefined) return;
+          const d = getDomain(url);
+          const favicon = faviconUrl(d);
+          let contents = null;
+
+          // Try allorigins (returns JSON wrapper)
+          try {
+            const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+            if (res.ok) contents = (await res.json()).contents || null;
+          } catch {}
+
+          // Fallback: corsproxy.io (returns raw HTML)
+          if (!contents) {
+            try {
+              const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`);
+              if (res.ok) contents = await res.text();
+            } catch {}
+          }
+
+          if (contents) {
+            const doc = new DOMParser().parseFromString(contents, 'text/html');
+            const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
+            const ogDesc = doc.querySelector('meta[property="og:description"]')?.getAttribute('content') || '';
+            let ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || '';
+            if (ogImage && !ogImage.startsWith('http')) {
+              try { ogImage = new URL(ogImage, url).href; } catch { ogImage = ''; }
+            }
+            const pgTitle = doc.querySelector('title')?.textContent?.trim() || '';
+            const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
+            ogCache[url] = {
+              title: ogTitle || pgTitle || d,
+              desc: ogDesc || metaDesc || '',
+              image: ogImage,
+              favicon,
+              domain: d
+            };
+          } else {
+            ogCache[url] = { title: d, desc: '', image: '', favicon, domain: d };
+          }
+
+          // If the user is still hovering this link, update the card with fresh data
+          if (hoveredUrl === url) renderCard(ogCache[url]);
+        }
+
+        const links = [...document.querySelectorAll('a[href]')].filter(el => !shouldSkip(el));
+        const urls = [...new Set(links.map(el => el.href))];
+        links.forEach(attachHover);
+        Promise.allSettled(urls.map(fetchOG));
+      })();
+    </script>
+
   </body>
 </html>
