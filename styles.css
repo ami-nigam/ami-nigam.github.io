@@ -306,10 +306,10 @@ a {
 
 /* ===== Thinking ===== */
 .thinking-item {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1rem 0;
+  display: block;
+  padding: 2rem 0;
+  text-decoration: none;
+  color: inherit;
   transition: opacity 0.2s ease;
 }
 
@@ -318,49 +318,44 @@ a {
 }
 
 .thinking-item:hover {
-  opacity: 0.5;
+  opacity: 0.65;
 }
 
-.thinking-row {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1.5rem;
+.thinking-img-wrap {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  margin-bottom: 1.25rem;
 }
 
-.thinking-thumb {
-  width: 64px;
-  height: 64px;
+.thinking-img-wrap img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  flex-shrink: 0;
-  border-radius: 2px;
-}
-
-.thinking-title {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--primary-text);
-  line-height: 1.4;
-  flex: 1;
+  display: block;
 }
 
 .thinking-date {
-  font-size: 11px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   color: var(--text-tertiary);
-  white-space: nowrap;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.3em;
+  margin-bottom: 0.75rem;
 }
 
-.li-icon {
-  width: 10px;
-  height: 10px;
-  flex-shrink: 0;
+.thinking-body {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
+
+.thinking-source {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 1rem;
 }
 
 /* ===== Contact ===== */

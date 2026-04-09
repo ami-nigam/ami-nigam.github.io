@@ -246,73 +246,75 @@
       const LINKEDIN_FEED_URL = 'https://rss.app/feeds/OFYG5gZjTmzOJsUF.xml';
       const CORS_PROXY_URL = 'https://api.allorigins.win/get?url=';
 
+      const FILTER_TERMS = ['apply', 'hiring', 'applications close', 'bim manager', 'vacancy', 'vacancies', "we're looking for", 'we are looking for', 'join our team', 'lnkd.in/e5j'];
+
+      function esc(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      }
+
+      function stripHtml(html) {
+        const normalized = html.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>/gi, '\n\n').replace(/<\/div>/gi, '\n');
+        const tmp = document.createElement('div');
+        tmp.innerHTML = normalized;
+        return (tmp.textContent || tmp.innerText || '').replace(/\n{3,}/g, '\n\n').trim();
+      }
+
       function renderThinkingPosts(posts) {
         const container = document.getElementById('thinking-posts');
         container.innerHTML = posts.map(post => `
-          <div class="thinking-item">
-            <div class="thinking-row">
-              <a href="${post.url}" target="_blank" rel="noopener noreferrer" class="thinking-title">${post.title}</a>
-              <span class="thinking-date">
-                <svg class="li-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                ${post.date}
-              </span>
-            </div>
-            ${post.image ? `<img class="thinking-thumb" src="${post.image}" alt="" loading="lazy" />` : ''}
-          </div>
+          <a class="thinking-item" href="${esc(post.url)}" target="_blank" rel="noopener noreferrer">
+            ${post.image ? `<div class="thinking-img-wrap"><img src="${esc(post.image)}" alt="" loading="lazy" /></div>` : ''}
+            <div class="thinking-date">${esc(post.date)}</div>
+            <div class="thinking-body">${esc(post.text)}</div>
+            <div class="thinking-source">LinkedIn ↗</div>
+          </a>
         `).join('');
-      }
-
-      const FILTER_TERMS = ['apply', 'hiring', 'applications close', 'job', 'vacancy', "we're looking for", 'join our team'];
-
-      function firstParagraph(html) {
-        const normalized = html.replace(/<br\s*\/?>/gi, '\n');
-        const tmp = document.createElement('div');
-        tmp.innerHTML = normalized;
-        const text = (tmp.textContent || tmp.innerText || '').trim();
-        return text.split(/\n{2,}/)[0].replace(/\n/g, ' ').trim();
       }
 
       function parseRSSItems(xml) {
         return [...xml.querySelectorAll('item')]
           .map(item => {
+            const creator = item.getElementsByTagNameNS('http://purl.org/dc/elements/1.1/', 'creator')[0]?.textContent?.trim() || '';
+            if (creator !== 'Ami Nigam') return null;
             const url = item.querySelector('link')?.textContent?.trim() || '';
             if (!url.includes('ami-nigam-4325256a')) return null;
             const title = item.querySelector('title')?.textContent?.trim() || '';
             const rawDesc = item.querySelector('description')?.textContent?.trim() || '';
-            const excerpt = firstParagraph(rawDesc) || title;
-            const searchText = (title + ' ' + excerpt).toLowerCase().replace(/[\u2018\u2019\u201a\u201b]/g, "'");
+            const text = stripHtml(rawDesc);
+            const searchText = (title + ' ' + text).toLowerCase().replace(/[\u2018\u2019\u201a\u201b]/g, "'");
             if (FILTER_TERMS.some(t => searchText.includes(t))) return null;
             const mediaEl = item.getElementsByTagNameNS('http://search.yahoo.com/mrss/', 'content')[0];
             return {
-              title: excerpt,
               url,
+              text,
               date: (() => {
                 const pub = item.querySelector('pubDate')?.textContent;
                 if (!pub) return '';
-                return new Date(pub).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+                return new Date(pub).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }).toUpperCase();
               })(),
               image: mediaEl?.getAttribute('url') || '',
             };
           })
           .filter(Boolean)
-          .slice(0, 10);
+          .slice(0, 5);
       }
 
       async function loadThinking() {
-        let xml;
         try {
-          const res = await fetch(LINKEDIN_FEED_URL);
-          if (!res.ok) throw new Error('not ok');
-          const text = await res.text();
-          xml = new DOMParser().parseFromString(text, 'application/xml');
-        } catch {
-          const proxyRes = await fetch(CORS_PROXY_URL + encodeURIComponent(LINKEDIN_FEED_URL));
-          if (!proxyRes.ok) return;
-          const json = await proxyRes.json();
-          xml = new DOMParser().parseFromString(json.contents, 'application/xml');
-        }
-        const items = parseRSSItems(xml);
-        if (items.length) renderThinkingPosts(items);
+          let xml;
+          try {
+            const res = await fetch(LINKEDIN_FEED_URL);
+            if (!res.ok) throw new Error('not ok');
+            xml = new DOMParser().parseFromString(await res.text(), 'application/xml');
+          } catch {
+            const proxyRes = await fetch(CORS_PROXY_URL + encodeURIComponent(LINKEDIN_FEED_URL));
+            if (!proxyRes.ok) throw new Error('proxy failed');
+            const json = await proxyRes.json();
+            xml = new DOMParser().parseFromString(json.contents, 'application/xml');
+          }
+          const items = parseRSSItems(xml);
+          if (items.length) renderThinkingPosts(items);
+        } catch { /* silent fail */ }
       }
 
       loadThinking();
