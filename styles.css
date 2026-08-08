@@ -380,13 +380,6 @@ a {
 }
 
 /* ===== Contact ===== */
-.contact-block {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.85rem 1.25rem;
-}
-
 .contact-line {
   font-size: 16px;
   font-weight: 300;
@@ -400,32 +393,6 @@ a {
 
 .contact-line a:hover {
   border-bottom-color: var(--primary-text);
-}
-
-.email-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.6rem 1.1rem;
-  border: 0.5px solid var(--border-tertiary);
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.email-button:hover {
-  color: var(--primary-bg);
-  background-color: var(--primary-text);
-  border-color: var(--primary-text);
-}
-
-.email-button svg {
-  flex-shrink: 0;
 }
 
 /* ===== Footer ===== */
