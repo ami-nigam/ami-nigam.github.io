@@ -1,6 +1,11 @@
 # Website Enhancement Plan
 ## Ami Nigam Portfolio - Modern Dynamic Redesign
 
+> **Historical document — not the current design.** This plan proposed a split-screen
+> layout with a Prism Labs showcase in the right half. That direction was not built.
+> The site shipped as a single-column editorial layout instead; see CLAUDE.md for how
+> it is actually structured. Kept for reference only.
+
 ### Overview
 Transform the current single-page portfolio into a modern, dynamic two-half layout showcasing Prism Labs applications alongside professional portfolio content.
 
