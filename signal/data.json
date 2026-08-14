@@ -1,308 +1,398 @@
 {
   "date": "2026-08-14",
-  "generated_at": "2026-08-14T13:30:00Z",
+  "generated_at": "2026-08-14T05:05:00Z",
+  "title": "2026-08-14 - Ami's GenAI news briefing",
+  "summary": {
+    "total_items": 9,
+    "high_relevance": 6,
+    "medium_relevance": 3,
+    "low_relevance": 0,
+    "reddit_pulse": 3,
+    "sources_checked": 12
+  },
+  "topics": [
+    {
+      "name": "Image/Video Gen",
+      "count": 1,
+      "heat": "cool"
+    },
+    {
+      "name": "AEC & BIM",
+      "count": 2,
+      "heat": "warm"
+    },
+    {
+      "name": "Computational Design",
+      "count": 0,
+      "heat": "cold"
+    },
+    {
+      "name": "Agentic Tools",
+      "count": 6,
+      "heat": "hot"
+    },
+    {
+      "name": "Arch Viz",
+      "count": 0,
+      "heat": "cool"
+    },
+    {
+      "name": "Sentiment",
+      "count": 3,
+      "heat": "warm"
+    }
+  ],
   "crowd_signals": [
     {
       "id": 1,
-      "name": "Autodesk AI Pivot",
+      "name": "Frontier Model Frenzy",
       "heat": "hot",
-      "description": "Autodesk folding Construction Cloud into Forma, releasing geometry-based AI assistants and accelerating BIM with AI — the biggest AEC-specific platform shift in months",
-      "sources": ["X", "LinkedIn", "Bing News"],
-      "volume": "high",
-      "sentiment": "mixed",
-      "sample_quotes": [
-        {"platform": "Bing News", "text": "Autodesk folds Construction Cloud into Forma, will release geometry-based AI assistants",
-         "author": "Engineering News-Record", "url": "https://www.enr.com/articles/61362-autodesk-folds-construction-cloud-into-forma-will-release-geometry-based-ai-assistants"},
-        {"platform": "Bing News", "text": "Autodesk accelerates future BIM with new AI, data connections",
-         "author": "ITWire", "url": "https://itwire.com/business-it-news/data/autodesk-accelerates-future-bim-with-new-ai,-data-connections/"},
-        {"platform": "Bing News", "text": "AI Will Become Default Operating Layer of AEC: Pinnacle's Bimal Patwari on Digital Transformation",
-         "author": "Analytics Insight", "url": "https://www.analyticsinsight.net/interview/ai-will-become-default-operating-layer-of-aec-pinnacles-bimal-patwari-on-digital-transformation"}
+      "description": "Three frontier model moves in ~24h: OpenAI's GPT-5.6 Sol with a 14x 'Ultrafast' mode, xAI's Grok 4.6 matching GPT-5.6 Sol at a fraction of the price, and Google's Gemini 3.7 Flash at half price. A full-blown flagship-model and price war -- the biggest 24h model cycle in months.",
+      "sources": [
+        "TechCrunch",
+        "Bing News",
+        "Yahoo Finance",
+        "AI Business"
       ],
-      "related_news": [1, 2, 6]
+      "volume": "high",
+      "sentiment": "hype",
+      "sample_quotes": [
+        {
+          "platform": "TechCrunch",
+          "text": "OpenAI introduces 'Ultrafast,' a new mode that makes GPT-5.6 Sol work at 14x the speed",
+          "author": "TechCrunch",
+          "url": "https://openai.com/index/previewing-ultrafast"
+        },
+        {
+          "platform": "AI Business",
+          "text": "Grok 4.6 is Out, Undercutting AI Prices of Rivals",
+          "author": "AI Business",
+          "url": "https://aibusiness.com/generative-ai/grok-4-6-out-undercutting-ai-prices-rivals"
+        },
+        {
+          "platform": "Tech Times",
+          "text": "Google cuts Gemini 3.7 Flash price in half as it claims to top Claude on business workflows",
+          "author": "Tech Times",
+          "url": "https://www.msn.com/en-us/money/general/google-cuts-gemini-3-7-flash-price-in-half-as-it-claims-to-top-claude-on-business-workflows/ar-AA2a3hUp"
+        }
+      ],
+      "related_news": [
+        1,
+        2,
+        4
+      ]
     },
     {
       "id": 2,
-      "name": "AI Viz Arms Race",
+      "name": "Watermarking Goes Global",
       "heat": "hot",
-      "description": "Generative AI is rapidly reshaping architectural visualization — Chaos accelerating 3D workflows, D5/Enscape/Twinmotion adding AI features, and firms racing to adopt",
-      "sources": ["LinkedIn", "Bing News", "ArchDaily"],
-      "volume": "high",
-      "sentiment": "hype",
-      "sample_quotes": [
-        {"platform": "TechTimes", "text": "Generative AI Is Reshaping Architectural Visualization & Design But Not Replacing It",
-         "author": "TechTimes", "url": "https://www.techtimes.com/articles/313172/20251204/generative-ai-reshaping-architectural-visualization-design-not-replacing-it.htm"},
-        {"platform": "CIO", "text": "How Chaos accelerates 3D visualization workflows with AI",
-         "author": "CIO", "url": "https://www.cio.com/video/4162587/how-chaos-accelerates-3d-visualization-workflows-with-ai.html"},
-        {"platform": "ArchDaily", "text": "How Top Firms See AI Shaping Architecture's Workflows",
-         "author": "ArchDaily", "url": "https://www.archdaily.com/1036357/how-top-firms-see-ai-shaping-architectures-workflows"}
+      "description": "Anthropic turned on invisible watermarks for ALL Claude text and image outputs worldwide (EU AI Act compliance) -- the first major lab to watermark image outputs at scale, with a high-engagement r/singularity thread and broad press coverage.",
+      "sources": [
+        "PCMag",
+        "Reddit",
+        "Forbes",
+        "Artificial Lawyer"
       ],
-      "related_news": [3, 4, 9]
+      "volume": "high",
+      "sentiment": "mixed",
+      "sample_quotes": [
+        {
+          "platform": "PCMag",
+          "text": "Anthropic's Claude Will Now Add Invisible Watermarks to Text, Image Outputs",
+          "author": "PCMag",
+          "url": "https://www.pcmag.com/news/anthropics-claude-will-now-add-invisible-watermarks-to-text-image-outputs"
+        },
+        {
+          "platform": "Reddit r/singularity",
+          "text": "Claude now embeds invisible watermarks in all text outputs + signed metadata on files",
+          "author": "r/singularity",
+          "url": "https://www.reddit.com/r/singularity/comments/1vkzjln/claude_now_embeds_invisible_watermarks_in_all/"
+        },
+        {
+          "platform": "Forbes",
+          "text": "Explaining Anthropic's New Watermarking Of Claude AI-Generated Outputs",
+          "author": "Forbes",
+          "url": "https://www.forbes.com/sites/lanceeliot/2026/08/13/explaining-anthropics-new-watermarking-of-claude-ai-generated-outputs-and-what-it-signifies-for-society/"
+        }
+      ],
+      "related_news": [
+        3
+      ]
     },
     {
       "id": 3,
-      "name": "AI Video Goes Pro",
+      "name": "Agentic Tooling Heats Up",
       "heat": "warm",
-      "description": "AI video generation is maturing fast — Seedance 2.5, MiniMax H3 opening to devs, and tools are now viable for architectural walkthroughs",
-      "sources": ["Bing News", "PCMag", "X"],
+      "description": "The agent layer is getting crowded: DeepSeek shipped an open-source Claude Code rival ('Harness'), OpenAI's 'Computer History' folds desktop activity into ChatGPT memory, and IBM partnered with OpenAI for enterprise GPT-5.6 deployment.",
+      "sources": [
+        "VentureBeat",
+        "Unite.AI",
+        "Yahoo Finance"
+      ],
       "volume": "medium",
       "sentiment": "hype",
       "sample_quotes": [
-        {"platform": "Gigazine", "text": "ByteDance announces Seedance 2.5 — AI video up to 30 seconds from text/prompt",
-         "author": "Gigazine", "url": "https://gigazine.net/gsc_news/en/20260624-bytedance-seedance-2-5/"},
-        {"platform": "PCMag", "text": "The Best AI Video Generators for 2026",
-         "author": "PCMag", "url": "https://uk.pcmag.com/ai/161294/the-best-ai-video-generators"},
-        {"platform": "MSN", "text": "MiniMax H3 opens AI video to developers: Copyright lawsuit clouds every clip",
-         "author": "GIGAZINE/MSN", "url": "https://www.msn.com/en-us/technology/tech-companies/minimax-h3-opens-ai-video-to-developers-copyright-lawsuit-clouds-every-clip/ar-AA299Wz8"}
+        {
+          "platform": "VentureBeat",
+          "text": "DeepSeek Harness launches as open source rival to Claude Code, alongside V4-Pro on API with higher prices",
+          "author": "VentureBeat",
+          "url": "https://venturebeat.com/technology/deepseek-harness-launches-as-open-source-rival-to-claude-code-alongside-v4-pro-on-api-with-higher-prices"
+        },
+        {
+          "platform": "Unite.AI",
+          "text": "OpenAI's Computer History Turns Mac Activity Into ChatGPT Memory",
+          "author": "Unite.AI",
+          "url": "https://www.unite.ai/openais-computer-history-turns-mac-activity-into-chatgpt-memory/"
+        },
+        {
+          "platform": "Yahoo Finance",
+          "text": "IBM, OpenAI strike deal to deploy AI services",
+          "author": "Yahoo Finance",
+          "url": "https://finance.yahoo.com/technology/ai/articles/ibm-openai-strike-deal-deploy-145005350.html"
+        }
       ],
-      "related_news": [10, 11, 12]
+      "related_news": [
+        5,
+        6,
+        7
+      ]
     },
     {
       "id": 4,
-      "name": "BIM AI Arms Race",
+      "name": "AEC AI Consolidation",
       "heat": "warm",
-      "description": "Multiple startups and incumbents racing to bring AI into BIM — Beam AI BIM CoPilot, BIM 2.0 with integrated AI, and Gstarsoft's open CAD+BIM+AI ecosystem",
-      "sources": ["LinkedIn", "Bing News", "ArchDaily"],
+      "description": "Autodesk's Construction-Cloud-into-Forma consolidation with geometry-based AI assistants, plus Beam AI's BIM CoPilot, keep AEC-specific AI in motion -- though no NEW AEC release broke in this 48h window beyond the Forma story already in circulation.",
+      "sources": [
+        "ENR",
+        "Yahoo Finance",
+        "Bing News"
+      ],
       "volume": "medium",
       "sentiment": "mixed",
       "sample_quotes": [
-        {"platform": "Yahoo Finance", "text": "Beam AI launches BIM CoPilot, bringing human-vetted BIM management to the build phase",
-         "author": "Yahoo Finance", "url": "https://finance.yahoo.com/tech/articles/beam-ai-launches-bim-copilot-210000616.html"},
-        {"platform": "ArchDaily", "text": "How Will BIM 2.0, AI Assistance, and Integrated Workflows Shape the Architect's Design Experience?",
-         "author": "ArchDaily", "url": "https://www.archdaily.com/1035178/how-will-bim-ai-assistance-and-integrated-workflows-shape-the-architects-design-experience"},
-        {"platform": "Analytics Insight", "text": "AI Will Become Default Operating Layer of AEC",
-         "author": "Analytics Insight", "url": "https://www.analyticsinsight.net/interview/ai-will-become-default-operating-layer-of-aec-pinnacles-bimal-patwari-on-digital-transformation"}
+        {
+          "platform": "ENR",
+          "text": "Autodesk folds Construction Cloud into Forma, will release geometry-based AI assistants",
+          "author": "Engineering News-Record",
+          "url": "https://www.enr.com/articles/61362-autodesk-folds-construction-cloud-into-forma-will-release-geometry-based-ai-assistants"
+        },
+        {
+          "platform": "Yahoo Finance",
+          "text": "Beam AI launches BIM CoPilot, bringing human-vetted BIM management to the build phase",
+          "author": "Yahoo Finance",
+          "url": "https://finance.yahoo.com/tech/articles/beam-ai-launches-bim-copilot-210000616.html"
+        }
       ],
-      "related_news": [5, 6, 13]
+      "related_news": [
+        8,
+        9
+      ]
     },
     {
       "id": 5,
-      "name": "Profession in Flux",
-      "heat": "warm",
-      "description": "The existential anxiety is real — RIBA survey finds architects fear AI will cost jobs, FT covers 'AI coming for architecture', while Zaha Hadid Architects shows the forward path partnering with NVIDIA",
-      "sources": ["Reddit", "X", "LinkedIn", "Bing News"],
-      "volume": "medium",
-      "sentiment": "concern",
-      "sample_quotes": [
-        {"platform": "Architects' Journal", "text": "Architects fear AI will cost jobs and harm profession's next generation, RIBA finds",
-         "author": "Architects' Journal", "url": "https://www.architectsjournal.co.uk/news/architects-fear-ai-will-cost-jobs-and-harm-professions-next-generation-riba-finds"},
-        {"platform": "Financial Times", "text": "AI is coming for architecture",
-         "author": "Financial Times", "url": "https://www.ft.com/content/e0ba1b34-ddc9-4b42-941e-6f8114ba41c9"},
-        {"platform": "Wallpaper", "text": "Zaha Hadid Architects on its pioneering use of AI and collaborating with NVIDIA",
-         "author": "Wallpaper", "url": "https://www.wallpaper.com/architecture/zaha-hadid-architects-nvidia-ai-in-architecture"}
+      "name": "Image-Gen Lull",
+      "heat": "cool",
+      "description": "No NEW dedicated image/video generation model shipped this cycle -- Imagen, Veo, Nano Banana / nano-banana-pro, and an openai-image-1.5 successor were all quiet in the 48h window. The only image-gen-adjacent move was Claude watermarking image outputs. VizAI's watchlist models are on pause.",
+      "sources": [
+        "Bing News",
+        "Google AI blog"
       ],
-      "related_news": [7, 8, 14]
+      "volume": "low",
+      "sentiment": "neutral",
+      "sample_quotes": [
+        {
+          "platform": "Bing News",
+          "text": "No fresh Imagen / Veo / Nano Banana / openai-image release found in the 7-day news window (search returned 0 news cards).",
+          "author": "Bing News scan",
+          "url": null
+        },
+        {
+          "platform": "Google AI blog",
+          "text": "Latest Google AI blog posts (Aug 13) cover Sheets canvas and AMIE medical consultations -- no Imagen/Veo update.",
+          "author": "blog.google",
+          "url": "https://blog.google/innovation-and-ai/technology/ai/"
+        }
+      ],
+      "related_news": [
+        3
+      ]
     }
   ],
   "items": [
     {
       "id": 1,
-      "title": "Autodesk Folds Construction Cloud Into Forma, Will Release Geometry-Based AI Assistants",
+      "title": "OpenAI previews 'Ultrafast' mode -- GPT-5.6 Sol at up to 14x the speed",
+      "source": "OpenAI / TechCrunch",
+      "source_type": "official",
+      "url": "https://openai.com/index/previewing-ultrafast",
+      "timestamp": "2026-08-13T10:00:00Z",
+      "category": "agentic",
+      "relevance": "high",
+      "projects": [
+        "VizAI",
+        "Benoy Assistant"
+      ],
+      "so_what": "OpenAI's new flagship GPT-5.6 Sol gets an 'Ultrafast' 14x speed preview mode aimed at enterprise -- a major latency/cost shift for any OpenAI-based pipeline and a new frontier model for VizAI's eval framework to benchmark.",
+      "action": "Benchmark GPT-5.6 Sol in VizAI's model eval framework; evaluate Ultrafast mode latency/cost for Benoy Assistant workloads.",
+      "full_summary": "OpenAI launched a preview of Ultrafast, a sped-up mode of its latest and most powerful model GPT-5.6 Sol, running up to 14x faster to court enterprise users. Released alongside an official builder's guide to GPT-5.6 (openai.com/index/builders-guide-to-gpt-5-6). This is the first new OpenAI flagship since the openai-image-1.5 cycle and resets the latency/price frontier for OpenAI-based image-prompt and assistant pipelines."
+    },
+    {
+      "id": 2,
+      "title": "xAI's Grok 4.6 matches GPT-5.6 Sol on benchmarks, undercuts rivals on price",
+      "source": "AI Business / Windows Report",
+      "source_type": "blog",
+      "url": "https://aibusiness.com/generative-ai/grok-4-6-out-undercutting-ai-prices-rivals",
+      "timestamp": "2026-08-13T00:00:00Z",
+      "category": "agentic",
+      "relevance": "high",
+      "projects": [
+        "VizAI",
+        "Benoy Assistant"
+      ],
+      "so_what": "xAI (SpaceXAI) released Grok 4.6, matching GPT-5.6 Sol on Artificial Analysis while targeting long-running agents, coding and 'visual work' at a fraction of the price -- a cheaper frontier option VizAI should add to its eval set.",
+      "action": "Add Grok 4.6 to VizAI's eval framework; compare price/quality vs GPT-5.6 Sol and Gemini. Confirm whether 'visual work' includes image generation (not just vision).",
+      "full_summary": "Elon Musk's SpaceXAI debuted Grok 4.6, its latest frontier model, engineered for extended multi-step tasks across software engineering, technical research and visual work. Independent coverage says it matches GPT-5.6 Sol on Artificial Analysis while significantly undercutting rival API prices. Whether 'visual work' extends to image generation (vs multimodal vision) is not yet confirmed."
+    },
+    {
+      "id": 3,
+      "title": "Anthropic's Claude now adds invisible watermarks to text AND image outputs globally",
+      "source": "PCMag",
+      "source_type": "blog",
+      "url": "https://www.pcmag.com/news/anthropics-claude-will-now-add-invisible-watermarks-to-text-image-outputs",
+      "timestamp": "2026-08-13T00:00:00Z",
+      "category": "image-gen",
+      "relevance": "high",
+      "projects": [
+        "VizAI",
+        "Benoy Assistant"
+      ],
+      "so_what": "Claude now embeds imperceptible watermarks in all text AND image outputs worldwide (EU AI Act compliance) -- affects provenance and downstream reuse of any Claude-generated imagery, and any Benoy Assistant pipeline that touches Claude.",
+      "action": "Confirm whether VizAI/Benoy Assistant image or text pipelines touch Claude outputs; account for watermarking in provenance and client-comms policies.",
+      "full_summary": "Anthropic turned on global invisible watermarking for Claude outputs, covering both text and image, for all Claude products released from 2 August 2026 onwards. Introduced to comply with the EU AI Act, the marks are applied worldwide. Multiple outlets (PCMag, Forbes, Artificial Lawyer, The Hindu) and a high-engagement r/singularity thread confirm broad coverage."
+    },
+    {
+      "id": 4,
+      "title": "Google launches Gemini 3.7 Flash at half price, claims it tops Claude Sonnet 5 and GPT on business workflows",
+      "source": "Tech Times (MSN)",
+      "source_type": "blog",
+      "url": "https://www.msn.com/en-us/money/general/google-cuts-gemini-3-7-flash-price-in-half-as-it-claims-to-top-claude-on-business-workflows/ar-AA2a3hUp",
+      "timestamp": "2026-08-13T00:00:00Z",
+      "category": "agentic",
+      "relevance": "high",
+      "projects": [
+        "VizAI",
+        "Benoy Assistant"
+      ],
+      "so_what": "Gemini 3.7 Flash launches with a 50% introductory price cut (through 31 Dec 2026) and benchmark wins on coding/document tasks -- directly cuts VizAI's Gemini call costs and adds a new model to benchmark.",
+      "action": "Switch VizAI's Gemini Flash calls to 3.7 Flash to halve cost; add 3.7 Flash to the eval framework vs Imagen/Nano Banana and GPT-5.6 Sol.",
+      "full_summary": "Google released Gemini 3.7 Flash with a 50% introductory price cut running through December 31, 2026, benchmark improvements on coding and document tasks, and a claim that it outperforms both Claude Sonnet 5 and GPT on business workflows. This is the first fresh Gemini model move this cycle and materially lowers VizAI's Gemini inference cost."
+    },
+    {
+      "id": 5,
+      "title": "DeepSeek launches open-source 'Harness' rival to Claude Code; V4-Pro API prices jump 4x",
+      "source": "VentureBeat",
+      "source_type": "blog",
+      "url": "https://venturebeat.com/technology/deepseek-harness-launches-as-open-source-rival-to-claude-code-alongside-v4-pro-on-api-with-higher-prices",
+      "timestamp": "2026-08-13T00:00:00Z",
+      "category": "agentic",
+      "relevance": "medium",
+      "projects": [
+        "Benoy Assistant"
+      ],
+      "so_what": "DeepSeek moved beyond models into agentic tooling with an open-source Claude Code rival, while quadrupling V4-Pro API prices to $3.96/M peak tokens -- the agentic coding-tool market is heating up and reshaping model pricing.",
+      "action": "Monitor Harness as a possible open agentic backend for Benoy Assistant; note the V4-Pro cost change if any Benoy pipeline uses DeepSeek.",
+      "full_summary": "DeepSeek launched Harness, an open-source agentic coding tool positioned as a rival to Anthropic's Claude Code, alongside putting V4-Pro on API at roughly 4x higher prices (~$3.96 per million peak tokens). The move signals Chinese labs competing on the agentic-tool layer, not just the model layer."
+    },
+    {
+      "id": 6,
+      "title": "OpenAI 'Computer History' turns Mac desktop activity into ChatGPT Memory",
+      "source": "Unite.AI",
+      "source_type": "blog",
+      "url": "https://www.unite.ai/openais-computer-history-turns-mac-activity-into-chatgpt-memory/",
+      "timestamp": "2026-08-13T00:00:00Z",
+      "category": "agentic",
+      "relevance": "medium",
+      "projects": [
+        "Benoy Assistant"
+      ],
+      "so_what": "OpenAI's new opt-in 'Computer History' records macOS activity into ChatGPT memory -- a step toward always-on agentic context, raising enterprise privacy questions directly relevant to how Benoy Assistant captures institutional knowledge.",
+      "action": "Note for Benoy Assistant data-handling/privacy policy; consider an analogous opt-in institutional-memory capture pattern.",
+      "full_summary": "OpenAI launched Computer History, an opt-in feature in the ChatGPT desktop app on macOS that records what a user does on their Mac and folds it into ChatGPT Memory. It points toward always-on, activity-derived agent context but surfaces clear enterprise data-governance concerns."
+    },
+    {
+      "id": 7,
+      "title": "IBM and OpenAI launch enterprise AI partnership with GPT-5.6 integration",
+      "source": "Yahoo Finance",
+      "source_type": "blog",
+      "url": "https://finance.yahoo.com/technology/ai/articles/ibm-openai-strike-deal-deploy-145005350.html",
+      "timestamp": "2026-08-13T00:00:00Z",
+      "category": "general",
+      "relevance": "medium",
+      "projects": [
+        "Benoy Assistant"
+      ],
+      "so_what": "IBM is now distributing OpenAI models enterprise-wide with GPT-5.6 integration -- a reference channel for how an OpenAI-powered assistant like Benoy's could reach enterprise clients at scale.",
+      "action": "Reference for Benoy Assistant enterprise go-to-market; watch for IBM-hosted GPT-5.6 API endpoints.",
+      "full_summary": "IBM announced a strategic partnership with OpenAI on August 13, 2026 to bring OpenAI's models and tools to more enterprise customers, with explicit GPT-5.6 integration. It opens another large-enterprise distribution route for OpenAI's frontier models."
+    },
+    {
+      "id": 8,
+      "title": "Autodesk folds Construction Cloud into Forma, will release geometry-based AI assistants",
       "source": "Engineering News-Record",
       "source_type": "official",
       "url": "https://www.enr.com/articles/61362-autodesk-folds-construction-cloud-into-forma-will-release-geometry-based-ai-assistants",
       "timestamp": "2026-08-14T00:00:00Z",
       "category": "aec-bim",
       "relevance": "high",
-      "projects": ["Atlas", "Benny", "Benoy Assistant"],
-      "so_what": "Autodesk is consolidating its entire construction cloud into Forma and adding geometry-aware AI assistants — directly competitive with Atlas's Rhino GH approach and Benny's Revit AI vision.",
-      "action": "Evaluate Autodesk Forma geometry AI capabilities vs. Atlas for early-design competition analysis.",
-      "full_summary": "Autodesk announced it is folding its Construction Cloud into the Forma platform, alongside plans to release geometry-based AI assistants. This represents a major consolidation of Autodesk's AEC strategy, putting AI at the center of design and construction workflows. The geometry-based AI assistants are particularly relevant as they compete with the parametric/computational design approach of Atlas and other Rhino-based tools."
+      "projects": [
+        "Atlas",
+        "Benny",
+        "Benoy Assistant",
+        "Forma POC"
+      ],
+      "so_what": "Autodesk is consolidating its Construction Cloud into Forma and adding geometry-aware AI assistants -- directly competitive with Atlas's Rhino/GH approach and Benny's Revit AI vision.",
+      "action": "Evaluate Autodesk Forma geometry-AI capabilities vs Atlas for early-design competition analysis; track for the Forma POC.",
+      "full_summary": "Autodesk announced it is folding its Construction Cloud into the Forma platform, alongside plans to release geometry-based AI assistants. This is a major consolidation of Autodesk's AEC strategy, putting geometry-aware AI at the center of design and construction workflows and competing with the parametric/computational approach of Atlas and other Rhino-based tools. (In-window carry; originally reported Aug 13-14.)"
     },
     {
-      "id": 2,
-      "title": "Autodesk Accelerates Future BIM With New AI, Data Connections",
-      "source": "ITWire",
-      "source_type": "blog",
-      "url": "https://itwire.com/business-it-news/data/autodesk-accelerates-future-bim-with-new-ai,-data-connections/",
-      "timestamp": "2026-08-13T00:00:00Z",
-      "category": "aec-bim",
-      "relevance": "high",
-      "projects": ["Benny", "RhinoFam"],
-      "so_what": "Autodesk's BIM AI push directly competes with Benny (Revit AI assistant) and RhinoFam's parametric BIM approach.",
-      "action": "Monitor Autodesk's BIM AI features for overlap/differentiation with Benny.",
-      "full_summary": "Autodesk detailed new AI capabilities and data connections for BIM workflows, accelerating the integration of artificial intelligence into building information modeling. The updates aim to make BIM more intelligent and connected across the project lifecycle."
-    },
-    {
-      "id": 3,
-      "title": "Generative AI Is Reshaping Architectural Visualization & Design But Not Replacing It",
-      "source": "TechTimes",
-      "source_type": "blog",
-      "url": "https://www.techtimes.com/articles/313172/20251204/generative-ai-reshaping-architectural-visualization-design-not-replacing-it.htm",
-      "timestamp": "2025-12-04T00:00:00Z",
-      "category": "arch-viz",
-      "relevance": "high",
-      "projects": ["VizAI", "Arch Viz"],
-      "so_what": "Latest analysis on how AI vis tools (D5, Enscape, VizAI-like platforms) are transforming but not replacing arch viz — validation of VizAI's positioning.",
-      "action": "Cite in VizAI positioning/messaging as independent validation of the AI-augmented-not-replaced thesis.",
-      "full_summary": "TechTimes published an analysis on how generative AI is fundamentally reshaping architectural visualization and design. The piece argues that AI tools are augmenting human creativity rather than replacing it, with arch viz being one of the most impacted areas. The article validates the approach that VizAI and similar platforms are taking."
-    },
-    {
-      "id": 4,
-      "title": "How Chaos Accelerates 3D Visualization Workflows With AI",
-      "source": "CIO",
-      "source_type": "blog",
-      "url": "https://www.cio.com/video/4162587/how-chaos-accelerates-3d-visualization-workflows-with-ai.html",
-      "timestamp": "2026-08-01T00:00:00Z",
-      "category": "arch-viz",
-      "relevance": "medium",
-      "projects": ["Arch Viz", "VizAI"],
-      "so_what": "Chaos (V-Ray/Enscape) pushing AI into core rendering workflow — confirms the industry-wide AI-viz acceleration trend Ami is tracking.",
-      "action": "Evaluate Chaos AI features for potential integration points with VizAI or competitive analysis.",
-      "full_summary": "CIO covered how Chaos is integrating AI into its 3D visualization products (V-Ray, Enscape, Corona). The article details Chaos's approach to accelerating rendering workflows through AI denoising, upscaling, and content generation features."
-    },
-    {
-      "id": 5,
-      "title": "Beam AI Launches BIM CoPilot — Human-Vetted BIM Management for the Build Phase",
+      "id": 9,
+      "title": "Beam AI launches BIM CoPilot -- human-vetted BIM management for the build phase",
       "source": "Yahoo Finance",
       "source_type": "blog",
       "url": "https://finance.yahoo.com/tech/articles/beam-ai-launches-bim-copilot-210000616.html",
       "timestamp": "2026-08-12T00:00:00Z",
       "category": "aec-bim",
       "relevance": "high",
-      "projects": ["Benny", "Benoy Assistant"],
-      "so_what": "New dedicated BIM AI CoPilot from Beam AI — directly comparable to Benny's vision as a Revit AI assistant. Validates market demand for BIM-specific AI tools.",
-      "action": "Analyze Beam AI BIM CoPilot features vs. Benny roadmap. Key competitor.",
-      "full_summary": "Beam AI launched BIM CoPilot, an AI-powered tool for human-vetted BIM management during the construction phase. The tool uses AI to automate BIM coordination and clash detection while keeping humans in the loop. This validates the growing market for BIM-specific AI assistants and is a direct competitor to Benny's Revit AI vision."
+      "projects": [
+        "Benny",
+        "Benoy Assistant"
+      ],
+      "so_what": "A new dedicated BIM AI CoPilot from Beam AI -- directly comparable to Benny's vision as a Revit AI assistant, and a key competitor to track.",
+      "action": "Analyse Beam AI BIM CoPilot features vs the Benny roadmap.",
+      "full_summary": "Beam AI launched BIM CoPilot, an AI-powered tool for human-vetted BIM management during the construction phase, using AI to automate BIM coordination and clash detection while keeping humans in the loop. It validates growing market demand for BIM-specific AI assistants and is a direct competitor to Benny's Revit AI vision. (In-window carry; originally reported Aug 12.)"
+    }
+  ],
+  "reddit": [
+    {
+      "subreddit": "r/singularity",
+      "topic": "Anthropic watermarking backlash & visibility",
+      "summary": "A top-of-week thread confirms Claude now embeds invisible watermarks in all text outputs + signed file metadata, with heavy engagement and mixed sentiment (some users unhappy about 'exposure').",
+      "heat": "high",
+      "url": "https://www.reddit.com/r/singularity/comments/1vkzjln/claude_now_embeds_invisible_watermarks_in_all/"
     },
     {
-      "id": 6,
-      "title": "'AI Will Become Default Operating Layer of AEC' — Pinnacle's Bimal Patwari",
-      "source": "Analytics Insight",
-      "source_type": "blog",
-      "url": "https://www.analyticsinsight.net/interview/ai-will-become-default-operating-layer-of-aec-pinnacles-bimal-patwari-on-digital-transformation",
-      "timestamp": "2026-08-10T00:00:00Z",
-      "category": "aec-bim",
-      "relevance": "high",
-      "projects": ["Benoy Assistant", "Benny", "Atlas"],
-      "so_what": "Industry leader predicts AI as the default operating layer in AEC — validates Ami's thesis and the entire tool stack he's building.",
-      "action": "Use this quote in Benoy internal AI strategy presentations.",
-      "full_summary": "In an interview with Analytics Insight, Pinnacle Infotech's Bimal Patwari argues that AI will become the default operating layer of the AEC industry. The interview covers how AI-driven BIM, computational design, and project management tools are moving from experimental to essential in AEC workflows."
+      "subreddit": "r/singularity",
+      "topic": "OpenAI COO resigns -- executive churn narrative",
+      "summary": "Thread on OpenAI's COO resignation feeds the running 'executives leaving OpenAI' narrative; sentiment sceptical of OpenAI stability.",
+      "heat": "medium",
+      "url": "https://www.reddit.com/r/singularity/comments/1vlsi81/openais_chief_operating_officer_resigns/"
     },
     {
-      "id": 7,
-      "title": "Architects Fear AI Will Cost Jobs and Harm Profession's Next Generation, RIBA Finds",
-      "source": "Architects' Journal",
-      "source_type": "blog",
-      "url": "https://www.architectsjournal.co.uk/news/architects-fear-ai-will-cost-jobs-and-harm-professions-next-generation-riba-finds",
-      "timestamp": "2026-08-08T00:00:00Z",
-      "category": "general",
-      "relevance": "medium",
-      "projects": [],
-      "so_what": "RIBA survey reveals industry-wide anxiety about AI's impact on architectural employment — important context for how Benoy staff may perceive AI tools like VizAI and Benny.",
-      "action": "Consider internal comms approach for introducing AI tools — address concerns proactively.",
-      "full_summary": "A RIBA survey found widespread concern among architects that AI will cost jobs and harm opportunities for the next generation of the profession. The findings reflect growing anxiety in the architectural community about AI's impact on traditional roles and career paths."
-    },
-    {
-      "id": 8,
-      "title": "Zaha Hadid Architects on AI and Collaborating With NVIDIA",
-      "source": "Wallpaper",
-      "source_type": "blog",
-      "url": "https://www.wallpaper.com/architecture/zaha-hadid-architects-nvidia-ai-in-architecture",
-      "timestamp": "2026-08-01T00:00:00Z",
-      "category": "comp-design",
-      "relevance": "medium",
-      "projects": ["Atlas", "VizAI"],
-      "so_what": "ZHA partnership with NVIDIA shows cutting-edge architectural AI adoption — their approach with NVIDIA could influence Atlas's GPU-based design direction.",
-      "action": "Study ZHA's AI workflow for ideas applicable to Atlas and VizAI.",
-      "full_summary": "Wallpaper magazine explores how Zaha Hadid Architects is pioneering the use of AI in architectural design, including their collaboration with NVIDIA. The article covers ZHA's AI-driven design workflows and how they're pushing the boundaries of computational design."
-    },
-    {
-      "id": 9,
-      "title": "How Top Firms See AI Shaping Architecture's Workflows",
-      "source": "ArchDaily",
-      "source_type": "blog",
-      "url": "https://www.archdaily.com/1036357/how-top-firms-see-ai-shaping-architectures-workflows",
-      "timestamp": "2026-07-20T00:00:00Z",
-      "category": "general",
-      "relevance": "medium",
-      "projects": ["VizAI", "Benoy Assistant", "Atlas"],
-      "so_what": "ArchDaily roundtable covers how leading firms are embedding AI into design workflows — market intelligence for positioning Benoy's tools.",
-      "action": "Reference for Benoy AI strategy presentations — shows industry consensus on AI integration.",
-      "full_summary": "ArchDaily surveyed leading architecture firms on how they see AI shaping architectural workflows. The article covers generative design, visualization, BIM automation, and how top firms are structuring their AI adoption strategies. Useful benchmarking for Benoy's own AI tool strategy."
-    },
-    {
-      "id": 10,
-      "title": "ByteDance Announces Seedance 2.5 — AI Video Generation Up to 30 Seconds",
-      "source": "Gigazine",
-      "source_type": "blog",
-      "url": "https://gigazine.net/gsc_news/en/20260624-bytedance-seedance-2-5/",
-      "timestamp": "2026-06-24T00:00:00Z",
-      "category": "image-gen",
-      "relevance": "medium",
-      "projects": ["VizAI"],
-      "so_what": "Seedance 2.5 produces 30-second AI videos — potentially useful for architectural walkthroughs in VizAI's video gen pipeline.",
-      "action": "Evaluate Seedance API quality for architectural walkthrough generation vs. Veo and Nano Banana.",
-      "full_summary": "ByteDance released Seedance 2.5, an AI-powered video generation tool that produces videos up to 30 seconds from text or image prompts. The model represents rapid progress in AI video quality and could be evaluated for architectural walkthrough generation in VizAI's video pipeline."
-    },
-    {
-      "id": 11,
-      "title": "MiniMax H3 Opens AI Video to Developers — Copyright Lawsuit Clouds Every Clip",
-      "source": "GIGAZINE/MSN",
-      "source_type": "blog",
-      "url": "https://www.msn.com/en-us/technology/tech-companies/minimax-h3-opens-ai-video-to-developers-copyright-lawsuit-clouds-every-clip/ar-AA299Wz8",
-      "timestamp": "2026-08-10T00:00:00Z",
-      "category": "image-gen",
-      "relevance": "medium",
-      "projects": ["VizAI"],
-      "so_what": "Open-weight video gen going developer-accessible but copyright risks loom — relevsnt for VizAI's model sourcing strategy.",
-      "action": "Track copyright outcome before committing to MiniMax in VizAI pipeline.",
-      "full_summary": "MiniMax H3, the open-source video generation model, has been opened to developers for API access. However, every generated clip carries copyright lawsuit risk as the training data faces legal challenges. This presents a tradeoff for architectural firms considering open-weight video gen models."
-    },
-    {
-      "id": 12,
-      "title": "The Best AI Video Generators for 2026",
-      "source": "PCMag",
-      "source_type": "blog",
-      "url": "https://uk.pcmag.com/ai/161294/the-best-ai-video-generators",
-      "timestamp": "2026-07-15T00:00:00Z",
-      "category": "image-gen",
-      "relevance": "low",
-      "projects": ["VizAI"],
-      "so_what": "Comprehensive roundup of AI video gen tools landscape — useful reference for VizAI tool selection.",
-      "action": "Review PCMag recommendations to inform VizAI video gen pipeline decisions.",
-      "full_summary": "PCMag published its annual review of the best AI video generators for 2026, covering tools like Runway, Pika, Seedance, MiniMax, and others. The roundup provides a useful landscape overview for anyone building video generation capabilities."
-    },
-    {
-      "id": 13,
-      "title": "Design Intelligence for an Integrated Future: Gstarsoft Strengthens Open CAD+BIM+AI Ecosystem",
-      "source": "Yahoo Finance",
-      "source_type": "blog",
-      "url": "https://finance.yahoo.com/technology/ai/articles/design-intelligence-integrated-future-gstarsoft-083000677.html",
-      "timestamp": "2026-08-10T00:00:00Z",
-      "category": "aec-bim",
-      "relevance": "medium",
-      "projects": ["Atlas", "RhinoFam"],
-      "so_what": "Gstarsoft building open CAD+BIM+AI ecosystem — alternative platform approach worth monitoring against Autodesk's walled garden.",
-      "action": "Evaluate Gstarsoft's open ecosystem strategy for potential Atlas interoperability.",
-      "full_summary": "Gstarsoft is strengthening its open CAD+BIM+AI ecosystem, offering an alternative to Autodesk's platform. The approach focuses on interoperability and AI integration across the design-to-construction workflow, which could be relevant for Atlas's multi-platform strategy."
-    },
-    {
-      "id": 14,
-      "title": "How to Use AI in Architecture: A Practical Guide With Tim Fu",
-      "source": "Wallpaper",
-      "source_type": "blog",
-      "url": "https://www.wallpaper.com/architecture/how-to-use-ai-in-architecture-practical-guide",
-      "timestamp": "2026-07-20T00:00:00Z",
-      "category": "comp-design",
-      "relevance": "medium",
-      "projects": ["VizAI", "Atlas"],
-      "so_what": "Practical AI architecture guide from Tim Fu (ZHA) — shows the workflows Ami's tools compete with and complements.",
-      "action": "Reference for understanding practitioner AI workflows when positioning Benoy tools.",
-      "full_summary": "Wallpaper published a practical guide on using AI in architecture featuring Tim Fu, a computational designer known for integrating AI into design workflows at Zaha Hadid Architects. The guide covers AI image generation, design ideation, and visualization workflows."
-    },
-    {
-      "id": 15,
-      "title": "'It's Already Way Beyond What Humans Can Do': Will AI Wipe Out Architects?",
-      "source": "The Guardian",
-      "source_type": "blog",
-      "url": "https://www.theguardian.com/artanddesign/2023/aug/07/ai-architects-revolutionising-corbusier-architecture",
-      "timestamp": "2023-08-07T00:00:00Z",
-      "category": "general",
-      "relevance": "low",
-      "projects": [],
-      "so_what": "Older but evergreen article that keeps resurfacing in AI/arch discussions — reflects persistent public narrative about AI replacing architects.",
-      "action": null,
-      "full_summary": "The Guardian explores whether AI will make architects obsolete, featuring perspectives from across the profession. The article argues that AI is already producing designs 'way beyond what humans can do' while also noting the irreplaceable value of human creativity and context."
+      "subreddit": "r/singularity",
+      "topic": "Frontier model wave (GPT-5.6 Sol / Grok 4.6 / Gemini 3.7 Flash)",
+      "summary": "GPT-5.6 Sol, Grok 4.6 and Gemini 3.7 Flash all landed Aug 13; live threads were rate-limit-blocked from direct pull this run, but news volume indicates very high heat. Listed as inferred, not directly observed.",
+      "heat": "high",
+      "url": "https://www.reddit.com/r/singularity/search/?q=GPT-5.6+OR+Grok+4.6&sort=new&t=week"
     }
   ],
   "nothing_relevant": false
