@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0,user-scalable=yes">
+<title>Signal — Ami Nigam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary-bg:#ffffff;
+  --primary-text:#0d0d0d;
+  --text-secondary:#555555;
+  --text-tertiary:#575757;
+  --border-tertiary:rgba(0,0,0,0.19);
+  --border-faint:rgba(0,0,0,0.08);
+  --accent:#8B5CF6;
+  --accent-dim:rgba(139,92,246,0.12);
+  --hot:#ef4444;
+  --warm:#f59e0b;
+  --cool:#3b82f6;
+  --cold:#6b7280;
+  --green:#22c55e;
+  --card-bg:rgba(0,0,0,0.02);
+  --terminal-bg:#0a0a0a;
+}
+[data-theme="dark"]{
+  --primary-bg:#0d0d0d;
+  --primary-text:#f0ede8;
+  --text-secondary:#a0a0a0;
+  --text-tertiary:#838383;
+  --border-tertiary:rgba(255,255,255,0.16);
+  --border-faint:rgba(255,255,255,0.08);
+  --accent:#A78BFA;
+  --accent-dim:rgba(167,139,250,0.1);
+  --hot:#f87171;
+  --warm:#fbbf24;
+  --cool:#60a5fa;
+  --cold:#9ca3af;
+  --green:#4ade80;
+  --card-bg:rgba(255,255,255,0.03);
+  --terminal-bg:#050505;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  font-weight:300;
+  background:var(--primary-bg);
+  color:var(--primary-text);
+  overflow-x:hidden;
+  line-height:1.7;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  transition:background .4s ease,color .4s ease;
+  padding-top:48px;
+}
+
+/* SPECTRAL LINE */
+.spectral-line{
+  position:fixed;top:0;left:0;right:0;z-index:1000;height:2px;
+  background:linear-gradient(90deg,#7c3aed,#3b82f6,#06b6d4,#22c55e,#f59e0b,#ef4444,#7c3aed);
+  background-size:600px 100%;
+  animation:spectral-scroll 6s linear infinite;
+  pointer-events:none
+}
+@keyframes spectral-scroll{from{background-position:0 0}to{background-position:600px 0}}
+
+/* TOP BAR */
+.top-bar{
+  position:fixed;top:2px;left:0;right:0;z-index:999;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 20px;
+  background:var(--primary-bg);
+  transition:background .4s ease;
+  border-bottom:0.5px solid var(--border-tertiary);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px)
+}
+.top-bar a{
+  font-size:13px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+  color:var(--primary-text);text-decoration:none;
+  transition:color .3s
+}
+.top-bar a:hover{color:var(--accent)}
+.top-bar-right{display:flex;align-items:center;gap:16px}
+.theme-toggle{
+  background:none;border:none;cursor:pointer;
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-tertiary);transition:color .3s;
+  font-size:16px;line-height:1
+}
+.theme-toggle:hover{color:var(--primary-text)}
+.live-pulse{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--text-tertiary)
+}
+.live-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);
+  animation:pulse 2s ease-in-out infinite
+}
+@keyframes pulse{
+  0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,0.4)}
+  50%{opacity:.6;box-shadow:0 0 0 4px rgba(34,197,94,0)}
+}
+
+/* HERO / HEADER */
+.header{
+  padding:32px 20px 16px;
+  max-width:640px;
+  margin:0 auto
+}
+.header h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(32px,8vw,52px);
+  font-weight:700;
+  line-height:1.1;
+  letter-spacing:-.02em;
+  margin-bottom:8px
+}
+.header h1 em{
+  font-style:italic;font-weight:400;color:var(--accent)
+}
+.header .subtitle{
+  font-size:13px;color:var(--text-tertiary);
+  font-weight:400;line-height:1.6;
+  max-width:480px
+}
+
+/* SCAN STATUS */
+.scan-status{
+  max-width:640px;margin:0 auto;
+  padding:8px 20px 20px;
+  display:flex;align-items:center;gap:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--text-tertiary)
+}
+.scan-status .scan-icon{
+  width:14px;height:14px;border-radius:50%;
+  border:1.5px solid var(--accent);
+  position:relative
+}
+.scan-status .scan-icon::after{
+  content:'';position:absolute;inset:2px;border-radius:50%;
+  background:var(--accent);
+  animation:scan-pulse 1.5s ease-in-out infinite
+}
+@keyframes scan-pulse{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.3;transform:scale(.6)}
+}
+
+/* TOPIC HEAT MAP */
+.topic-grid{
+  max-width:640px;margin:0 auto;
+  padding:0 20px 24px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px
+}
+.topic-card{
+  background:var(--card-bg);
+  border:0.5px solid var(--border-faint);
+  border-radius:10px;
+  padding:14px 12px;
+  text-align:center;
+  transition:transform .2s,border-color .2s;
+  cursor:default
+}
+.topic-card:active{transform:scale(.97)}
+.topic-card .topic-name{
+  font-size:10px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--text-tertiary);margin-bottom:6px;
+  line-height:1.3
+}
+.topic-card .topic-count{
+  font-family:'JetBrains Mono',monospace;
+  font-size:24px;font-weight:700;
+  color:var(--primary-text);line-height:1
+}
+.topic-card .heat-bar{
+  height:3px;border-radius:2px;
+  margin-top:8px;
+  background:var(--border-faint);
+  position:relative;overflow:hidden
+}
+.topic-card .heat-fill{
+  position:absolute;left:0;top:0;bottom:0;
+  border-radius:2px;
+  transition:width .8s cubic-bezier(.22,1,.36,1)
+}
+.heat-hot{background:var(--hot)}
+.heat-warm{background:var(--warm)}
+.heat-cool{background:var(--cool)}
+.heat-cold{background:var(--cold)}
+
+/* NEWS FEED */
+.feed{
+  max-width:640px;margin:0 auto;
+  padding:0 20px 40px
+}
+.feed-label{
+  font-size:11px;font-weight:400;
+  text-transform:uppercase;letter-spacing:.12em;
+  color:var(--text-tertiary);
+  margin-bottom:16px;
+  display:flex;align-items:center;gap:10px
+}
+.feed-label::after{
+  content:'';flex:1;height:0.5px;background:var(--border-tertiary)
+}
+
+.news-item{
+  background:var(--card-bg);
+  border:0.5px solid var(--border-faint);
+  border-radius:12px;
+  padding:16px 16px 14px;
+  margin-bottom:10px;
+  transition:border-color .2s,transform .2s;
+  opacity:0;transform:translateY(12px);
+  animation:slide-in .5s ease forwards
+}
+.news-item:active{
+  border-color:var(--accent);
+  transform:scale(.99)
+}
+@keyframes slide-in{
+  to{opacity:1;transform:translateY(0)}
+}
+.news-item.relevance-high{
+  border-left:3px solid var(--hot);
+  padding-left:14px
+}
+.news-item.relevance-medium{
+  border-left:3px solid var(--warm);
+  padding-left:14px
+}
+.news-item.relevance-low{
+  border-left:3px solid var(--cool);
+  padding-left:14px
+}
+
+.news-meta{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:8px;
+  flex-wrap:wrap
+}
+.news-source{
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.05em;
+  color:var(--text-tertiary);
+  display:flex;align-items:center;gap:5px
+}
+.news-source .source-dot{
+  width:5px;height:5px;border-radius:50%;
+  background:var(--accent)
+}
+.news-category{
+  font-size:9px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 7px;border-radius:4px;
+  background:var(--accent-dim);
+  color:var(--accent)
+}
+.news-relevance{
+  font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 7px;border-radius:4px
+}
+.relevance-high .news-relevance{background:rgba(239,68,68,0.15);color:var(--hot)}
+.relevance-medium .news-relevance{background:rgba(245,158,11,0.15);color:var(--warm)}
+.relevance-low .news-relevance{background:rgba(59,130,246,0.15);color:var(--cool)}
+
+[data-theme="dark"] .relevance-high .news-relevance{background:rgba(248,113,113,0.15)}
+[data-theme="dark"] .relevance-medium .news-relevance{background:rgba(251,191,36,0.15)}
+[data-theme="dark"] .relevance-low .news-relevance{background:rgba(96,165,250,0.15)}
+
+.news-title{
+  font-size:15px;font-weight:500;
+  color:var(--primary-text);
+  line-height:1.45;
+  margin-bottom:6px
+}
+.news-title a{
+  color:inherit;text-decoration:none;
+  border-bottom:0.5px solid transparent;
+  transition:border-color .2s
+}
+.news-title a:hover{border-bottom-color:var(--accent)}
+.news-summary{
+  font-size:13px;font-weight:300;
+  color:var(--text-secondary);
+  line-height:1.65;
+  margin-bottom:8px
+}
+.news-so-what{
+  font-size:12px;font-weight:400;
+  color:var(--primary-text);
+  line-height:1.6;
+  padding:8px 12px;
+  background:var(--accent-dim);
+  border-radius:8px;
+  margin-bottom:8px
+}
+.news-so-what::before{
+  content:'SO WHAT — ';
+  font-family:'JetBrains Mono',monospace;
+  font-size:9px;font-weight:700;
+  letter-spacing:.1em;
+  color:var(--accent)
+}
+.news-projects{
+  display:flex;flex-wrap:wrap;gap:4px;
+  margin-bottom:6px
+}
+.project-tag{
+  font-size:10px;font-weight:500;
+  padding:3px 8px;border-radius:4px;
+  border:0.5px solid var(--border-tertiary);
+  color:var(--text-secondary)
+}
+.news-action{
+  font-size:12px;font-weight:400;
+  color:var(--text-tertiary);
+  margin-top:4px;
+  font-style:italic
+}
+.news-action::before{
+  content:'→ ';font-style:normal;color:var(--accent)
+}
+
+/* REDDIT PULSE */
+.reddit-section{
+  max-width:640px;margin:0 auto;
+  padding:0 20px 40px
+}
+.reddit-item{
+  background:var(--card-bg);
+  border:0.5px solid var(--border-faint);
+  border-radius:12px;
+  padding:14px 16px;
+  margin-bottom:10px;
+  animation:slide-in .5s ease forwards;
+  opacity:0;transform:translateY(12px)
+}
+.reddit-item .reddit-meta{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:6px
+}
+.reddit-sub{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;font-weight:500;
+  color:var(--accent)
+}
+.reddit-heat{
+  font-size:9px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.06em;
+  padding:2px 7px;border-radius:4px
+}
+.heat-high{background:rgba(239,68,68,0.15);color:var(--hot)}
+.heat-medium{background:rgba(245,158,11,0.15);color:var(--warm)}
+.heat-low{background:rgba(59,130,246,0.15);color:var(--cool)}
+[data-theme="dark"] .heat-high{background:rgba(248,113,113,0.15)}
+[data-theme="dark"] .heat-medium{background:rgba(251,191,36,0.15)}
+[data-theme="dark"] .heat-low{background:rgba(96,165,250,0.15)}
+.reddit-topic{
+  font-size:14px;font-weight:500;
+  color:var(--primary-text);
+  margin-bottom:4px
+}
+.reddit-summary{
+  font-size:12px;font-weight:300;
+  color:var(--text-secondary);
+  line-height:1.6
+}
+
+/* EMPTY STATE */
+.empty-state{
+  max-width:640px;margin:0 auto;
+  padding:40px 20px;
+  text-align:center
+}
+.empty-state .empty-icon{
+  font-size:40px;margin-bottom:16px;opacity:.3
+}
+.empty-state p{
+  font-size:14px;color:var(--text-tertiary);
+  font-weight:300;line-height:1.7;
+  max-width:360px;margin:0 auto
+}
+.empty-state .empty-code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--accent);
+  margin-top:12px;
+  opacity:.5
+}
+
+/* FOOTER */
+.footer{
+  max-width:640px;margin:0 auto;
+  padding:20px 20px 40px;
+  border-top:0.5px solid var(--border-tertiary);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:10px;color:var(--text-tertiary);
+  font-family:'JetBrains Mono',monospace
+}
+.footer .footer-meta{letter-spacing:.05em}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-tertiary);border-radius:2px}
+
+/* FOCUS */
+a:focus-visible,button:focus-visible{outline:1px solid var(--primary-text);outline-offset:3px}
+
+/* LOADING */
+.loading{
+  max-width:640px;margin:0 auto;
+  padding:20px 20px 40px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--text-tertiary);
+  line-height:2
+}
+.loading-line{
+  opacity:0;
+  animation:fade-in .4s ease forwards
+}
+@keyframes fade-in{to{opacity:1}}
+
+/* REDUCED MOTION */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
+  .spectral-line{animation:none}
+  .news-item,.reddit-item{opacity:1;transform:none}
+}
+
+/* MOBILE */
+@media(max-width:640px){
+  body{padding-top:44px}
+  .top-bar{padding:8px 16px}
+  .header{padding:24px 16px 12px}
+  .scan-status{padding:8px 16px 16px}
+  .topic-grid{padding:0 16px 20px;gap:6px}
+  .topic-card{padding:12px 8px}
+  .topic-card .topic-count{font-size:20px}
+  .feed{padding:0 16px 32px}
+  .reddit-section{padding:0 16px 32px}
+  .footer{padding:16px 16px 32px}
+}
+@media(max-width:380px){
+  .topic-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="spectral-line" aria-hidden="true"></div>
+
+<header class="top-bar">
+  <a href="/" aria-label="Back to home">← Ami Nigam</a>
+  <div class="top-bar-right">
+    <div class="live-pulse">
+      <span class="live-dot"></span>
+      <span>Live</span>
+    </div>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+      <span id="themeIcon">☀</span>
+    </button>
+  </div>
+</header>
+
+<div class="header">
+  <h1><em>Signal</em></h1>
+  <p class="subtitle">AI &amp; AEC intelligence scanner. Monitors model releases, tool updates, and practitioner sentiment across the things that matter to your work.</p>
+</div>
+
+<div class="scan-status" id="scanStatus">
+  <span class="scan-icon"></span>
+  <span id="scanText">Scanning sources…</span>
+</div>
+
+<div class="topic-grid" id="topicGrid"></div>
+
+<div class="feed">
+  <div class="feed-label">Signals</div>
+  <div id="newsFeed"></div>
+</div>
+
+<div class="reddit-section" id="redditSection" style="display:none">
+  <div class="feed-label">What People Are Saying</div>
+  <div id="redditFeed"></div>
+</div>
+
+<div class="footer">
+  <span class="footer-meta" id="footerMeta">signal v1.0</span>
+  <span class="footer-meta" id="footerDate"></span>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  // === THEME ===
+  var toggle=document.getElementById('themeToggle');
+  var icon=document.getElementById('themeIcon');
+  var html=document.documentElement;
+  function setTheme(t){
+    if(t==='dark'){html.setAttribute('data-theme','dark');icon.textContent='☾'}
+    else{html.removeAttribute('data-theme');icon.textContent='☀'}
+    try{localStorage.setItem('theme',t)}catch(e){}
+  }
+  toggle.addEventListener('click',function(){
+    setTheme(html.getAttribute('data-theme')==='dark'?'light':'dark');
+  });
+  try{var s=localStorage.getItem('theme');if(s)setTheme(s)}catch(e){}
+
+  // === DATA LOADING ===
+  var scanText=document.getElementById('scanText');
+  var scanStatus=document.getElementById('scanStatus');
+  var topicGrid=document.getElementById('topicGrid');
+  var newsFeed=document.getElementById('newsFeed');
+  var redditSection=document.getElementById('redditSection');
+  var redditFeed=document.getElementById('redditFeed');
+  var footerDate=document.getElementById('footerDate');
+  var footerMeta=document.getElementById('footerMeta');
+
+  // Simulated loading messages
+  var loadingMessages=[
+    'Scanning sources…',
+    'Checking Anthropic, OpenAI, Google AI…',
+    'Scanning Autodesk, McNeel, Food4Rhino…',
+    'Checking Reddit, LinkedIn, X…',
+    'Cross-referencing active projects…',
+    'Compiling signals…'
+  ];
+  var msgIndex=0;
+  var msgInterval=setInterval(function(){
+    msgIndex++;
+    if(msgIndex<loadingMessages.length){
+      scanText.textContent=loadingMessages[msgIndex];
+    } else { clearInterval(msgInterval); }
+  },600);
+
+  // Try to load data from the JSON file
+  var DATA_URL='signal/data.json';
+
+  fetch(DATA_URL,{cache:'no-store'}).then(function(r){
+    if(!r.ok) throw new Error('not found');
+    return r.json();
+  }).then(function(data){
+    clearInterval(msgInterval);
+    scanStatus.style.display='none';
+    renderData(data);
+  }).catch(function(){
+    clearInterval(msgInterval);
+    scanStatus.style.display='none';
+    renderEmpty();
+  });
+
+  function renderData(data){
+    // Date
+    if(data.date){
+      footerDate.textContent=data.date;
+    } else {
+      var d=new Date();
+      footerDate.textContent=d.toISOString().split('T')[0];
+    }
+
+    if(data.generated_at){
+      footerMeta.textContent='signal v1.0 · last scan '+data.generated_at.split('T')[1]?.substring(0,5)+' UTC';
+    }
+
+    // Topics
+    if(data.topics&&data.topics.length){
+      topicGrid.innerHTML=data.topics.map(function(t,i){
+        var pct=Math.min(100,t.count*25+10);
+        return '<div class="topic-card" style="animation:slide-in .4s ease '+((i+1)*80)+'ms forwards">'+
+          '<div class="topic-name">'+t.name+'</div>'+
+          '<div class="topic-count">'+t.count+'</div>'+
+          '<div class="heat-bar"><div class="heat-fill heat-'+t.heat+'" style="width:'+pct+'%"></div></div>'+
+        '</div>';
+      }).join('');
+    }
+
+    // News items
+    if(data.items&&data.items.length){
+      newsFeed.innerHTML=data.items.map(function(item,i){
+        var projectsHtml='';
+        if(item.projects&&item.projects.length){
+          projectsHtml='<div class="news-projects">'+
+            item.projects.map(function(p){return '<span class="project-tag">'+p+'</span>'}).join('')+
+          '</div>';
+        }
+        var actionHtml=item.action?'<div class="news-action">'+item.action+'</div>':'';
+        var soWhatHtml=item.so_what?'<div class="news-so-what">'+item.so_what+'</div>':'';
+        var titleLink=item.url?'<a href="'+item.url+'" target="_blank" rel="noopener noreferrer">'+item.title+'</a>':item.title;
+        var sourceIcon=item.source_type==='reddit'?'⚡':item.source_type==='linkedin'?'in':item.source_type==='twitter'?'𝕏':'◆';
+
+        return '<div class="news-item relevance-'+item.relevance+'" style="animation-delay:'+(i*60)+'ms">'+
+          '<div class="news-meta">'+
+            '<span class="news-source"><span class="source-dot"></span>'+sourceIcon+' '+item.source+'</span>'+
+            '<span class="news-category">'+item.category.replace(/-/g,' ')+'</span>'+
+            '<span class="news-relevance">'+item.relevance+'</span>'+
+          '</div>'+
+          '<div class="news-title">'+titleLink+'</div>'+
+          '<div class="news-summary">'+item.full_summary+'</div>'+
+          soWhatHtml+
+          projectsHtml+
+          actionHtml+
+        '</div>';
+      }).join('');
+    } else if(data.nothing_relevant){
+      newsFeed.innerHTML='<div class="empty-state">'+
+        '<div class="empty-icon">∅</div>'+
+        '<p>Nothing relevant in the last 48 hours. The signal is quiet.</p>'+
+        '<div class="empty-code">next scan: tomorrow 06:00 UTC</div>'+
+      '</div>';
+    }
+
+    // Reddit pulse
+    if(data.reddit&&data.reddit.length){
+      redditSection.style.display='block';
+      redditFeed.innerHTML=data.reddit.map(function(r,i){
+        return '<div class="reddit-item" style="animation-delay:'+(i*60)+'ms">'+
+          '<div class="reddit-meta">'+
+            '<span class="reddit-sub">'+r.subreddit+'</span>'+
+            '<span class="reddit-heat heat-'+r.heat+'">'+r.heat+'</span>'+
+          '</div>'+
+          '<div class="reddit-topic">'+r.topic+'</div>'+
+          '<div class="reddit-summary">'+r.summary+'</div>'+
+        '</div>';
+      }).join('');
+    }
+  }
+
+  function renderEmpty(){
+    var d=new Date();
+    var today=d.toISOString().split('T')[0];
+    footerDate.textContent=today;
+
+    newsFeed.innerHTML='<div class="empty-state">'+
+      '<div class="empty-icon">∅</div>'+
+      '<p>No signal data loaded yet. This page updates automatically every morning.</p>'+
+      '<div class="empty-code">next scan: tomorrow 06:00 UTC</div>'+
+    '</div>';
+  }
+
+})();
+</script>
+</body>
+</html>
