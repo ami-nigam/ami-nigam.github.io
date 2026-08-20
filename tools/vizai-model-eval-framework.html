@@ -141,6 +141,23 @@
   }
   .tag.pass { background: var(--pass-bg); color: var(--pass); }
   .tag.fail { background: var(--fail-bg); color: var(--fail); }
+  .tag.partial { background: #fdf1de; color: #8a5a12; }
+  a.tag { text-decoration: none; }
+  a.tag:hover { filter: brightness(0.94); }
+
+  .leaderboard-wrap { overflow-x: auto; margin: 16px 0 8px; }
+  .leaderboard-wrap table { margin: 0; min-width: 760px; }
+  .leaderboard-wrap .group-row td {
+    padding-top: 18px;
+    border-bottom: 2px solid var(--line);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+  .leaderboard-wrap .group-row:first-child td { padding-top: 9px; }
+  .leaderboard-legend { font-size: 12px; color: var(--ink-soft); margin: 0 0 6px; }
 
   /* Image gallery */
   .gallery-input {
@@ -378,6 +395,7 @@
 <div class="layout">
 <nav class="toc">
   <div class="toc-title">VizAI Eval</div>
+  <a href="#leaderboard"><strong>Leaderboard</strong></a>
   <a href="#scope">Scope &amp; Modes</a>
   <a href="#test-plan">Test Plan &amp; Status</a>
   <a href="#criteria">Evaluation Criteria</a>
@@ -399,6 +417,31 @@
 
 <h1>VizAI New Model Evaluation Framework</h1>
 <p class="subtitle">A repeatable process for testing new image/video generation models on UAT before deciding whether to integrate them into VizAI production.</p>
+
+<h2 id="leaderboard">Leaderboard</h2>
+<p>All 13 models tested so far, ranked by cost within their tier. Each test badge links to that test's full evidence &mdash; source image, side-by-side outputs, and the written read. Geometry/constraint-holding and general quality are scored as <a href="#findings">separate axes on purpose</a>: a model can pass every fidelity check and still be the wrong pick on cost or speed, and vice versa.</p>
+<p class="leaderboard-legend"><span class="tag pass">PASS</span> held geometry / constraint &nbsp; <span class="tag partial">PARTIAL</span> partially held &nbsp; <span class="tag fail">FAIL</span> did not hold</p>
+<div class="leaderboard-wrap">
+<table>
+<tr><th>Model</th><th>Cost / Gen</th><th>Avg Speed</th><th><a href="#test1">Test 1<br>Render</a></th><th><a href="#test3">Test 3<br>Mood</a></th><th><a href="#test4">Test 4<br>Material</a></th><th><a href="#test5">Test 5<br>Zoom</a></th><th>Best for</th></tr>
+<tr class="group-row"><td colspan="8">Baseline (current production)</td></tr>
+<tr><td class="model-name">gpt-image-2</td><td>$0.030</td><td>41.5s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Reliability ceiling &mdash; passes every fidelity test; slowest &amp; priciest of the baseline set</td></tr>
+<tr><td class="model-name">Nano Banana 2 Lite</td><td>$0.030</td><td>8.2s</td><td><a class="tag partial" href="#test1">PARTIAL</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag partial" href="#test5">PARTIAL</a></td><td>3&ndash;5x faster and far smaller files than anything else, trades away material fidelity</td></tr>
+<tr><td class="model-name">gpt-image-1.5</td><td>$0.040</td><td>23.8s</td><td><a class="tag fail" href="#test1">FAIL</a></td><td><a class="tag fail" href="#test3">FAIL</a></td><td><a class="tag fail" href="#test4">FAIL</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Fast, good atmosphere &mdash; but a repeated geometry-drift risk (failed 3 of 4 relevant tests)</td></tr>
+<tr><td class="model-name">Nano Banana 2</td><td>$0.060</td><td>17.5s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Solid fidelity, but the clearest miss on the constrained zoom test</td></tr>
+<tr><td class="model-name">Nano Banana Pro</td><td>$0.120</td><td>25.0s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Best baseline lighting match, tends to crop tighter than the source</td></tr>
+<tr class="group-row"><td colspan="8">New candidates (benchmark expansion)</td></tr>
+<tr><td class="model-name">Qwen Image 3</td><td>$0.033</td><td>48.5s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Budget-friendly, dependable geometry holding</td></tr>
+<tr><td class="model-name">Seedream 5.0 Lite</td><td>$0.035</td><td>52.2s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Cheap and reliable &mdash; one of only two models to cleanly pass the constrained zoom test</td></tr>
+<tr><td class="model-name">Qwen Image 3 Pro</td><td>$0.043</td><td>98.2s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Crisp detailing, but the slowest model in the whole benchmark</td></tr>
+<tr><td class="model-name">MAI-Image-2.5</td><td>$0.047</td><td>29.7s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Value frontier pick &mdash; passes every test including the constrained zoom</td></tr>
+<tr><td class="model-name">Seedream 5.0 Pro</td><td>$0.048</td><td>85.0s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Highest reference-edge precision, but slow (85&ndash;111s)</td></tr>
+<tr><td class="model-name">Grok Imagine Image 2.0</td><td>$0.050</td><td>10.7s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag partial" href="#test5">PARTIAL</a></td><td>Fastest frontier model by a wide margin (&sim;10s)</td></tr>
+<tr><td class="model-name">FLUX.2 Max</td><td>$0.070</td><td>33.0s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Best atmospheric lighting and materials of the whole benchmark</td></tr>
+<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>$0.108</td><td>41.6s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Joins the quality ceiling &mdash; passes everything, priciest of the new candidates</td></tr>
+</table>
+</div>
+<p class="lede">Test 2 (render&rarr;sketch) isn't shown here &mdash; no model had a geometry-drift issue in that test, so it doesn't differentiate. See <a href="#test2">Test 2</a> for the qualitative style comparison.</p>
 
 <h2 id="scope">Scope &amp; Modes</h2>
 <p>Applies to any new image or video generation model being trialed against the current production baseline (currently Gemini Imagen/Nano Banana for image, Veo for video). Run this framework any time a candidate model is added to UAT.</p>
