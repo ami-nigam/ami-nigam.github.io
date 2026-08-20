@@ -986,7 +986,7 @@
   var hint = document.getElementById('lightboxHint');
 
   var COMPARE_PREF_KEY = 'vizaiCompareEnabled';
-  var compareEnabled = localStorage.getItem(COMPARE_PREF_KEY) !== 'off';
+  var compareEnabled = localStorage.getItem(COMPARE_PREF_KEY) === 'on';
   compareToggle.checked = compareEnabled;
 
   // Build one entry per test section (each <h3 id="testN">), collecting that
