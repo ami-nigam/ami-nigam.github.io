@@ -8,26 +8,51 @@
 <title>AEC Model Evals — VizAI Image Model Comparison</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+  /* Palette matches the main site's tokens (styles.css --primary-bg / --primary-text /
+     --text-secondary / --text-tertiary / --border-tertiary) and its pink .city accent,
+     so this page sits comfortably alongside it — including light/dark parity, since
+     both pages read the same localStorage 'theme' key under the same origin. PASS/PART/FAIL
+     stay their own semantic colors rather than reusing the brand accent for status. */
   :root {
-    --ink: #17191B;
-    --ink-soft: #6E6A64;
-    --ink-body: #3C3E40;
-    --paper: #FBFAF7;
-    --line: rgba(23,25,27,0.14);
-    --accent: #2F5D50;
-    --accent-bg: #E8EFEC;
+    --ink: #0d0d0d;
+    --ink-soft: #575757;
+    --ink-body: #555555;
+    --paper: #ffffff;
+    --line: rgba(0,0,0,0.19);
+    --accent: #c0186c;
+    --accent-bg: #f9e3ee;
+    --pass: #2F5D50;
+    --pass-bg: #E8EFEC;
     --part: #8A5A12;
     --part-bg: #F6EAD4;
     --fail: #A83E1C;
     --fail-bg: #F8EAE4;
     --none: #9A938A;
-    --none-bg: rgba(23,25,27,0.06);
-    --serif: 'Instrument Serif', Georgia, serif;
-    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --none-bg: rgba(0,0,0,0.06);
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'DM Sans', system-ui, sans-serif;
     --mono: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
   }
+  [data-theme="dark"] {
+    --ink: #f0ede8;
+    --ink-soft: #838383;
+    --ink-body: #a0a0a0;
+    --paper: #0d0d0d;
+    --line: rgba(255,255,255,0.16);
+    --accent: #e8579f;
+    --accent-bg: rgba(232,87,159,0.16);
+    --pass: #6fae9c;
+    --pass-bg: rgba(111,174,156,0.16);
+    --part: #d1a256;
+    --part-bg: rgba(209,162,86,0.16);
+    --fail: #e2775a;
+    --fail-bg: rgba(226,119,90,0.16);
+    --none: #8a857c;
+    --none-bg: rgba(255,255,255,0.07);
+  }
+  body { transition: background-color 0.2s ease, color 0.2s ease; }
   * { box-sizing: border-box; }
   body {
     margin: 0;
@@ -48,12 +73,14 @@
   .eyebrow { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
 
   /* Top bar */
-  .topbar { position: sticky; top: 0; z-index: 40; background: rgba(251,250,247,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .topbar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
   .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 52px; gap: 32px; }
   .brand { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
-  .nav-links { display: flex; gap: 22px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; overflow-x: auto; }
+  .nav-links { display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; overflow-x: auto; }
   .nav-links a { color: var(--ink-soft); white-space: nowrap; }
   .nav-links a:hover { color: var(--ink); }
+  .theme-toggle { background: none; border: none; cursor: pointer; padding: 0; color: var(--ink-soft); display: flex; align-items: center; line-height: 0; transition: color 0.2s ease; flex-shrink: 0; }
+  .theme-toggle:hover { color: var(--ink); }
   @media (max-width: 640px) { .topbar-inner { padding: 0 20px; gap: 16px; } }
 
   /* Hero header */
@@ -77,14 +104,19 @@
   .evidence-note { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); text-align: right; max-width: 260px; line-height: 1.5; }
 
   .compare { position: relative; width: 100%; background: #16140F; cursor: ew-resize; user-select: none; touch-action: none; overflow: hidden; }
-  .compare--hero { height: 620px; }
-  .compare--task { height: 480px; margin-top: 30px; }
-  @media (max-width: 640px) { .compare--hero { height: 380px; } .compare--task { height: 320px; } }
+  /* Aspect-ratio driven (not a fixed height) so the band hugs the actual
+     image content — most outputs are 16:9, a smaller set is 3:2, and a
+     fixed short height was leaving large empty letterbox bars either side. */
+  .compare--hero { aspect-ratio: 16 / 9; height: auto; max-height: 82vh; }
+  .compare--task { aspect-ratio: 16 / 9; height: auto; max-height: 74vh; margin-top: 30px; }
+  @media (max-width: 640px) { .compare--hero { max-height: 60vh; } .compare--task { max-height: 52vh; } }
   .compare-base, .compare-out { position: absolute; top: 0; left: 0; height: 100%; object-fit: contain; display: block; pointer-events: none; }
   .compare-base { width: 100%; }
   .compare-clip { position: absolute; inset: 0; height: 100%; overflow: hidden; }
   .compare-handle { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.9); pointer-events: none; transform: translateX(-1px); }
-  .compare-handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 42px; height: 42px; border-radius: 50%; background: var(--paper); color: var(--ink); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 13px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
+  /* Fixed light-on-dark (not theme-linked) — this sits on the always-dark
+     compare band, so it must stay legible whichever mode the page is in. */
+  .compare-handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 42px; height: 42px; border-radius: 50%; background: #FBFAF7; color: #17191B; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 13px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
   .compare--task .compare-handle span { width: 38px; height: 38px; font-size: 12px; }
   .compare-tag { position: absolute; top: 20px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #fff; background: rgba(0,0,0,0.5); padding: 5px 9px; pointer-events: none; }
   .compare--task .compare-tag { top: 18px; }
@@ -118,7 +150,7 @@
   .legend { display: flex; flex-direction: column; gap: 7px; margin-top: 18px; }
   .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft); }
   .pill { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; padding: 3px 7px; }
-  .pill-pass { background: var(--accent-bg); color: var(--accent); }
+  .pill-pass { background: var(--pass-bg); color: var(--pass); }
   .pill-part { background: var(--part-bg); color: var(--part); }
   .pill-fail { background: var(--fail-bg); color: var(--fail); }
   .pill-none { background: var(--none-bg); color: var(--none); }
@@ -152,9 +184,9 @@
   .task-instruction p { font-family: var(--mono); font-size: 12.5px; line-height: 1.7; color: var(--ink-body); margin: 16px 0 0; max-width: 720px; }
 
   .card-strip { display: flex; gap: 12px; overflow-x: auto; padding: 16px 0 8px; }
-  .run-card { flex: 0 0 232px; cursor: pointer; border: 1px solid var(--line); background: #fff; text-align: left; padding: 0; font-family: inherit; }
+  .run-card { flex: 0 0 232px; cursor: pointer; border: 1px solid var(--line); background: var(--paper); text-align: left; padding: 0; font-family: inherit; }
   .run-card.active { border-color: var(--ink); border-width: 2px; }
-  .run-card .thumb { height: 132px; width: 100%; object-fit: cover; display: block; background: #EDEAE4; }
+  .run-card .thumb { height: 132px; width: 100%; object-fit: cover; display: block; background: color-mix(in srgb, var(--paper), var(--ink) 6%); }
   .run-card .card-body { padding: 9px 11px 10px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
   .run-card .card-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
   .run-card .card-name { font-size: 12.5px; font-weight: 500; color: var(--ink); }
@@ -169,7 +201,7 @@
   @media (max-width: 640px) { .cost-head-row, .cost-row { grid-template-columns: 110px 60px minmax(0,1fr) 70px; gap: 10px; } }
   .cost-name { font-size: 13.5px; font-weight: 500; }
   .cost-cost { font-family: var(--mono); font-size: 12.5px; text-align: right; }
-  .cost-bar-track { display: block; height: 9px; background: rgba(23,25,27,0.07); }
+  .cost-bar-track { display: block; height: 9px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
   .cost-bar-fill { display: block; height: 9px; }
   .cost-time { font-family: var(--mono); font-size: 12px; text-align: right; color: var(--ink-soft); }
   .volume-wrap { margin-top: 34px; overflow-x: auto; }
@@ -185,11 +217,11 @@
   /* Planned */
   .planned h2 { color: var(--none); }
   .planned p.lede { color: var(--none); }
-  .planned-list { display: grid; gap: 1px; background: rgba(23,25,27,0.1); border: 1px solid rgba(23,25,27,0.1); }
-  .planned-row { background: #F7F5F1; padding: 18px 22px; display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
-  .planned-title { font-size: 15.5px; color: #7C766E; font-weight: 400; }
+  .planned-list { display: grid; gap: 1px; background: color-mix(in srgb, var(--ink) 10%, transparent); border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); }
+  .planned-row { background: color-mix(in srgb, var(--paper), var(--ink) 4%); padding: 18px 22px; display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
+  .planned-title { font-size: 15.5px; color: var(--ink-soft); font-weight: 400; }
   .planned-note { font-size: 13.5px; color: var(--none); margin-top: 3px; }
-  .planned-status { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--none); white-space: nowrap; border: 1px solid rgba(23,25,27,0.16); padding: 3px 8px; }
+  .planned-status { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--none); white-space: nowrap; border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); padding: 3px 8px; }
 
   footer { max-width: 1280px; margin: 96px auto 0; padding: 22px 40px 72px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
 </style>
@@ -205,6 +237,22 @@
       <a href="#tasks">Tasks</a>
       <a href="#cost">Cost</a>
       <a href="#method">Method</a>
+      <button id="toggle-theme" class="theme-toggle" aria-label="Toggle light/dark mode">
+        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
     </div>
   </div>
 </nav>
@@ -550,6 +598,38 @@
 (function () {
   "use strict";
 
+  // ---------- theme toggle ----------
+  // Same localStorage key ('theme') and data-theme attribute convention as
+  // the main site, so this page matches whichever mode was last chosen there.
+  (function () {
+    var html = document.documentElement;
+    var toggleBtn = document.getElementById('toggle-theme');
+    var sunIcon = document.getElementById('sun-icon');
+    var moonIcon = document.getElementById('moon-icon');
+
+    var savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+      html.setAttribute('data-theme', 'dark');
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
+    }
+
+    toggleBtn.addEventListener('click', function () {
+      var isDark = html.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        html.removeAttribute('data-theme');
+        sunIcon.style.display = 'block';
+        moonIcon.style.display = 'none';
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = 'block';
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+  })();
+
   var GRADE = {
     PASS: { cls: 'pill-pass', label: 'PASS' },
     PART: { cls: 'pill-part', label: 'PART' },
@@ -796,7 +876,7 @@
   byCost.forEach(function (m) {
     var row = el('div', 'cost-row');
     var barPct = ((m.cost / maxCost) * 100).toFixed(1) + '%';
-    var barColor = m.tier === 'Baseline' ? '#9A938A' : 'var(--accent)';
+    var barColor = m.tier === 'Baseline' ? 'var(--none)' : 'var(--accent)';
     row.innerHTML =
       '<span class="cost-name">' + m.name + '</span>' +
       '<span class="cost-cost">$' + m.cost.toFixed(3) + '</span>' +
