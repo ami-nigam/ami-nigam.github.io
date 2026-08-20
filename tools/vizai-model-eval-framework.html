@@ -4,1163 +4,870 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>VizAI Model Evaluation Framework</title>
+<meta name="description" content="Thirteen image models, five real AEC tasks, one source render — source-to-output comparisons, cost, speed and pass/fail grading for choosing a visualization model.">
+<title>AEC Model Evals — VizAI Image Model Comparison</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --ink: #1a1d1f;
-    --ink-soft: #565c60;
-    --paper: #fbfaf8;
-    --panel: #ffffff;
-    --line: #e4e1da;
-    --accent: #2f5d50;
-    --accent-soft: #e8efec;
-    --fail: #b3441e;
-    --fail-bg: #fbeee7;
-    --pass: #2f5d50;
-    --pass-bg: #e8efec;
-    --mono: 'SF Mono', 'Consolas', 'Menlo', monospace;
+    --ink: #17191B;
+    --ink-soft: #6E6A64;
+    --ink-body: #3C3E40;
+    --paper: #FBFAF7;
+    --line: rgba(23,25,27,0.14);
+    --accent: #2F5D50;
+    --accent-bg: #E8EFEC;
+    --part: #8A5A12;
+    --part-bg: #F6EAD4;
+    --fail: #A83E1C;
+    --fail-bg: #F8EAE4;
+    --none: #9A938A;
+    --none-bg: rgba(23,25,27,0.06);
+    --serif: 'Instrument Serif', Georgia, serif;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
   }
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
     background: var(--paper);
     color: var(--ink);
-    line-height: 1.55;
+    font-family: var(--sans);
+    font-weight: 300;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
-  .layout { display: flex; min-height: 100vh; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--ink); }
+  ::selection { background: var(--accent-bg); }
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 40px; }
+  @media (max-width: 640px) { .wrap { padding: 0 20px; } }
 
-  /* Sidebar nav */
-  nav.toc {
-    width: 240px;
-    flex-shrink: 0;
-    background: var(--panel);
-    border-right: 1px solid var(--line);
-    padding: 28px 20px;
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    overflow-y: auto;
-  }
-  nav.toc .toc-title {
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin-bottom: 14px;
-    font-weight: 600;
-  }
-  nav.toc a {
-    display: block;
-    font-size: 13.5px;
-    color: var(--ink);
-    text-decoration: none;
-    padding: 6px 0;
-    border-bottom: 1px solid transparent;
-  }
-  nav.toc a:hover { color: var(--accent); }
-  nav.toc .sub a { padding-left: 12px; font-size: 12.5px; color: var(--ink-soft); }
+  .eyebrow { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
 
-  main { flex: 1; max-width: 980px; padding: 48px 56px 120px; }
+  /* Top bar */
+  .topbar { position: sticky; top: 0; z-index: 40; background: rgba(251,250,247,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+  .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 52px; gap: 32px; }
+  .brand { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
+  .nav-links { display: flex; gap: 22px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; overflow-x: auto; }
+  .nav-links a { color: var(--ink-soft); white-space: nowrap; }
+  .nav-links a:hover { color: var(--ink); }
+  @media (max-width: 640px) { .topbar-inner { padding: 0 20px; gap: 16px; } }
 
-  h1 {
-    font-size: 28px;
-    margin: 0 0 6px;
-    letter-spacing: -0.01em;
-  }
-  .subtitle { color: var(--ink-soft); font-size: 15px; margin-bottom: 40px; }
+  /* Hero header */
+  .hero-head { max-width: 1280px; margin: 0 auto; padding: 56px 40px 0; }
+  @media (max-width: 640px) { .hero-head { padding: 40px 20px 0; } }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 64px; align-items: end; }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; gap: 32px; } }
+  .hero-kicker { margin-bottom: 24px; }
+  .hero-title { font-family: var(--serif); font-weight: 400; font-size: clamp(44px, 8vw, 96px); line-height: 0.94; letter-spacing: -0.02em; margin: 0 0 26px; }
+  .hero-title em { font-style: italic; color: var(--accent); }
+  .hero-sub { font-size: 19px; line-height: 1.55; max-width: 620px; margin: 0; color: var(--ink-body); }
+  .stat-list { margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .stat-row { display: flex; justify-content: space-between; align-items: baseline; padding: 11px 0; border-bottom: 1px solid var(--line); }
+  .stat-row dt { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+  .stat-row dd { margin: 0; font-family: var(--mono); font-size: 15px; }
 
-  h2 {
-    font-size: 20px;
-    margin: 56px 0 16px;
-    padding-top: 8px;
-    border-top: 1px solid var(--line);
-    scroll-margin-top: 24px;
-  }
-  h2:first-of-type { border-top: none; margin-top: 0; }
-  h3 {
-    font-size: 16.5px;
-    margin: 32px 0 10px;
-    scroll-margin-top: 24px;
-  }
-  h4 { font-size: 14px; margin: 20px 0 8px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.04em; }
+  /* Evidence / compare bands */
+  .evidence { margin: 72px 0 0; }
+  .evidence-head { max-width: 1280px; margin: 0 auto 18px; padding: 0 40px; display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .evidence-head h2 { font-family: var(--serif); font-weight: 400; font-size: 34px; line-height: 1.05; margin: 8px 0 0; }
+  .evidence-note { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); text-align: right; max-width: 260px; line-height: 1.5; }
 
-  p { margin: 0 0 14px; font-size: 14.5px; }
-  .lede { color: var(--ink-soft); }
+  .compare { position: relative; width: 100%; background: #16140F; cursor: ew-resize; user-select: none; touch-action: none; overflow: hidden; }
+  .compare--hero { height: 620px; }
+  .compare--task { height: 480px; margin-top: 30px; }
+  @media (max-width: 640px) { .compare--hero { height: 380px; } .compare--task { height: 320px; } }
+  .compare-base, .compare-out { position: absolute; top: 0; left: 0; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+  .compare-base { width: 100%; }
+  .compare-clip { position: absolute; inset: 0; height: 100%; overflow: hidden; }
+  .compare-handle { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.9); pointer-events: none; transform: translateX(-1px); }
+  .compare-handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 42px; height: 42px; border-radius: 50%; background: var(--paper); color: var(--ink); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 13px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
+  .compare--task .compare-handle span { width: 38px; height: 38px; font-size: 12px; }
+  .compare-tag { position: absolute; top: 20px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #fff; background: rgba(0,0,0,0.5); padding: 5px 9px; pointer-events: none; }
+  .compare--task .compare-tag { top: 18px; }
+  .compare-tag--left { left: 20px; }
+  .compare-tag--right { right: 20px; }
 
-  code, .mono { font-family: var(--mono); font-size: 0.92em; }
+  .chip-row { max-width: 1280px; margin: 0 auto; padding: 14px 40px 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  @media (max-width: 640px) { .chip-row { padding: 14px 20px 0; } }
+  .chip-lead { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-right: 6px; }
+  .chip { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; padding: 6px 11px; border: 1px solid var(--line); background: transparent; color: var(--ink-body); cursor: pointer; border-radius: 0; }
+  .chip:hover { border-color: var(--ink); }
+  .chip.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
-  .instruction-box {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-left: 3px solid var(--accent);
-    padding: 14px 18px;
-    margin: 14px 0 20px;
-    font-size: 13.5px;
-    color: var(--ink-soft);
-    border-radius: 2px;
-  }
-  .instruction-box .label {
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--accent);
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
+  /* Sections */
+  .section { max-width: 1280px; margin: 0 auto; padding: 96px 40px 0; }
+  @media (max-width: 640px) { .section { padding: 64px 20px 0; } }
+  .section-grid { border-top: 1px solid var(--line); padding-top: 20px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 64px; }
+  @media (max-width: 720px) { .section-grid { grid-template-columns: 1fr; gap: 16px; } }
+  .section h2 { font-family: var(--serif); font-weight: 400; font-size: 44px; line-height: 1.06; margin: 0 0 14px; }
+  .section p.lede { font-size: 17px; max-width: 620px; margin: 0 0 28px; color: var(--ink-body); }
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 16px 0 28px;
-    font-size: 13px;
-  }
-  th, td {
-    text-align: left;
-    padding: 9px 12px;
-    border-bottom: 1px solid var(--line);
-    vertical-align: top;
-  }
-  th {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--ink-soft);
-    font-weight: 600;
-    border-bottom: 2px solid var(--line);
-  }
-  tr:hover td { background: rgba(0,0,0,0.012); }
-  .model-name { font-weight: 600; white-space: nowrap; }
+  /* Picks */
+  .picks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .pick-card { background: var(--paper); padding: 26px 24px 28px; display: flex; flex-direction: column; gap: 10px; min-height: 230px; }
+  .pick-role { font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+  .pick-model { font-family: var(--serif); font-size: 27px; line-height: 1.1; }
+  .pick-stat { font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); }
+  .pick-why { font-size: 14px; line-height: 1.55; color: var(--ink-body); margin: 6px 0 0; }
 
-  .tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
-  }
-  .tag.pass { background: var(--pass-bg); color: var(--pass); }
-  .tag.fail { background: var(--fail-bg); color: var(--fail); }
-  .tag.partial { background: #fdf1de; color: #8a5a12; }
-  a.tag { text-decoration: none; }
-  a.tag:hover { filter: brightness(0.94); }
+  /* Legend + leaderboard */
+  .legend { display: flex; flex-direction: column; gap: 7px; margin-top: 18px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-soft); }
+  .pill { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; padding: 3px 7px; }
+  .pill-pass { background: var(--accent-bg); color: var(--accent); }
+  .pill-part { background: var(--part-bg); color: var(--part); }
+  .pill-fail { background: var(--fail-bg); color: var(--fail); }
+  .pill-none { background: var(--none-bg); color: var(--none); }
 
-  .leaderboard-wrap { overflow-x: auto; margin: 16px 0 8px; }
-  .leaderboard-wrap table { margin: 0; min-width: 760px; }
-  .leaderboard-wrap .group-row td {
-    padding-top: 18px;
-    border-bottom: 2px solid var(--line);
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 700;
-    color: var(--ink-soft);
-  }
-  .leaderboard-wrap .group-row:first-child td { padding-top: 9px; }
-  .leaderboard-legend { font-size: 12px; color: var(--ink-soft); margin: 0 0 6px; }
+  .sort-toggle { display: flex; gap: 6px; margin-bottom: 20px; }
+  .sort-btn { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 13px; border: 1px solid var(--line); background: transparent; color: var(--ink-body); cursor: pointer; }
+  .sort-btn:hover { border-color: var(--ink); }
+  .sort-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 
-  /* Image gallery */
-  .gallery-input {
-    margin: 18px 0 26px;
-  }
-  .gallery-input .cap { font-size: 12px; color: var(--ink-soft); margin-top: 6px; }
-  .gallery-input img {
-    width: 100%;
-    max-width: 720px;
-    border: 1px solid var(--line);
-    border-radius: 3px;
-    display: block;
-  }
+  .table-scroll { overflow-x: auto; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  #board-table { min-width: 820px; }
+  #volume-table { min-width: 620px; }
+  th { text-align: left; padding: 0 12px 9px 0; border-bottom: 1.5px solid var(--ink); font-family: var(--mono); font-size: 9.5px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+  th.num, td.num { text-align: center; padding-left: 8px; padding-right: 8px; }
+  th.right, td.right { text-align: right; }
+  td { padding: 11px 12px 11px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  td.model-name { font-weight: 500; white-space: nowrap; }
+  td.tier, td.mono-cell { font-family: var(--mono); font-size: 12.5px; }
+  td.tier { font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); }
+  td.best-for { color: var(--ink-body); min-width: 220px; }
 
-  .model-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin: 18px 0 32px;
-  }
-  .model-card {
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    overflow: hidden;
-    background: var(--panel);
-  }
-  .model-card img {
-    width: 100%;
-    display: block;
-    cursor: zoom-in;
-  }
-  .model-card .card-head {
-    padding: 10px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--line);
-    font-size: 12.5px;
-  }
-  .model-card .card-head .name { font-weight: 600; }
-  .model-card .card-head .time { color: var(--ink-soft); font-family: var(--mono); font-size: 11.5px; }
+  /* Tasks intro + task sections */
+  .task { margin-top: 72px; }
+  .task-index .task-num { font-family: var(--serif); font-size: 64px; line-height: 0.9; color: var(--accent); }
+  .task-index .task-mode { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-top: 10px; }
+  .task-title { font-family: var(--serif); font-weight: 400; font-size: 38px; line-height: 1.08; margin: 0 0 10px; }
+  .task-verdict { font-size: 18px; margin: 0 0 22px; max-width: 640px; color: var(--ink); }
+  .task-instruction summary { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); cursor: pointer; padding: 8px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); list-style: none; }
+  .task-instruction summary::-webkit-details-marker { display: none; }
+  .task-instruction p { font-family: var(--mono); font-size: 12.5px; line-height: 1.7; color: var(--ink-body); margin: 16px 0 0; max-width: 720px; }
 
-  .read-box {
-    background: var(--accent-soft);
-    border-radius: 4px;
-    padding: 14px 18px;
-    font-size: 13.5px;
-    margin: 8px 0 30px;
-  }
-  .read-box .label {
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--accent);
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
+  .card-strip { display: flex; gap: 12px; overflow-x: auto; padding: 16px 0 8px; }
+  .run-card { flex: 0 0 232px; cursor: pointer; border: 1px solid var(--line); background: #fff; text-align: left; padding: 0; font-family: inherit; }
+  .run-card.active { border-color: var(--ink); border-width: 2px; }
+  .run-card .thumb { height: 132px; width: 100%; object-fit: cover; display: block; background: #EDEAE4; }
+  .run-card .card-body { padding: 9px 11px 10px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 3px; }
+  .run-card .card-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .run-card .card-name { font-size: 12.5px; font-weight: 500; color: var(--ink); }
+  .run-card .card-meta { font-family: var(--mono); font-size: 10.5px; color: var(--ink-soft); }
 
-  .status-list { list-style: none; padding: 0; margin: 0 0 20px; }
-  .status-list li {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    border-bottom: 1px solid var(--line);
-    font-size: 13.5px;
-  }
-  .status-list .status { font-family: var(--mono); font-size: 11.5px; padding: 2px 8px; border-radius: 3px; }
-  .status.tested { background: var(--pass-bg); color: var(--pass); }
-  .status.next { background: #fdf1de; color: #8a5a12; }
-  .status.dropped { background: #f0eeea; color: var(--ink-soft); text-decoration: line-through; }
+  .task-read { margin-top: 26px; }
+  .task-read blockquote { font-size: 16px; line-height: 1.65; margin: 0; max-width: 720px; color: var(--ink-body); border-left: 2px solid var(--accent); padding-left: 20px; }
 
-  .finding {
-    padding: 12px 0;
-    border-bottom: 1px solid var(--line);
-    font-size: 14px;
-  }
-  .finding:last-child { border-bottom: none; }
-  .finding b { color: var(--accent); }
+  /* Cost */
+  .cost-head-row { display: grid; grid-template-columns: 190px 74px minmax(0, 1fr) 96px; gap: 16px; padding-bottom: 8px; border-bottom: 1.5px solid var(--ink); font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+  .cost-row { display: grid; grid-template-columns: 190px 74px minmax(0, 1fr) 96px; gap: 16px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+  @media (max-width: 640px) { .cost-head-row, .cost-row { grid-template-columns: 110px 60px minmax(0,1fr) 70px; gap: 10px; } }
+  .cost-name { font-size: 13.5px; font-weight: 500; }
+  .cost-cost { font-family: var(--mono); font-size: 12.5px; text-align: right; }
+  .cost-bar-track { display: block; height: 9px; background: rgba(23,25,27,0.07); }
+  .cost-bar-fill { display: block; height: 9px; }
+  .cost-time { font-family: var(--mono); font-size: 12px; text-align: right; color: var(--ink-soft); }
+  .volume-wrap { margin-top: 34px; overflow-x: auto; }
+  .volume-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 12px; }
 
-  .prompt-list, ul, ol { font-size: 14px; padding-left: 22px; }
-  .prompt-list li, ul li, ol li { margin-bottom: 6px; }
+  /* Method */
+  .method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px 48px; }
+  .method-grid h4 { font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+  .method-grid ul { margin: 0; padding-left: 18px; font-size: 14.5px; line-height: 1.7; color: var(--ink-body); }
+  .method-grid p { font-size: 14px; line-height: 1.6; color: var(--ink-soft); margin: 14px 0 0; }
+  .caveat { font-size: 14px; line-height: 1.65; color: var(--ink-soft); margin: 34px 0 0; max-width: 640px; padding-top: 18px; border-top: 1px solid var(--line); }
 
-  .lightbox {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(20,20,18,0.92);
-    z-index: 999;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: 30px;
-  }
-  .lightbox.active { display: flex; }
-  .lightbox-plain { cursor: zoom-out; }
-  .lightbox-plain img { max-width: 100%; max-height: 100%; box-shadow: 0 10px 40px rgba(0,0,0,0.4); border-radius: 3px; display: block; }
+  /* Planned */
+  .planned h2 { color: var(--none); }
+  .planned p.lede { color: var(--none); }
+  .planned-list { display: grid; gap: 1px; background: rgba(23,25,27,0.1); border: 1px solid rgba(23,25,27,0.1); }
+  .planned-row { background: #F7F5F1; padding: 18px 22px; display: flex; justify-content: space-between; align-items: baseline; gap: 24px; }
+  .planned-title { font-size: 15.5px; color: #7C766E; font-weight: 400; }
+  .planned-note { font-size: 13.5px; color: var(--none); margin-top: 3px; }
+  .planned-status { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--none); white-space: nowrap; border: 1px solid rgba(23,25,27,0.16); padding: 3px 8px; }
 
-  .lightbox-compare { display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 100%; }
-  .compare-wrap {
-    position: relative;
-    background: #16140f;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-    border-radius: 3px;
-    overflow: hidden;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: none;
-    cursor: ew-resize;
-  }
-  /* object-fit: contain (not cover) so mismatched aspect ratios between the
-     source and an output never crop the two differently and shift the scene
-     out of alignment — each layer is scaled to fit the same box and centred. */
-  .compare-wrap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
-  .compare-output-clip { position: absolute; inset: 0; height: 100%; overflow: hidden; width: 50%; }
-  .compare-output-clip img { position: absolute; top: 0; left: 0; width: var(--compare-w, 100%); max-width: none; height: 100%; object-fit: contain; }
-  .compare-handle {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    transform: translateX(-50%);
-    pointer-events: none;
-  }
-  .compare-handle::before {
-    content: '';
-    position: absolute;
-    top: 0; bottom: 0; left: 50%;
-    width: 2px;
-    background: rgba(255,255,255,0.85);
-    transform: translateX(-50%);
-  }
-  .compare-handle-grip {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.92);
-    color: #1a1d1f;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  }
-  .compare-label {
-    position: absolute;
-    top: 10px;
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 600;
-    color: #fff;
-    background: rgba(0,0,0,0.45);
-    padding: 3px 8px;
-    border-radius: 3px;
-    pointer-events: none;
-  }
-  .compare-label-left { left: 10px; }
-  .compare-label-right { right: 10px; }
-
-  .output-plain-img { max-width: 88vw; max-height: 68vh; box-shadow: 0 10px 40px rgba(0,0,0,0.4); border-radius: 3px; display: none; }
-
-  .compare-toggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 12.5px;
-    color: rgba(255,255,255,0.85);
-    margin-left: 8px;
-    padding-left: 18px;
-    border-left: 1px solid rgba(255,255,255,0.25);
-  }
-  .compare-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
-  .compare-toggle .switch {
-    position: relative;
-    width: 34px;
-    height: 19px;
-    border-radius: 10px;
-    background: rgba(255,255,255,0.25);
-    transition: background 0.15s;
-    flex-shrink: 0;
-  }
-  .compare-toggle .switch::before {
-    content: '';
-    position: absolute;
-    top: 2px; left: 2px;
-    width: 15px; height: 15px;
-    border-radius: 50%;
-    background: #fff;
-    transition: transform 0.15s;
-  }
-  .compare-toggle input:checked + .switch { background: var(--accent, #2f5d50); }
-  .compare-toggle input:checked + .switch::before { transform: translateX(15px); }
-
-  .lightbox-model-name { font-size: 15px; font-weight: 600; color: #fff; letter-spacing: 0.01em; }
-  .lightbox-nav { display: flex; align-items: center; gap: 18px; color: #fff; font-size: 13px; }
-  .lightbox-arrow {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.3);
-    color: #fff;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    font-size: 18px;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .lightbox-arrow:hover { background: rgba(255,255,255,0.22); }
-  .lightbox-counter { font-family: var(--mono); color: rgba(255,255,255,0.75); min-width: 48px; text-align: center; }
-  .lightbox-hint { font-size: 11.5px; color: rgba(255,255,255,0.55); }
-
-  footer {
-    margin-top: 60px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line);
-    font-size: 12px;
-    color: var(--ink-soft);
-  }
-
-  @media (max-width: 900px) {
-    nav.toc { display: none; }
-    main { padding: 32px 20px; }
-  }
+  footer { max-width: 1280px; margin: 96px auto 0; padding: 22px 40px 72px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
 </style>
 </head>
 <body>
-<div class="layout">
-<nav class="toc">
-  <div class="toc-title">VizAI Eval</div>
-  <a href="#leaderboard"><strong>Leaderboard</strong></a>
-  <a href="#scope">Scope &amp; Modes</a>
-  <a href="#test-plan">Test Plan &amp; Status</a>
-  <a href="#criteria">Evaluation Criteria</a>
-  <a href="#findings">Key Findings</a>
-  <a href="#scoring">Scoring Method</a>
-  <a href="#decision">Decision Framework</a>
-  <a href="#template">Output Template</a>
-  <a href="#results"><strong>Results Log</strong></a>
-  <div class="sub">
-    <a href="#test1">Test 1 — Image → Render</a>
-    <a href="#test2">Test 2 — Render → Sketch</a>
-    <a href="#test3">Test 3 — Mood Swap</a>
-    <a href="#test4">Test 4 — Material Swap</a>
-    <a href="#test5">Test 5 — Zoom-in / Detail</a>
+
+<nav class="topbar">
+  <div class="topbar-inner">
+    <span class="brand">AEC Model Evals</span>
+    <div class="nav-links">
+      <a href="#picks">Picks</a>
+      <a href="#board">Leaderboard</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#cost">Cost</a>
+      <a href="#method">Method</a>
+    </div>
   </div>
-  <a href="#costs"><strong>Cost Comparison</strong></a>
 </nav>
-<main>
 
-<h1>VizAI New Model Evaluation Framework</h1>
-<p class="subtitle">A repeatable process for testing new image/video generation models on UAT before deciding whether to integrate them into VizAI production.</p>
-
-<h2 id="leaderboard">Leaderboard</h2>
-<p>All 13 models tested so far, ranked by cost within their tier. Each test badge links to that test's full evidence &mdash; source image, side-by-side outputs, and the written read. Geometry/constraint-holding and general quality are scored as <a href="#findings">separate axes on purpose</a>: a model can pass every fidelity check and still be the wrong pick on cost or speed, and vice versa.</p>
-<p class="leaderboard-legend"><span class="tag pass">PASS</span> held geometry / constraint &nbsp; <span class="tag partial">PARTIAL</span> partially held &nbsp; <span class="tag fail">FAIL</span> did not hold</p>
-<div class="leaderboard-wrap">
-<table>
-<tr><th>Model</th><th>Cost / Gen</th><th>Avg Speed</th><th><a href="#test1">Test 1<br>Render</a></th><th><a href="#test3">Test 3<br>Mood</a></th><th><a href="#test4">Test 4<br>Material</a></th><th><a href="#test5">Test 5<br>Zoom</a></th><th>Best for</th></tr>
-<tr class="group-row"><td colspan="8">Baseline (current production)</td></tr>
-<tr><td class="model-name">gpt-image-2</td><td>$0.030</td><td>41.5s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Reliability ceiling &mdash; passes every fidelity test; slowest &amp; priciest of the baseline set</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>$0.030</td><td>8.2s</td><td><a class="tag partial" href="#test1">PARTIAL</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag partial" href="#test5">PARTIAL</a></td><td>3&ndash;5x faster and far smaller files than anything else, trades away material fidelity</td></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td>$0.040</td><td>23.8s</td><td><a class="tag fail" href="#test1">FAIL</a></td><td><a class="tag fail" href="#test3">FAIL</a></td><td><a class="tag fail" href="#test4">FAIL</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Fast, good atmosphere &mdash; but a repeated geometry-drift risk (failed 3 of 4 relevant tests)</td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td>$0.060</td><td>17.5s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Solid fidelity, but the clearest miss on the constrained zoom test</td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td>$0.120</td><td>25.0s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Best baseline lighting match, tends to crop tighter than the source</td></tr>
-<tr class="group-row"><td colspan="8">New candidates (benchmark expansion)</td></tr>
-<tr><td class="model-name">Qwen Image 3</td><td>$0.033</td><td>48.5s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Budget-friendly, dependable geometry holding</td></tr>
-<tr><td class="model-name">Seedream 5.0 Lite</td><td>$0.035</td><td>52.2s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Cheap and reliable &mdash; one of only two models to cleanly pass the constrained zoom test</td></tr>
-<tr><td class="model-name">Qwen Image 3 Pro</td><td>$0.043</td><td>98.2s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Crisp detailing, but the slowest model in the whole benchmark</td></tr>
-<tr><td class="model-name">MAI-Image-2.5</td><td>$0.047</td><td>29.7s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Value frontier pick &mdash; passes every test including the constrained zoom</td></tr>
-<tr><td class="model-name">Seedream 5.0 Pro</td><td>$0.048</td><td>85.0s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag fail" href="#test5">FAIL</a></td><td>Highest reference-edge precision, but slow (85&ndash;111s)</td></tr>
-<tr><td class="model-name">Grok Imagine Image 2.0</td><td>$0.050</td><td>10.7s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag partial" href="#test5">PARTIAL</a></td><td>Fastest frontier model by a wide margin (&sim;10s)</td></tr>
-<tr><td class="model-name">FLUX.2 Max</td><td>$0.070</td><td>33.0s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Best atmospheric lighting and materials of the whole benchmark</td></tr>
-<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>$0.108</td><td>41.6s</td><td><a class="tag pass" href="#test1">PASS</a></td><td><a class="tag pass" href="#test3">PASS</a></td><td><a class="tag pass" href="#test4">PASS</a></td><td><a class="tag pass" href="#test5">PASS</a></td><td>Joins the quality ceiling &mdash; passes everything, priciest of the new candidates</td></tr>
-</table>
-</div>
-<p class="lede">Test 2 (render&rarr;sketch) isn't shown here &mdash; no model had a geometry-drift issue in that test, so it doesn't differentiate. See <a href="#test2">Test 2</a> for the qualitative style comparison.</p>
-
-<h2 id="scope">Scope &amp; Modes</h2>
-<p>Applies to any new image or video generation model being trialed against the current production baseline (currently Gemini Imagen/Nano Banana for image, Veo for video). Run this framework any time a candidate model is added to UAT.</p>
-<p>Test each mode separately &mdash; a model can be strong at one and weak at another, and VizAI uses all four.</p>
-<table>
-<tr><th>Mode</th><th>Definition</th></tr>
-<tr><td class="model-name">Image create</td><td>Text-to-image, no input reference</td></tr>
-<tr><td class="model-name">Image augment</td><td>Image-to-image &mdash; editing/extending an existing render, map, or photo</td></tr>
-<tr><td class="model-name">Video create</td><td>Text-to-video, no input reference</td></tr>
-<tr><td class="model-name">Video animate</td><td>Image-to-video &mdash; animating an existing still (e.g. render fly-through)</td></tr>
-</table>
-
-<h2 id="test-plan">Test Plan &amp; Status</h2>
-
-<h3>Image create &mdash; 6 prompts, one run per model, covering 5 disciplines &times; 4 styles (not yet run)</h3>
-<ol class="prompt-list">
-<li><b>Masterplan aerial &mdash; diagram style</b> &mdash; "Aerial view of a mixed-use masterplan development, multiple building typologies including residential towers and low-rise retail podium, landscaped public realm, flat schematic massing diagram, plan/axonometric view, annotated"</li>
-<li><b>Street-level render &mdash; photoreal, hard case</b> &mdash; "Street-level view of a mixed-use podium building with active retail frontage, reflective glass facades, low sun angle creating strong reflections and shadows, complex mixed material palette (glass, stone, metal), pedestrians and street furniture, photorealistic architectural visualization"</li>
-<li><b>Interior render &mdash; photoreal</b> &mdash; "Interior view of a ground-floor retail and lobby space, double-height ceiling, natural daylight, contemporary material palette, photorealistic architectural visualization"</li>
-<li><b>Public realm / landscape &mdash; sketch style</b> &mdash; "Ground-level view of a public plaza with soft landscaping, seating areas, and water feature, people using the space, loose hand-drawn/marker concept sketch style, muted tones"</li>
-<li><b>Graphics/signage &mdash; flat graphic style</b> &mdash; "Wayfinding signage design for a mixed-use development, clean typography, project branding on a metal and timber backdrop, flat graphic style, daytime exterior setting"</li>
-<li><b>Masterplan aerial &mdash; sketch style</b> &mdash; "Aerial view of a mixed-use masterplan development at dusk, multiple building typologies including residential towers and low-rise retail podium, landscaped public realm, warm lighting, loose hand-drawn/marker concept sketch style"</li>
-</ol>
-<p class="lede">Total runs: 6 prompts &times; 6 models = 36 images</p>
-
-<h3>Image augment &mdash; status</h3>
-<ul class="status-list">
-<li><span>1. Image &rarr; render (re-render)</span><span class="status tested">TESTED</span></li>
-<li><span>2. Render &rarr; sketch</span><span class="status tested">TESTED</span></li>
-<li><span>3. Mood swap (blue hour, fog, cinematic uplift)</span><span class="status tested">TESTED</span></li>
-<li><span>4. Material/facade swap (2 elements)</span><span class="status tested">TESTED</span></li>
-<li><span>5. Zoom-in / detail development (constrained)</span><span class="status tested">TESTED</span></li>
-<li><span>Outpainting (extend beyond frame)</span><span class="status dropped">DROPPED &mdash; not a realistic Benoy workflow</span></li>
-<li><span>Colour-snap / map conversion</span><span class="status dropped">DROPPED &mdash; only gpt-image-2 handles this workflow, no comparative value</span></li>
-</ul>
-
-<h3>Video create (4&ndash;6 prompts, not yet run)</h3>
-<ul>
-<li>Fly-through / camera movement through massing, described only</li>
-<li>Day-to-night or seasonal transition</li>
-<li>A "hard case" &mdash; crowds, water, or reflective surfaces</li>
-</ul>
-
-<h3>Video animate (4&ndash;6 input/instruction pairs, not yet run)</h3>
-<ul>
-<li>Static render &rarr; slow pan/parallax</li>
-<li>Static render &rarr; camera fly-through</li>
-<li>Static render &rarr; environmental animation (people, cars, water movement)</li>
-</ul>
-<p class="lede">Keep the same prompt/input, aspect ratio, and resolution target across every model tested, per mode.</p>
-
-<h2 id="criteria">Evaluation Criteria</h2>
-<p>Weight quantitative and qualitative equally &mdash; a model that scores well qualitatively but is too slow or expensive for production use isn't a viable candidate, and vice versa. Treat <b>faithfulness / constraint-holding</b> (geometry preservation, staying within a given edit boundary) as its own axis, separate from general surface quality &mdash; the two do not track together (see Key Findings).</p>
-
-<h4>Quantitative (measured, not judged)</h4>
-<table>
-<tr><th>Metric</th><th>Applies to</th><th>How to capture</th></tr>
-<tr><td>Generation time</td><td>All modes</td><td>Seconds/minutes per output, logged per run</td></tr>
-<tr><td>File size</td><td>Image, Video</td><td>Output file size &mdash; proxy for detail/compression</td></tr>
-<tr><td>Cost per generation</td><td>All modes</td><td>From API/vendor pricing, per output</td></tr>
-<tr><td>Success rate</td><td>All modes</td><td>% of runs producing a usable output first try</td></tr>
-<tr><td>Retry rate</td><td>All modes</td><td>Avg regenerations needed for an acceptable output</td></tr>
-<tr><td>Output resolution</td><td>Image, Video</td><td>Native output dimensions vs required minimum</td></tr>
-<tr><td>Video length / frame rate</td><td>Video</td><td>Actual vs requested duration and fps</td></tr>
-<tr><td>Artifact rate</td><td>All modes</td><td>% of outputs with visible defects &mdash; count, don't just rate</td></tr>
-</table>
-
-<h4>Qualitative (scored 1&ndash;5 by reviewers)</h4>
-<p><b>Image (create + augment)</b></p>
-<table>
-<tr><th>Criterion</th><th>What it checks</th></tr>
-<tr><td>Prompt/instruction adherence</td><td>Did it follow the brief or edit instruction?</td></tr>
-<tr><td>Architectural accuracy</td><td>Are proportions, scale, and detailing plausible?</td></tr>
-<tr><td>Style consistency</td><td>Does it match Benoy's visual style / previous outputs?</td></tr>
-<tr><td>Edit fidelity (augment only)</td><td>Did it preserve the parts of the input that shouldn't change?</td></tr>
-<tr><td>Constraint-holding (augment only)</td><td>Did it stay within an explicit boundary rather than defaulting to free generation?</td></tr>
-</table>
-<p><b>Video (create + animate)</b></p>
-<table>
-<tr><th>Criterion</th><th>What it checks</th></tr>
-<tr><td>Temporal consistency</td><td>Does geometry stay stable frame-to-frame?</td></tr>
-<tr><td>Motion quality</td><td>Is camera/object movement smooth and plausible?</td></tr>
-<tr><td>Prompt/instruction adherence</td><td>Did it follow the intended shot/sequence?</td></tr>
-<tr><td>Source fidelity (animate only)</td><td>Does it stay true to the input still, not drift or reinterpret it?</td></tr>
-</table>
-
-<h2 id="findings">Key Findings So Far (5 augment tests)</h2>
-
-<div class="finding"><b>gpt-image-2 is the clear faithfulness leader.</b> Clean across every test run &mdash; geometry held in all 4 relevant tests, materials executed correctly, signage stayed legible, and it's the only model to pass the constrained zoom test (Test 5). This is the quality ceiling, at a consistent cost: slowest every time (39&ndash;44s) and among the largest files.</div>
-<div class="finding"><b>gpt-image-1.5 has a real, repeated geometry problem.</b> Strong on materials, lighting, and atmosphere, but failed geometry preservation in 3 of 4 relevant tests (Test 1 cantilever drift, Test 3 podium geometry wrong, Test 4 podium changed again) and also failed the constrained zoom test. This is a consistent pattern, not noise &mdash; worth treating as a production risk if geometry fidelity matters. <i>Caveat: one run per test; worth re-confirming with a repeat run before this goes into a formal report.</i></div>
-<div class="finding"><b>Gemini Nano Banana 2</b> holds geometry and materials well, but takes more creative liberty on unconstrained details (invented screen content, different crowd density) and had the clearest failure on the constrained zoom test (generated an unrelated building entirely).</div>
-<div class="finding"><b>Gemini Nano Banana Pro</b> sits just behind gpt-image-2 on general fidelity, best lighting/shadow match in Test 1, but also failed the zoom constraint and tends toward tighter/cropped compositions than the source.</div>
-<div class="finding"><b>Gemini Nano Banana 2 Lite</b> is the speed/size outlier &mdash; 3&ndash;5x faster than everything else, files often 10x smaller &mdash; but that consistently costs material and edge fidelity, and it only partially passed the zoom test.</div>
-<div class="finding"><b>Overall quality and constraint-holding are separate skills.</b> Models that scored well on surface quality (gpt-1.5, Nano Banana Pro) failed to hold an explicit "don't redesign this" instruction, while quality wasn't a reliable predictor of faithfulness. Score these as genuinely separate criteria in the Decision Framework, not one blended number.</div>
-
-<h2 id="scoring">Scoring Method</h2>
-<ul>
-<li>Score each output 1&ndash;5 per criterion (5 = production-ready, 1 = unusable).</li>
-<li>Run blind where possible &mdash; reviewer shouldn't know which model produced which output, to avoid bias toward the incumbent.</li>
-<li>Minimum 2 reviewers per test set, scores averaged.</li>
-<li>Record raw outputs + scores in one sheet (per model) so runs are auditable later.</li>
-</ul>
-
-<h2 id="decision">Decision Framework</h2>
-<p>Score per mode, not just per model overall &mdash; a model can be worth integrating for image augment only, for example.</p>
-<p>A mode/model combination is a candidate for production integration if it:</p>
-<ul>
-<li>Matches or beats baseline on qualitative criteria average</li>
-<li>Matches or beats baseline on success rate and artifact rate</li>
-<li>Is neutral-or-better on speed and cost, OR the qualitative gain justifies the delta</li>
-<li>Holds constraints reliably on augment tasks (not just surface quality)</li>
-</ul>
-<p>Otherwise: park it, note why, revisit at next model refresh.</p>
-
-<h2 id="template">Output Template (per model, per mode)</h2>
-<ul>
-<li>Model name / version</li>
-<li>Mode tested (create / augment / animate)</li>
-<li>Date tested</li>
-<li>Avg qualitative score per criterion</li>
-<li>Success rate, retry rate, artifact rate</li>
-<li>Avg generation time</li>
-<li>Avg cost per generation</li>
-<li>Output resolution / duration / fps (as applicable)</li>
-<li>Reviewer notes &mdash; what it's good/bad at</li>
-<li>Recommendation: Integrate / Park / Retest</li>
-</ul>
-
-<h2 id="results">Results Log</h2>
-
-<h3 id="test1">Test 1 &mdash; Image &rarr; Render (re-render)</h3>
-<p class="lede">Input: Enscape render, tower/podium elevation (signage, landscaping, mixed cladding)</p>
-<div class="gallery-input">
-  <img src="eval_results/sources/test1-input.jpg" alt="test1_input" loading="lazy">
-  <div class="cap">Source Enscape render</div>
-</div>
-<div class="instruction-box">
-  <div class="label">Instruction</div>
-  "Render this scene as a photorealistic architectural visualization, preserving the exact building massing and camera angle: the curved-top glass tower on the left, the fin-clad tower behind it, and the mixed-height podium with retail signage zones and landscaped terraces below. Match the existing materiality (glass curtain wall, bronze/gold metal cladding, white vertical fins on the right-hand towers), daylight lighting, shadows, and street-level activity (vehicles, planting, signage)."
-</div>
-
-<h4>Initial Models Tested</h4>
-<div class="model-grid">
-  <div class="model-card"><img src="eval_results/sources/test4-input.jpg" alt="test1_output_gpt-image-2" loading="lazy"><div class="card-head"><span class="name">gpt-image-2</span><span class="time">39.17s &middot; 2.04 MB</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/openai_gpt-image-1.5.jpg" alt="test1_output_gpt-image-1.5" loading="lazy"><div class="card-head"><span class="name">gpt-image-1.5</span><span class="time">23.43s &middot; 2.12 MB</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/google_nano-banana-2.jpg" alt="test1_output_nano-banana-2" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2</span><span class="time">15.72s &middot; 1.47 MB</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/google_nano-banana-pro.jpg" alt="test1_output_nano-banana-pro" loading="lazy"><div class="card-head"><span class="name">Nano Banana Pro</span><span class="time">26.70s &middot; 1.33 MB</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/google_nano-banana-2-lite.jpg" alt="test1_output_nano-banana-2-lite" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2 Lite</span><span class="time">8.54s &middot; 164.76 KB</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Quality rank</th><th>Notes</th></tr>
-<tr><td class="model-name">gpt-image-2</td><td>$0.030</td><td>1</td><td>Sharpest detail, most accurate material read on the gold fin cladding and glass reflections</td></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td>$0.040</td><td>2</td><td>Slightly altered proportion of the right-hand floating volume &mdash; flag as a fidelity issue</td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td>$0.060</td><td>3</td><td>Denser street-level crowd than other outputs; screen content invented differently each run</td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td>$0.120</td><td>4</td><td>Solid overall fidelity, closest daylight/shadow match to source</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>$0.030</td><td>5</td><td>Fastest + smallest, lowest quality &mdash; warmer/more golden tone, less contrast on glass</td></tr>
-</table>
-
-<h4>Faithfulness vs source</h4>
-<table>
-<tr><th>Model</th><th>Geometry / massing</th><th>Camera match</th><th>Prompt adherence</th><th>Notes</th></tr>
-<tr><td class="model-name">gpt-image-2</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Strong</td><td>Closest overall match to source</td></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td><span class="tag fail">MEDIUM</span></td><td>Exact</td><td>Strong on materials, weaker on geometry</td><td>First instance of a repeated geometry issue</td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Strong, but invented screen content</td><td>Not a prompt miss, but worth locking down if it matters</td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Strong &mdash; best lighting/shadow match</td><td>No notable geometry drift</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>Medium-high</td><td>Exact</td><td>Followed brief, warmer/less accurate tone</td><td>Speed/size tradeoff shows as material fidelity, not geometry error</td></tr>
-</table>
-
-<h4>New Candidate Models (Benchmark Expansion)</h4>
-<div class="model-grid">
-  <div class="model-card"><img src="eval_results/test1/images/black-forest-labs_flux.2-max.jpg" alt="test1_FLUX.2 Max" loading="lazy"><div class="card-head"><span class="name">FLUX.2 Max</span><span class="time">34.77s &middot; 717 KB &middot; $0.070</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/x-ai_grok-imagine-image-2.0.jpg" alt="test1_Grok Imagine Image 2.0" loading="lazy"><div class="card-head"><span class="name">Grok Imagine Image 2.0</span><span class="time">10.27s &middot; 304 KB &middot; $0.050</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/bytedance-seed_seedream-5-0-pro.jpg" alt="test1_Seedream 5.0 Pro" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Pro</span><span class="time">111.20s &middot; 456 KB &middot; $0.048</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/bytedance-seed_seedream-5-0-lite.jpg" alt="test1_Seedream 5.0 Lite" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Lite</span><span class="time">38.11s &middot; 816 KB &middot; $0.035</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/qwen_qwen-image-3-pro.jpg" alt="test1_Qwen Image 3 Pro" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3 Pro</span><span class="time">122.52s &middot; 2.26 MB &middot; $0.043</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/qwen_qwen-image-3.jpg" alt="test1_Qwen Image 3" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3</span><span class="time">53.96s &middot; 2.10 MB &middot; $0.033</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/microsoft_mai-image-2.5.jpg" alt="test1_MAI-Image-2.5" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5</span><span class="time">30.02s &middot; 1.35 MB &middot; $0.047</span></div></div>
-  <div class="model-card"><img src="eval_results/test1/images/microsoft_mai-image-2.5-pro.jpg" alt="test1_MAI-Image-2.5 Pro" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5 Pro</span><span class="time">41.61s &middot; 1.27 MB &middot; $0.108</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Geometry / Massing</th><th>Camera Match</th><th>Material Fidelity</th><th>Speed / Realism Grade</th></tr>
-<tr><td class="model-name">FLUX.2 Max</td><td>$0.070</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Outstanding (natural bronze &amp; glass speculars)</td><td>S-Tier (34.77s)</td></tr>
-<tr><td class="model-name">Grok Imagine Image 2.0</td><td>$0.050</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Flawless (crisp louvers, rich landscaping)</td><td>S-Tier (10.27s ⚡)</td></tr>
-<tr><td class="model-name">Seedream 5.0 Pro</td><td>$0.048</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Near-100% reference match on podium storefronts</td><td>A+ Tier (111.2s)</td></tr>
-<tr><td class="model-name">Seedream 5.0 Lite</td><td>$0.035</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Clean white vertical fins &amp; sharp parapet lines</td><td>A+ Tier (38.11s)</td></tr>
-<tr><td class="model-name">Qwen Image 3 Pro</td><td>$0.043</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Crisp high-res detailing &amp; glass fin articulation</td><td>A-Tier (122.5s)</td></tr>
-<tr><td class="model-name">Qwen Image 3</td><td>$0.033</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Warm timber louvers &amp; balanced reflections</td><td>A-Tier (53.96s)</td></tr>
-<tr><td class="model-name">MAI-Image-2.5</td><td>$0.047</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Crisp glass facade, balanced podium retail, high realism</td><td>S-Tier (30.02s)</td></tr>
-<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>$0.108</td><td><span class="tag pass">HIGH</span></td><td>Exact</td><td>Superb daylight rendering, ultra-clean fin articulation</td><td>S-Tier (41.61s)</td></tr>
-</table>
-
-<div class="read-box">
-  <div class="label">Test 1 Read &amp; Production Insights</div>
-  All 8 benchmark expansion candidate models successfully held building massing and camera angle without the cantilever drift observed in gpt-image-1.5. <b>Grok Imagine Image 2.0 ($0.050, 10.27s)</b> delivers top-tier architectural crispness at extreme speed. <b>FLUX.2 Max ($0.070, 34.77s)</b> sets the standard for natural daylight speculars and warm bronze reflectivity, while <b>Seedream 5.0 Lite ($0.035)</b> and <b>Qwen Image 3 ($0.033)</b> provide highly dependable geometry holding at low cost. <b>Microsoft MAI-Image-2.5 ($0.047, 30.02s)</b> and <b>MAI-Image-2.5 Pro ($0.108, 41.61s)</b> delivered flawless 1:1 camera and massing fidelity with impeccable architectural materiality.
-</div>
-
-
-<h3 id="test2">Test 2 &mdash; Render &rarr; Sketch</h3>
-<p class="lede">Input: same Enscape render as Test 1</p>
-<div class="gallery-input">
-  <img src="eval_results/sources/test1-input.jpg" alt="test2_input" loading="lazy">
-  <div class="cap">Source Enscape render</div>
-</div>
-<div class="instruction-box">
-  <div class="label">Instruction</div>
-  "Convert this render into a loose hand-drawn/marker concept sketch, preserving the composition and massing exactly. Muted tones, visible linework, concept-stage feel."
-</div>
-<h4>Initial Models Tested</h4>
-<div class="model-grid">
-<div class="model-card"><img src="eval_results/test2/images/openai_gpt-image-2.jpg" alt="test2_output_gpt-image-2" loading="lazy"><div class="card-head"><span class="name">gpt-image-2</span><span class="time">40.64s &middot; 2.54 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test2/images/google_nano-banana-pro.jpg" alt="test2_output_nano-banana-pro" loading="lazy"><div class="card-head"><span class="name">Nano Banana Pro</span><span class="time">25.00s &middot; 1.44 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test2/images/google_nano-banana-2.jpg" alt="test2_output_nano-banana-2" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2</span><span class="time">19.87s &middot; 1.66 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test2/images/openai_gpt-image-1.5.jpg" alt="test2_output_gpt-image-1.5" loading="lazy"><div class="card-head"><span class="name">gpt-image-1.5</span><span class="time">24.67s &middot; 2.41 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test2/images/google_nano-banana-2-lite.jpg" alt="test2_output_nano-banana-2-lite" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2 Lite</span><span class="time">9.25s &middot; 213.83 KB</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Quality rank</th><th>Notes</th></tr>
-<tr><td class="model-name">gpt-image-2</td><td>$0.030</td><td>1</td><td>Slowest + heaviest &mdash; but ranked best on hand-drawn feel</td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td>$0.120</td><td>2</td><td>Warm tones, dense cross-hatch</td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td>$0.060</td><td>3</td><td>Cool wash, heavier shading</td></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td>$0.040</td><td>4</td><td>Loosest linework, most "quick concept" feel</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>$0.030</td><td>5</td><td>Fastest + smallest by far, but lowest fidelity</td></tr>
-</table>
-
-<div class="read-box">
-  <div class="label">Initial Test 2 Read</div>
-  No geometry drift issues flagged in this set &mdash; style transfer preserved massing more reliably than photoreal re-renders across all models.
-</div>
-
-<h4>New Candidate Models (Benchmark Expansion)</h4>
-<div class="model-grid">
-  <div class="model-card"><img src="eval_results/test2/images/black-forest-labs_flux.2-max.jpg" alt="test2_FLUX.2 Max" loading="lazy"><div class="card-head"><span class="name">FLUX.2 Max</span><span class="time">31.18s &middot; 1.22 MB &middot; $0.070</span></div></div>
-  <div class="model-card"><img src="eval_results/test2/images/x-ai_grok-imagine-image-2.0.jpg" alt="test2_Grok Imagine Image 2.0" loading="lazy"><div class="card-head"><span class="name">Grok Imagine Image 2.0</span><span class="time">10.72s &middot; 386 KB &middot; $0.050</span></div></div>
-  <div class="model-card"><img src="eval_results/test2/images/bytedance-seed_seedream-5-0-pro.jpg" alt="test2_Seedream 5.0 Pro" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Pro</span><span class="time">94.11s &middot; 573 KB &middot; $0.048</span></div></div>
-  <div class="model-card"><img src="eval_results/test2/images/bytedance-seed_seedream-5-0-lite.jpg" alt="test2_Seedream 5.0 Lite" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Lite</span><span class="time">43.34s &middot; 1.01 MB &middot; $0.035</span></div></div>
-  <div class="model-card"><img src="eval_results/test2/images/qwen_qwen-image-3-pro.jpg" alt="test2_Qwen Image 3 Pro" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3 Pro</span><span class="time">88.85s &middot; 2.83 MB &middot; $0.043</span></div></div>
-  <div class="model-card"><img src="eval_results/test2/images/qwen_qwen-image-3.jpg" alt="test2_Qwen Image 3" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3</span><span class="time">46.17s &middot; 2.45 MB &middot; $0.033</span></div></div>
-  <div class="model-card"><img src="eval_results/test2/images/microsoft_mai-image-2.5.jpg" alt="test2_MAI-Image-2.5" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5</span><span class="time">27.94s &middot; 1.74 MB &middot; $0.047</span></div></div>
-  <div class="model-card"><img src="eval_results/test2/images/microsoft_mai-image-2.5-pro.jpg" alt="test2_MAI-Image-2.5 Pro" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5 Pro</span><span class="time">45.74s &middot; 1.96 MB &middot; $0.108</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Linework &amp; Medium</th><th>Watercolor Wash</th><th>Geometry Holding</th><th>Sketch Appeal</th></tr>
-<tr><td class="model-name">FLUX.2 Max</td><td>$0.070</td><td>Colored pencil &amp; crosshatch on textured paper</td><td>Subtle grain wash</td><td><span class="tag pass">HIGH</span></td><td>Outstanding hand-crafted presentation look (31.18s)</td></tr>
-<tr><td class="model-name">Grok Imagine Image 2.0</td><td>$0.050</td><td>Clean pen &amp; ink linework</td><td>Soft watercolor wash</td><td><span class="tag pass">HIGH</span></td><td>Excellent editorial watercolor sketch (10.72s ⚡)</td></tr>
-<tr><td class="model-name">Seedream 5.0 Pro</td><td>$0.048</td><td>Marker &amp; ink hatching</td><td>Warm architectural tint</td><td><span class="tag pass">HIGH</span></td><td>Classic design-studio marker concept aesthetic (94.11s)</td></tr>
-<tr><td class="model-name">Seedream 5.0 Lite</td><td>$0.035</td><td>Loose sketch linework</td><td>Light color wash</td><td><span class="tag pass">HIGH</span></td><td>Solid quick-concept styling (43.34s)</td></tr>
-<tr><td class="model-name">Qwen Image 3 Pro</td><td>$0.043</td><td>Crisp architectural drafting lines</td><td>Muted watercolor</td><td><span class="tag pass">HIGH</span></td><td>High-res drafting sketch read (88.85s)</td></tr>
-<tr><td class="model-name">Qwen Image 3</td><td>$0.033</td><td>Loose concept lines</td><td>Soft wash</td><td><span class="tag pass">HIGH</span></td><td>Clean budget sketch option (46.17s)</td></tr>
-<tr><td class="model-name">MAI-Image-2.5</td><td>$0.047</td><td>Crisp technical pen linework</td><td>Clean blue architectural marker wash</td><td><span class="tag pass">HIGH</span></td><td>Pristine graphic design sketch aesthetic (27.94s)</td></tr>
-<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>$0.108</td><td>Hand-drawn ink contours on parchment</td><td>Muted atmospheric watercolor wash</td><td><span class="tag pass">HIGH</span></td><td>S-Tier presentation watercolor illustration (45.74s)</td></tr>
-</table>
-
-<div class="read-box">
-  <div class="label">Benchmark Expansion Read &amp; Production Trade-offs</div>
-  <b>Grok Imagine Image 2.0 ($0.050, 10.72s)</b> produced the crispest watercolor/ink concept sketch with instant turnaround. <b>FLUX.2 Max ($0.070, 31.18s)</b> created a distinct colored-pencil-on-vellum architectural aesthetic, while <b>Seedream 5.0 Pro ($0.048)</b> captured authentic design-office Copic marker rendering. <b>Microsoft MAI-Image-2.5 ($0.047)</b> generated crisp technical pen-and-marker linework, while <b>MAI-Image-2.5 Pro ($0.108)</b> delivered an S-Tier professional competition-board watercolor on parchment with perfect massing.
-</div>
-<h3 id="test3">Test 3 &mdash; Mood Swap (Blue Hour, Fog, Cinematic Uplift)</h3>
-<p class="lede">Input: same Enscape render used in Tests 1/2</p>
-<div class="gallery-input">
-  <img src="eval_results/sources/test1-input.jpg" alt="test3_input" loading="lazy">
-  <div class="cap">Source Enscape render</div>
-</div>
-<div class="instruction-box">
-  <div class="label">Instruction</div>
-  "Uplift this render into a cinematic photorealistic visualization, preserving the building massing and camera angle. Set the atmosphere to blue hour &mdash; deep blue-violet sky, low ambient light, building facades and signage glowing warmly against the cool dusk light. Add heavy, dense atmospheric fog rolling through the street and lower levels, thick enough to soften and partially obscure the base of the towers and diffuse the light from signage and windows. Interior floors should read as inhabited &mdash; visible variation in window lighting (some lit, some dim), hints of interior activity such as figures, furniture silhouettes, or desk lamps, rather than uniform flat glow. Wet pavement with reflections of the glowing facades and lights. Push contrast and mood to be highly dramatic and cinematic."
-</div>
-
-<h4>Initial Models Tested</h4>
-<div class="model-grid">
-<div class="model-card"><img src="eval_results/test3/images/openai_gpt-image-1.5.jpg" alt="test3_output_gpt-image-1.5" loading="lazy"><div class="card-head"><span class="name">gpt-image-1.5</span><span class="time">23.59s &middot; 2.21 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test3/images/openai_gpt-image-2.jpg" alt="test3_output_gpt-image-2" loading="lazy"><div class="card-head"><span class="name">gpt-image-2</span><span class="time">43.56s &middot; 2.02 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test3/images/google_nano-banana-2.jpg" alt="test3_output_nano-banana-2" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2</span><span class="time">19.23s &middot; 1.34 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test3/images/google_nano-banana-2-lite.jpg" alt="test3_output_nano-banana-2-lite" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2 Lite</span><span class="time">5.88s &middot; 122.56 KB</span></div></div>
-<div class="model-card"><img src="eval_results/test3/images/google_nano-banana-pro.jpg" alt="test3_output_nano-banana-pro" loading="lazy"><div class="card-head"><span class="name">Nano Banana Pro</span><span class="time">35.95s &middot; 1.34 MB</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Fog</th><th>Occupancy</th><th>Blue hour</th><th>Reflections</th><th>Drama</th><th>Geometry</th></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td>$0.040</td><td>Strong</td><td>Weak</td><td>Strong</td><td>Strong</td><td>Strong</td><td><span class="tag fail">FAIL</span></td></tr>
-<tr><td class="model-name">gpt-image-2</td><td>$0.030</td><td>Strong</td><td>Weak-moderate</td><td>Strong</td><td>Strong</td><td>Strong</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td>$0.060</td><td>Weak-moderate</td><td>Strong</td><td>Moderate</td><td>Weak</td><td>Moderate</td><td>High (tighter crop)</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>$0.030</td><td>Weak</td><td>Moderate</td><td>Weak</td><td>Weak</td><td>Weak</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td>$0.120</td><td>Weak</td><td>Overdone</td><td>Weak-moderate</td><td>Moderate</td><td>Moderate</td><td>High (tighter crop)</td></tr>
-</table>
-<div class="read-box">
-  <div class="label">Initial Test 3 Read</div>
-  No model in the initial batch hit all six checklist items. gpt-image-1.5 led on atmosphere but had its second geometry drift failure. gpt-image-2 signage text was garbled ("SIIGNAGE").
-</div>
-
-<h4>New Candidate Models (Benchmark Expansion)</h4>
-<div class="model-grid">
-  <div class="model-card"><img src="eval_results/test3/images/black-forest-labs_flux.2-max.jpg" alt="test3_FLUX.2 Max" loading="lazy"><div class="card-head"><span class="name">FLUX.2 Max</span><span class="time">37.27s &middot; 675 KB &middot; $0.070</span></div></div>
-  <div class="model-card"><img src="eval_results/test3/images/x-ai_grok-imagine-image-2.0.jpg" alt="test3_Grok Imagine Image 2.0" loading="lazy"><div class="card-head"><span class="name">Grok Imagine Image 2.0</span><span class="time">12.95s &middot; 280 KB &middot; $0.050</span></div></div>
-  <div class="model-card"><img src="eval_results/test3/images/bytedance-seed_seedream-5-0-pro.jpg" alt="test3_Seedream 5.0 Pro" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Pro</span><span class="time">87.59s &middot; 304 KB &middot; $0.048</span></div></div>
-  <div class="model-card"><img src="eval_results/test3/images/bytedance-seed_seedream-5-0-lite.jpg" alt="test3_Seedream 5.0 Lite" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Lite</span><span class="time">55.49s &middot; 561 KB &middot; $0.035</span></div></div>
-  <div class="model-card"><img src="eval_results/test3/images/qwen_qwen-image-3-pro.jpg" alt="test3_Qwen Image 3 Pro" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3 Pro</span><span class="time">104.85s &middot; 2.00 MB &middot; $0.043</span></div></div>
-  <div class="model-card"><img src="eval_results/test3/images/qwen_qwen-image-3.jpg" alt="test3_Qwen Image 3" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3</span><span class="time">45.54s &middot; 1.99 MB &middot; $0.033</span></div></div>
-  <div class="model-card"><img src="eval_results/test3/images/microsoft_mai-image-2.5.jpg" alt="test3_MAI-Image-2.5" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5</span><span class="time">28.15s &middot; 1.40 MB &middot; $0.047</span></div></div>
-  <div class="model-card"><img src="eval_results/test3/images/microsoft_mai-image-2.5-pro.jpg" alt="test3_MAI-Image-2.5 Pro" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5 Pro</span><span class="time">34.40s &middot; 1.31 MB &middot; $0.108</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Fog</th><th>Occupancy</th><th>Blue hour</th><th>Reflections</th><th>Drama</th><th>Geometry</th></tr>
-<tr><td class="model-name">FLUX.2 Max</td><td>$0.070</td><td>Dense, rolling</td><td>Strong (desk lamps, figures)</td><td>Deep blue-violet</td><td>Puddles &amp; sharp reflections</td><td>Very Strong (S-Tier)</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">Grok Imagine Image 2.0</td><td>$0.050</td><td>Moderate mist</td><td>Moderate (floor slabs)</td><td>Strong gradient</td><td>Clean wet ground</td><td>Strong (12.95s speed)</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">Seedream 5.0 Pro</td><td>$0.048</td><td>Strong ground fog</td><td>Strong (varied units)</td><td>Deep twilight</td><td>Smooth reflections</td><td>Strong</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">Seedream 5.0 Lite</td><td>$0.035</td><td>Moderate</td><td>Moderate-high</td><td>Clean blue hour</td><td>Clean wet surface</td><td>Moderate-high</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">Qwen Image 3 Pro</td><td>$0.043</td><td>Moderate haze</td><td>Subtle</td><td>Strong sky gradient</td><td>Diffuse sheen</td><td>Moderate-high</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">Qwen Image 3</td><td>$0.033</td><td>Moderate haze</td><td>Subtle</td><td>Subtle blue hour</td><td>Subtle wet ground</td><td>Moderate</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">MAI-Image-2.5</td><td>$0.047</td><td>Dense ground &amp; podium mist</td><td>Strong varied interior illumination</td><td>Deep indigo / twilight sky</td><td>Sharp wet pavement reflections</td><td>S-Tier Cinematic (28.15s)</td><td><span class="tag pass">HIGH</span></td></tr>
-<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>$0.108</td><td>Layered rolling fog billows</td><td>Exceptional floor-by-floor variance</td><td>Rich twilight gradient with dusk clouds</td><td>Mirror puddle &amp; facade reflections</td><td>S-Tier Atmospheric (34.40s)</td><td><span class="tag pass">HIGH</span></td></tr>
-</table>
-
-<div class="read-box">
-  <div class="label">Benchmark Expansion Read &amp; Production Trade-offs</div>
-  <b>FLUX.2 Max ($0.070, 37.3s)</b> produced the best atmospheric lighting and interior occupancy of the entire benchmark with zero geometry drift. <b>Grok Imagine 2.0 ($0.050, 12.95s)</b> is by far the fastest frontier option (nearly 3x faster than FLUX). <b>Seedream 5.0 Lite ($0.035)</b> and <b>Qwen Image 3 ($0.033)</b> offer strong baseline geometry holding at low cost, while <b>Seedream 5.0 Pro ($0.048)</b> offers highest reference edge precision. <b>Microsoft MAI-Image-2.5 Pro ($0.108, 34.40s)</b> and <b>MAI-Image-2.5 ($0.047, 28.15s)</b> rival FLUX.2 Max for best atmospheric mood swap, featuring rich twilight skies, volumetric fog rolling through the lower podium levels, and varied inhabited window lighting.
-</div>
-<h3 id="test4">Test 4 &mdash; Material / Facade Swap (2 Elements)</h3>
-<p class="lede">Input: same daytime Enscape render used in Tests 1/3</p>
-<div class="gallery-input">
-  <img src="eval_results/sources/test4-input.jpg" alt="test4_input" loading="lazy">
-  <div class="cap">Source Enscape render</div>
-</div>
-<div class="instruction-box">
-  <div class="label">Instruction</div>
-  "Keep the building geometry, camera angle, composition, and all other materials unchanged. Make two material changes: 1) Replace the gold/bronze vertical fin cladding on the right-hand podium volume with iridescent chromic perforated metal panels, maintaining the same panel/fin proportions. 2) Replace the signage wall's pink/mauve stone cladding (ground-level, left of centre) with hot-pink glossy plastic cladding, keeping the signage lettering and layout unchanged. Maintain existing daylight lighting throughout, and keep all other materials unchanged."
-</div>
-<h4>Initial Models Tested</h4>
-<div class="model-grid">
-<div class="model-card"><img src="eval_results/test4/images/openai_gpt-image-1.5.jpg" alt="test4_output_gpt-image-1.5" loading="lazy"><div class="card-head"><span class="name">gpt-image-1.5</span><span class="time">22.38s &middot; 2.24 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test4/images/openai_gpt-image-2.jpg" alt="test4_output_gpt-image-2" loading="lazy"><div class="card-head"><span class="name">gpt-image-2</span><span class="time">41.94s &middot; 2.03 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test4/images/google_nano-banana-2.jpg" alt="test4_output_nano-banana-2" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2</span><span class="time">21.88s &middot; 1.54 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test4/images/google_nano-banana-2-lite.jpg" alt="test4_output_nano-banana-2-lite" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2 Lite</span><span class="time">7.68s &middot; 221.01 KB</span></div></div>
-<div class="model-card"><img src="eval_results/test4/images/google_nano-banana-pro.jpg" alt="test4_output_nano-banana-pro" loading="lazy"><div class="card-head"><span class="name">Nano Banana Pro</span><span class="time">27.47s &middot; 1.56 MB</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Iridescent swap</th><th>Hot-pink swap</th><th>Rest held</th><th>Geometry</th><th>Notes</th></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td>$0.040</td><td>Applied, saturated</td><td>Applied</td><td>Held</td><td><span class="tag fail">FAIL</span></td><td>Third geometry drift instance across Tests 1, 3, 4</td></tr>
-<tr><td class="model-name">gpt-image-2</td><td>$0.030</td><td>Applied, muted/pastel</td><td>Applied</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>Slowest again, but most reliable overall</td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td>$0.060</td><td>Applied, strong shadow detail</td><td>Applied</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>Best-looking material realism of the set</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>$0.030</td><td>Applied</td><td>Applied</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>Fastest again, both swaps executed correctly this time</td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td>$0.120</td><td>Applied, most saturated</td><td>Applied</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>Strong result, most stylised iridescent read</td></tr>
-</table>
-<div class="read-box">
-  <div class="label">Initial Test 4 Read</div>
-  All 5 initial models correctly executed both material swaps and held the rest of the materiality unchanged. The standout finding was geometry, not materials: gpt-image-1.5 failed geometry preservation in 3 of 4 augment tests.
-</div>
-
-<h4>New Candidate Models (Benchmark Expansion)</h4>
-<div class="model-grid">
-  <div class="model-card"><img src="eval_results/test4/images/black-forest-labs_flux.2-max.jpg" alt="test4_FLUX.2 Max" loading="lazy"><div class="card-head"><span class="name">FLUX.2 Max</span><span class="time">29.54s &middot; 832 KB &middot; $0.070</span></div></div>
-  <div class="model-card"><img src="eval_results/test4/images/x-ai_grok-imagine-image-2.0.jpg" alt="test4_Grok Imagine Image 2.0" loading="lazy"><div class="card-head"><span class="name">Grok Imagine Image 2.0</span><span class="time">9.85s &middot; 312 KB &middot; $0.050</span></div></div>
-  <div class="model-card"><img src="eval_results/test4/images/bytedance-seed_seedream-5-0-pro.jpg" alt="test4_Seedream 5.0 Pro" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Pro</span><span class="time">99.78s &middot; 525 KB &middot; $0.048</span></div></div>
-  <div class="model-card"><img src="eval_results/test4/images/bytedance-seed_seedream-5-0-lite.jpg" alt="test4_Seedream 5.0 Lite" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Lite</span><span class="time">79.88s &middot; 1.07 MB &middot; $0.035</span></div></div>
-  <div class="model-card"><img src="eval_results/test4/images/qwen_qwen-image-3-pro.jpg" alt="test4_Qwen Image 3 Pro" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3 Pro</span><span class="time">98.52s &middot; 2.46 MB &middot; $0.043</span></div></div>
-  <div class="model-card"><img src="eval_results/test4/images/qwen_qwen-image-3.jpg" alt="test4_Qwen Image 3" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3</span><span class="time">55.93s &middot; 2.25 MB &middot; $0.033</span></div></div>
-  <div class="model-card"><img src="eval_results/test4/images/microsoft_mai-image-2.5.jpg" alt="test4_MAI-Image-2.5" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5</span><span class="time">31.80s &middot; 1.41 MB &middot; $0.047</span></div></div>
-  <div class="model-card"><img src="eval_results/test4/images/microsoft_mai-image-2.5-pro.jpg" alt="test4_MAI-Image-2.5 Pro" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5 Pro</span><span class="time">45.45s &middot; 1.49 MB &middot; $0.108</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Iridescent Swap</th><th>Hot-Pink Swap</th><th>Rest Held</th><th>Geometry</th><th>Production Grade</th></tr>
-<tr><td class="model-name">FLUX.2 Max</td><td>$0.070</td><td>Applied with realistic specular sheen</td><td>Applied cleanly</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>S-Tier (29.54s &middot; flawless geometry holding)</td></tr>
-<tr><td class="model-name">Grok Imagine Image 2.0</td><td>$0.050</td><td>Applied with vibrant holographic reflection</td><td>Applied cleanly</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>S-Tier (9.85s ⚡ &middot; fastest swap execution)</td></tr>
-<tr><td class="model-name">Seedream 5.0 Pro</td><td>$0.048</td><td>Applied, subtle perforated shimmer</td><td>Applied precisely</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>A+ Tier (99.78s &middot; exact alignment)</td></tr>
-<tr><td class="model-name">Seedream 5.0 Lite</td><td>$0.035</td><td>Applied</td><td>Applied</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>A+ Tier (79.88s &middot; consistent materials)</td></tr>
-<tr><td class="model-name">Qwen Image 3 Pro</td><td>$0.043</td><td>Applied, metallic iridescence</td><td>Applied</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>A-Tier (98.52s)</td></tr>
-<tr><td class="model-name">Qwen Image 3</td><td>$0.033</td><td>Applied</td><td>Applied</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>A-Tier (55.93s)</td></tr>
-<tr><td class="model-name">MAI-Image-2.5</td><td>$0.047</td><td>Vibrant iridescent chromic perforated screen</td><td>Vivid glossy hot-pink wall</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>S-Tier (31.80s &middot; flawless material substitution)</td></tr>
-<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>$0.108</td><td>Iridescent vertical louvers with prism reflections</td><td>Glossy magenta/pink panel with signage preserved</td><td>Held</td><td><span class="tag pass">HIGH</span></td><td>S-Tier (45.45s &middot; exquisite specular detailing)</td></tr>
-</table>
-
-<div class="read-box">
-  <div class="label">Benchmark Expansion Read &amp; Production Trade-offs</div>
-  Every single one of the 8 expansion models successfully performed both material substitutions while keeping the rest of the building completely intact. <b>Grok Imagine 2.0 ($0.050, 9.85s)</b> and <b>FLUX.2 Max ($0.070, 29.54s)</b> rendered the most convincing iridescent cladding reflections without altering adjacent glass curtain wall elements. <b>Microsoft MAI-Image-2.5</b> and <b>MAI-Image-2.5 Pro</b> executed both material swaps with surgically clean boundary masks and vibrant iridescent specular reflections.
-</div>
-<h3 id="test5">Test 5 &mdash; Zoom-in / Detail Development (Constrained)</h3>
-<p class="lede">Input: same daytime Enscape render, region highlighted (rooftop terrace between the curved tower and the fin tower)</p>
-<div class="gallery-input">
-  <img src="eval_results/sources/test5-input-highlighted.jpg" alt="test5_input_highlighted" loading="lazy">
-  <div class="cap">Source render with highlighted region</div>
-</div>
-<div class="instruction-box">
-  <div class="label">Instruction</div>
-  "This is a resolution and detail upscale, not a redesign. Zoom into the highlighted rooftop terrace area exactly as it appears in the source image &mdash; do not alter the roofline, canopy shapes, terrace levels, steps, or any existing architectural geometry. Add resolution and richness only: realistic planting, paving detail, people using the space, and sculptural art pieces placed within the existing terrace geometry. The underlying architecture must be recognizably the same design as the source, just rendered at higher detail and closer proximity."
-</div>
-<h4>Initial Models Tested</h4>
-<div class="model-grid">
-<div class="model-card"><img src="eval_results/test5/images/openai_gpt-image-2.jpg" alt="test5_output_gpt-image-2" loading="lazy"><div class="card-head"><span class="name">gpt-image-2</span><span class="time">41.24s &middot; 2.49 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test5/images/google_nano-banana-2-lite.jpg" alt="test5_output_nano-banana-2-lite" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2 Lite</span><span class="time">6.96s &middot; 328.16 KB</span></div></div>
-<div class="model-card"><img src="eval_results/test5/images/openai_gpt-image-1.5.jpg" alt="test5_output_gpt-image-1.5" loading="lazy"><div class="card-head"><span class="name">gpt-image-1.5</span><span class="time">23.02s &middot; 3.03 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test5/images/google_nano-banana-pro.jpg" alt="test5_output_nano-banana-pro" loading="lazy"><div class="card-head"><span class="name">Nano Banana Pro</span><span class="time">39.96s &middot; 2.23 MB</span></div></div>
-<div class="model-card"><img src="eval_results/test5/images/google_nano-banana-2.jpg" alt="test5_output_nano-banana-2" loading="lazy"><div class="card-head"><span class="name">Nano Banana 2</span><span class="time">21.25s &middot; 2.11 MB</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Reads as zoom of source?</th><th>Notes</th></tr>
-<tr><td class="model-name">gpt-image-2</td><td>$0.030</td><td><span class="tag pass">PASS</span></td><td>Only initial model to pass &mdash; recognizable curved timber soffit, matching white perforated cladding and glass fin detailing, camera framing genuinely reads as a close-up crop of the source</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>$0.030</td><td>Partial</td><td>Echoes source motifs (timber canopy, ring sculpture, signage panel) but composition shifted enough to read as a variation, not a strict zoom</td></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td>$0.040</td><td><span class="tag fail">FAIL</span></td><td>Convincing terrace design, but background context (open skyline, mountains) doesn't relate to the source elevation &mdash; reads as a new location</td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td>$0.120</td><td><span class="tag fail">FAIL</span></td><td>Plausible palette extension, but the viewpoint is a new composition, not a traceable zoom</td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td>$0.060</td><td><span class="tag fail">FAIL</span> &mdash; clearest miss</td><td>Different buildings entirely (satellite dishes, generic towers, unrelated skyline) &mdash; no connection to the source building</td></tr>
-</table>
-<div class="read-box">
-  <div class="label">Initial Test 5 Read</div>
-  This test isolates a distinct capability &mdash; constrained detail development vs. free generation &mdash; that doesn't track with overall quality or geometry-preservation performance elsewhere. In the initial test batch, only gpt-image-2 held the constraint.
-</div>
-
-<h4>New Candidate Models (Benchmark Expansion)</h4>
-<div class="model-grid">
-  <div class="model-card"><img src="eval_results/test5/images/black-forest-labs_flux.2-max.jpg" alt="test5_FLUX.2 Max" loading="lazy"><div class="card-head"><span class="name">FLUX.2 Max</span><span class="time">32.23s &middot; 1.18 MB &middot; $0.070</span></div></div>
-  <div class="model-card"><img src="eval_results/test5/images/x-ai_grok-imagine-image-2.0.jpg" alt="test5_Grok Imagine Image 2.0" loading="lazy"><div class="card-head"><span class="name">Grok Imagine Image 2.0</span><span class="time">9.88s &middot; 406 KB &middot; $0.050</span></div></div>
-  <div class="model-card"><img src="eval_results/test5/images/bytedance-seed_seedream-5-0-pro.jpg" alt="test5_Seedream 5.0 Pro" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Pro</span><span class="time">32.08s &middot; 503 KB &middot; $0.048</span></div></div>
-  <div class="model-card"><img src="eval_results/test5/images/bytedance-seed_seedream-5-0-lite.jpg" alt="test5_Seedream 5.0 Lite" loading="lazy"><div class="card-head"><span class="name">Seedream 5.0 Lite</span><span class="time">44.05s &middot; 1.71 MB &middot; $0.035</span></div></div>
-  <div class="model-card"><img src="eval_results/test5/images/qwen_qwen-image-3-pro.jpg" alt="test5_Qwen Image 3 Pro" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3 Pro</span><span class="time">76.47s &middot; 2.66 MB &middot; $0.043</span></div></div>
-  <div class="model-card"><img src="eval_results/test5/images/qwen_qwen-image-3.jpg" alt="test5_Qwen Image 3" loading="lazy"><div class="card-head"><span class="name">Qwen Image 3</span><span class="time">40.67s &middot; 2.61 MB &middot; $0.033</span></div></div>
-  <div class="model-card"><img src="eval_results/test5/images/microsoft_mai-image-2.5.jpg" alt="test5_MAI-Image-2.5" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5</span><span class="time">30.49s &middot; 1.82 MB &middot; $0.047</span></div></div>
-  <div class="model-card"><img src="eval_results/test5/images/microsoft_mai-image-2.5-pro.jpg" alt="test5_MAI-Image-2.5 Pro" loading="lazy"><div class="card-head"><span class="name">MAI-Image-2.5 Pro</span><span class="time">40.68s &middot; 1.87 MB &middot; $0.108</span></div></div>
-</div>
-
-<table>
-<tr><th>Model</th><th>Cost</th><th>Constraint Holding</th><th>Reads as Zoom of Highlighted Source?</th><th>Notes &amp; Architectural Realism</th></tr>
-<tr><td class="model-name">Seedream 5.0 Lite</td><td>$0.035</td><td><span class="tag pass">PASS</span></td><td><span class="tag pass">EXACT PASS</span></td><td><b>Standout Pass:</b> Exact rooftop crop between curved tower and fin tower, perfect fan canopy, matching perforated facade on right, realistic planting &amp; wireframe sculptures.</td></tr>
-<tr><td class="model-name">FLUX.2 Max</td><td>$0.070</td><td><span class="tag pass">PASS</span></td><td><span class="tag pass">PASS (Podium Crop)</span></td><td><b>High Fidelity:</b> Zoomed directly into the intermediate podium setback terraces, holding exact marble fluted cladding, bronze soffits, ring sculptures, and realistic scale figures.</td></tr>
-<tr><td class="model-name">Grok Imagine Image 2.0</td><td>$0.050</td><td>Partial / Redesign</td><td>Partial</td><td>Generated an upscale luxury terrace under a curved canopy, but shifted camera angle into a freeform redesign of the rooftop space (9.88s).</td></tr>
-<tr><td class="model-name">Seedream 5.0 Pro</td><td>$0.048</td><td><span class="tag fail">FAIL</span></td><td>Full Elevation Generated</td><td>Treated input as a global reference and re-rendered the full elevation instead of cropping/zooming into the highlighted terrace.</td></tr>
-<tr><td class="model-name">Qwen Image 3 Pro</td><td>$0.043</td><td><span class="tag fail">FAIL</span></td><td>Full Elevation Generated</td><td>Re-rendered full building elevation with enhanced greenery instead of zooming into the crop.</td></tr>
-<tr><td class="model-name">Qwen Image 3</td><td>$0.033</td><td><span class="tag fail">FAIL</span></td><td>Full Elevation Generated</td><td>Re-rendered full building elevation instead of zooming into the crop.</td></tr>
-<tr><td class="model-name">MAI-Image-2.5</td><td>$0.047</td><td><span class="tag pass">PASS</span></td><td><span class="tag pass">EXACT PASS</span></td><td><b>Outstanding Pass:</b> Exact crop of the intermediate podium &amp; rooftop terrace, holding the curved bronze soffit, stepped seating, glass balustrades, stone sculptures, and scale figures.</td></tr>
-<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>$0.108</td><td><span class="tag pass">PASS</span></td><td><span class="tag pass">EXACT PASS</span></td><td><b>Superlative Pass:</b> Flawless zoom into rooftop terrace between the towers, holding exact fan canopy underside geometry, stepped sunken terrace, fluted glass, ring sculpture, and architectural entourage.</td></tr>
-</table>
-
-<div class="read-box">
-  <div class="label">Test 5 Production Takeaways: Constraint-Holding Champions</div>
-  <b>Seedream 5.0 Lite ($0.035, 44.05s)</b> joins <b>gpt-image-2</b> as the only two models across the entire 11-model benchmark to achieve a true, exact crop-and-upscale of the specified rooftop terrace without redesigning the architecture. <b>FLUX.2 Max ($0.070, 32.23s)</b> demonstrated exceptional spatial fidelity on the podium terraces.
-</div>
-<h2 id="costs">Model Cost Comparison</h2>
-<p>Per-generation cost and average duration across all test runs. Prices reflect actual API expenditure per image generated at standard output resolution. <b>Baseline models</b> are VizAI's current production stack; <b>new candidates</b> were evaluated in the benchmark expansion.</p>
-
-<h3>Per-Generation Cost &amp; Performance</h3>
-<table>
-<tr><th>Model</th><th>Tier</th><th>Cost / Gen</th><th>Avg Duration</th><th>Output Size</th><th>Speed Index</th></tr>
-<tr><td class="model-name">gpt-image-2</td><td>Baseline</td><td>$0.030</td><td>41.5s</td><td>~1-3 MB</td><td>Moderate</td></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td>Baseline</td><td>$0.040</td><td>23.8s</td><td>~2-3 MB</td><td>Fast</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>Baseline</td><td>$0.030</td><td>8.2s</td><td>~200 KB</td><td>⚡ Fastest</td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td>Baseline</td><td>$0.060</td><td>17.5s</td><td>~1-2 MB</td><td>Fast</td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td>Baseline</td><td>$0.120</td><td>25.0s</td><td>~2-3 MB</td><td>Moderate</td></tr>
-<tr style="border-top: 2px solid var(--line);"><td class="model-name">Grok Imagine Image 2.0</td><td>New</td><td>$0.050</td><td>10.7s</td><td>~337 KB</td><td>⚡ Fastest</td></tr>
-<tr><td class="model-name">MAI-Image-2.5</td><td>New</td><td>$0.047</td><td>29.7s</td><td>~1,688 KB</td><td>Fast-Mod</td></tr>
-<tr><td class="model-name">FLUX.2 Max</td><td>New</td><td>$0.070</td><td>33.0s</td><td>~935 KB</td><td>Moderate</td></tr>
-<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>New</td><td>$0.108</td><td>41.6s</td><td>~1,739 KB</td><td>Moderate</td></tr>
-<tr><td class="model-name">Seedream 5.0 Lite</td><td>New</td><td>$0.035</td><td>52.2s</td><td>~1,051 KB</td><td>Slow</td></tr>
-<tr><td class="model-name">Seedream 5.0 Pro</td><td>New</td><td>$0.048</td><td>85.0s</td><td>~472 KB</td><td>Slow</td></tr>
-<tr><td class="model-name">Qwen Image 3</td><td>New</td><td>$0.033</td><td>48.5s</td><td>~2,321 KB</td><td>Slow</td></tr>
-<tr><td class="model-name">Qwen Image 3 Pro</td><td>New</td><td>$0.043</td><td>98.2s</td><td>~2,486 KB</td><td>Slowest</td></tr>
-</table>
-
-<h3>Volume Cost Projections</h3>
-<table>
-<tr><th>Model</th><th>Per Gen</th><th>10 Gens</th><th>100 Gens</th><th>1,000 Gens</th><th>10,000 Gens</th></tr>
-<tr><td class="model-name">gpt-image-1.5</td><td>$0.040</td><td>$0.40</td><td>$4.00</td><td>$40</td><td>$400</td></tr>
-<tr><td class="model-name">gpt-image-2</td><td>$0.030</td><td>$0.30</td><td>$3.00</td><td>$30</td><td>$300</td></tr>
-<tr><td class="model-name">Nano Banana 2 Lite</td><td>$0.030</td><td>$0.30</td><td>$3.00</td><td>$30</td><td>$300</td></tr>
-<tr><td class="model-name">Nano Banana 2</td><td>$0.060</td><td>$0.60</td><td>$6.00</td><td>$60</td><td>$600</td></tr>
-<tr><td class="model-name">Nano Banana Pro</td><td>$0.120</td><td>$1.20</td><td>$12.00</td><td>$120</td><td>$1,200</td></tr>
-<tr style="border-top: 2px solid var(--line);"><td class="model-name">Qwen Image 3</td><td>$0.033</td><td>$0.33</td><td>$3.30</td><td>$33</td><td>$330</td></tr>
-<tr><td class="model-name">Seedream 5.0 Lite</td><td>$0.035</td><td>$0.35</td><td>$3.50</td><td>$35</td><td>$350</td></tr>
-<tr><td class="model-name">Qwen Image 3 Pro</td><td>$0.043</td><td>$0.43</td><td>$4.30</td><td>$43</td><td>$430</td></tr>
-<tr><td class="model-name">MAI-Image-2.5</td><td>$0.047</td><td>$0.47</td><td>$4.70</td><td>$47</td><td>$470</td></tr>
-<tr><td class="model-name">Seedream 5.0 Pro</td><td>$0.048</td><td>$0.48</td><td>$4.80</td><td>$48</td><td>$480</td></tr>
-<tr><td class="model-name">Grok Imagine Image 2.0</td><td>$0.050</td><td>$0.50</td><td>$5.00</td><td>$50</td><td>$500</td></tr>
-<tr><td class="model-name">FLUX.2 Max</td><td>$0.070</td><td>$0.70</td><td>$7.00</td><td>$70</td><td>$700</td></tr>
-<tr><td class="model-name">MAI-Image-2.5 Pro</td><td>$0.108</td><td>$1.08</td><td>$10.80</td><td>$108</td><td>$1,080</td></tr>
-</table>
-
-<div class="read-box">
-  <div class="label">Cost-Performance Takeaways</div>
-  <b>Budget production tier ($0.030–$0.035/gen):</b> Qwen Image 3, Seedream 5.0 Lite, gpt-image-2, and Nano Banana 2 Lite offer the lowest per-gen cost. Of these, <b>gpt-image-2</b> delivers the highest geometry fidelity and constraint-holding while <b>Nano Banana 2 Lite</b> is the fastest (8s) but lowest quality.<br><br>
-  <b>Value frontier ($0.047–$0.050/gen):</b> <b>Microsoft MAI-Image-2.5 ($0.047, 29.7s)</b> and <b>Grok Imagine Image 2.0 ($0.050, 10.7s)</b> are benchmark standouts &mdash; MAI-Image-2.5 provides superior spatial constraint holding (passing Test 5 cleanly) and impeccable architectural materials, while Grok Imagine 2.0 delivers blistering real-time speed.<br><br>
-  <b>Quality &amp; Fidelity Ceiling ($0.070–$0.108/gen):</b> <b>Microsoft MAI-Image-2.5 Pro ($0.108, 41.6s)</b> and <b>FLUX.2 Max ($0.070, 33.0s)</b> represent the highest tier of photorealistic realism, pristine geometry holding, atmospheric mood swaps, and complex zoom constraints.<br><br>
-  <b>Average cost across all 13 models:</b> <b>$0.055/gen</b> &mdash; median <b>$0.047/gen</b>.<br><br>
-  <b>Throughput ceiling:</b> Nano Banana 2 Lite (8.2s) and Grok Imagine 2.0 (10.7s) are the only models capable of sub-15s generation, making them suitable for interactive / real-time workflows. Benchmarked on standard API infrastructure &mdash; actual throughput may vary with queue depth and concurrency limits.
+<header class="hero-head">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow hero-kicker">Edition 01 &nbsp;·&nbsp; Image generation &nbsp;·&nbsp; Architecture, engineering &amp; construction</div>
+      <h1 class="hero-title">Which model<br>holds the<br><em>building</em> still?</h1>
+      <p class="hero-sub">Thirteen image models, five real AEC tasks, one source render. Every claim on this page is a picture you can drag. If you are choosing a model for a visualisation tool — or just deciding what to run tonight — start with the evidence, not the spec sheet.</p>
+    </div>
+    <dl class="stat-list">
+      <div class="stat-row"><dt>Models</dt><dd>13</dd></div>
+      <div class="stat-row"><dt>Tasks run</dt><dd>5 of 9</dd></div>
+      <div class="stat-row"><dt>Generations</dt><dd>60+</dd></div>
+      <div class="stat-row"><dt>Cheapest pass</dt><dd>$0.030</dd></div>
+      <div class="stat-row" style="border-bottom: none;"><dt>Updated</dt><dd>Aug 2026</dd></div>
+    </dl>
   </div>
-  <footer>
-    VizAI New Model Evaluation Framework &middot; living working document &mdash; append new tests and model results as new models reach UAT.
-  </footer>
-  </main>
-</div>
+</header>
 
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-plain" id="lightboxPlain">
-    <img id="lightbox-img" src="" alt="">
+<section class="evidence">
+  <div class="evidence-head">
+    <div>
+      <div class="eyebrow">The evidence &nbsp;/&nbsp; drag to wipe</div>
+      <h2>Source render, and what each model gave back</h2>
+    </div>
+    <div class="evidence-note">Task 01 — re-render an Enscape output as photoreal, holding massing and camera.</div>
   </div>
-  <div class="lightbox-compare" id="lightboxCompare">
-    <div class="compare-wrap" id="compareWrap">
-      <img class="compare-original" id="compareOriginal" src="" alt="Original">
-      <div class="compare-output-clip" id="compareClip">
-        <img class="compare-output" id="compareOutput" src="" alt="Output">
+
+  <div class="compare compare--hero" id="hero-compare">
+    <img class="compare-base" id="hero-base" src="eval_results/sources/test1-input.jpg" alt="Source Enscape render">
+    <div class="compare-clip" id="hero-clip" style="width:50%">
+      <img class="compare-out" id="hero-out" src="" alt="">
+    </div>
+    <div class="compare-handle" id="hero-handle" style="left:50%"><span>&#8596;</span></div>
+    <div class="compare-tag compare-tag--left">Source · Enscape</div>
+    <div class="compare-tag compare-tag--right" id="hero-tag"></div>
+  </div>
+
+  <div class="chip-row">
+    <span class="chip-lead">Compare against</span>
+    <div id="hero-chips"></div>
+  </div>
+</section>
+
+<section id="picks" class="section">
+  <div class="section-grid">
+    <div class="eyebrow">01 / The short answer</div>
+    <div>
+      <h2 style="max-width:620px;">Four picks, depending on what you are protecting.</h2>
+      <p class="lede">Surface quality and constraint-holding are separate skills — the strongest-looking models were often the ones that quietly redesigned the building. Choose on the axis you cannot afford to lose.</p>
+      <div class="picks-grid" id="picks-grid"></div>
+    </div>
+  </div>
+</section>
+
+<section id="board" class="section">
+  <div class="section-grid">
+    <div>
+      <div class="eyebrow" style="margin-bottom:18px;">02 / Leaderboard</div>
+      <div class="legend">
+        <div class="legend-item"><span class="pill pill-pass">PASS</span> held geometry</div>
+        <div class="legend-item"><span class="pill pill-part">PART</span> partially held</div>
+        <div class="legend-item"><span class="pill pill-fail">FAIL</span> did not hold</div>
       </div>
-      <div class="compare-handle" id="compareHandle"><div class="compare-handle-grip">&#8596;</div></div>
-      <div class="compare-label compare-label-left">Output</div>
-      <div class="compare-label compare-label-right">Original</div>
     </div>
-    <img class="output-plain-img" id="outputPlainImg" src="" alt="">
-    <div class="lightbox-model-name" id="lightboxModelName"></div>
-    <div class="lightbox-nav">
-      <button type="button" class="lightbox-arrow" id="lightboxPrev" aria-label="Previous output">&#8249;</button>
-      <span class="lightbox-counter" id="lightboxCounter"></span>
-      <button type="button" class="lightbox-arrow" id="lightboxNext" aria-label="Next output">&#8250;</button>
-      <label class="compare-toggle">
-        <input type="checkbox" id="compareToggle">
-        <span class="switch"></span>
-        Compare
-      </label>
+    <div>
+      <h2>All thirteen, <span id="sort-label">ranked by cost</span>.</h2>
+      <p class="lede">Task 02 is not scored here — nothing drifted, so it does not separate anyone. It is a style choice, and it lives with the other evidence below.</p>
+      <div class="sort-toggle">
+        <button class="sort-btn active" data-sort="cost">Cost</button>
+        <button class="sort-btn" data-sort="fidelity">Fidelity</button>
+        <button class="sort-btn" data-sort="speed">Speed</button>
+      </div>
+      <div class="table-scroll">
+        <table id="board-table">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Tier</th>
+              <th class="right">Cost</th>
+              <th class="right">Speed</th>
+              <th class="num">01</th>
+              <th class="num">03</th>
+              <th class="num">04</th>
+              <th class="num">05</th>
+              <th>Best for</th>
+            </tr>
+          </thead>
+          <tbody id="board-body"></tbody>
+        </table>
+      </div>
     </div>
-    <div class="lightbox-hint" id="lightboxHint">Drag to compare &middot; &larr; &rarr; to browse &middot; Esc to close</div>
   </div>
-</div>
+</section>
+
+<section id="tasks" class="section">
+  <div class="section-grid">
+    <div class="eyebrow">03 / The tasks</div>
+    <div>
+      <h2>Five things an AEC team actually asks for.</h2>
+      <p class="lede" style="margin-bottom:0;">Same source render, same aspect ratio, one run per model. The instruction is printed verbatim so you can re-run it yourself and compare against what is here.</p>
+    </div>
+  </div>
+</section>
+
+<section class="task" id="t1" data-task="t1">
+  <div class="wrap">
+    <div class="section-grid">
+      <div class="task-index"><div class="task-num">01</div><div class="task-mode">Image augment</div></div>
+      <div>
+        <h3 class="task-title">Re-render an Enscape output as photoreal</h3>
+        <p class="task-verdict">Twelve of thirteen held the massing and the camera. gpt-image-1.5 drifted the cantilever — the first instance of a pattern that repeats.</p>
+        <details class="task-instruction">
+          <summary>Instruction given to every model</summary>
+          <p>"Render this scene as a photorealistic architectural visualization, preserving the exact building massing and camera angle: the curved-top glass tower on the left, the fin-clad tower behind it, and the mixed-height podium with retail signage zones and landscaped terraces below. Match the existing materiality (glass curtain wall, bronze/gold metal cladding, white vertical fins on the right-hand towers), daylight lighting, shadows, and street-level activity (vehicles, planting, signage)."</p>
+        </details>
+      </div>
+    </div>
+  </div>
+  <div class="compare compare--task" data-role="band">
+    <img class="compare-base" data-role="base" src="eval_results/sources/test1-input.jpg" alt="Source render — Test 1">
+    <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
+    <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
+    <div class="compare-tag compare-tag--left">Source</div>
+    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+  </div>
+  <div class="wrap">
+    <div class="card-strip" data-role="cards"></div>
+    <div class="section-grid task-read">
+      <div class="eyebrow">The read</div>
+      <blockquote>All eight expansion candidates held massing and camera without the cantilever drift seen in gpt-image-1.5. Grok Imagine 2.0 delivers top-tier crispness at extreme speed; FLUX.2 Max sets the standard for daylight speculars and warm bronze reflectivity; Seedream 5.0 Lite and Qwen Image 3 give dependable geometry holding at low cost. Both MAI models returned flawless 1:1 camera and massing fidelity.</blockquote>
+    </div>
+  </div>
+</section>
+
+<section class="task" id="t2" data-task="t2">
+  <div class="wrap">
+    <div class="section-grid">
+      <div class="task-index"><div class="task-num">02</div><div class="task-mode">Image augment</div></div>
+      <div>
+        <h3 class="task-title">Turn the render back into a concept sketch</h3>
+        <p class="task-verdict">Nothing drifted here, so this one does not rank anybody. It is a question of which hand you want — marker, pencil, ink or watercolour.</p>
+        <details class="task-instruction">
+          <summary>Instruction given to every model</summary>
+          <p>"Convert this render into a loose hand-drawn/marker concept sketch, preserving the composition and massing exactly. Muted tones, visible linework, concept-stage feel."</p>
+        </details>
+      </div>
+    </div>
+  </div>
+  <div class="compare compare--task" data-role="band">
+    <img class="compare-base" data-role="base" src="eval_results/sources/test1-input.jpg" alt="Source render — Test 2">
+    <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
+    <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
+    <div class="compare-tag compare-tag--left">Source</div>
+    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+  </div>
+  <div class="wrap">
+    <div class="card-strip" data-role="cards"></div>
+    <div class="section-grid task-read">
+      <div class="eyebrow">The read</div>
+      <blockquote>gpt-image-2 ranked best on hand-drawn feel but is slowest and heaviest. Grok Imagine 2.0 produced the crispest watercolour/ink sketch with instant turnaround; FLUX.2 Max a coloured-pencil-on-vellum aesthetic; Seedream 5.0 Pro authentic design-office Copic marker; MAI-Image-2.5 crisp technical pen-and-marker; MAI-Image-2.5 Pro a competition-board watercolour on parchment with perfect massing.</blockquote>
+    </div>
+  </div>
+</section>
+
+<section class="task" id="t3" data-task="t3">
+  <div class="wrap">
+    <div class="section-grid">
+      <div class="task-index"><div class="task-num">03</div><div class="task-mode">Image augment</div></div>
+      <div>
+        <h3 class="task-title">Swap the mood — blue hour, fog, cinematic uplift</h3>
+        <p class="task-verdict">Atmosphere is close to solved. Every expansion model delivered dusk, fog and wet reflections; gpt-image-1.5 lost the geometry again doing it.</p>
+        <details class="task-instruction">
+          <summary>Instruction given to every model</summary>
+          <p>"Uplift this render into a cinematic photorealistic visualization, preserving the building massing and camera angle. Set the atmosphere to blue hour — deep blue-violet sky, low ambient light, building facades and signage glowing warmly against the cool dusk light. Add heavy, dense atmospheric fog rolling through the street and lower levels, thick enough to soften and partially obscure the base of the towers and diffuse the light from signage and windows. Interior floors should read as inhabited — visible variation in window lighting, hints of interior activity such as figures, furniture silhouettes, or desk lamps, rather than uniform flat glow. Wet pavement with reflections of the glowing facades and lights. Push contrast and mood to be highly dramatic and cinematic."</p>
+        </details>
+      </div>
+    </div>
+  </div>
+  <div class="compare compare--task" data-role="band">
+    <img class="compare-base" data-role="base" src="eval_results/sources/test1-input.jpg" alt="Source render — Test 3">
+    <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
+    <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
+    <div class="compare-tag compare-tag--left">Source</div>
+    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+  </div>
+  <div class="wrap">
+    <div class="card-strip" data-role="cards"></div>
+    <div class="section-grid task-read">
+      <div class="eyebrow">The read</div>
+      <blockquote>No model in the initial batch hit all six checklist items, and gpt-image-2 garbled the signage text. FLUX.2 Max produced the best atmospheric lighting and interior occupancy of the entire benchmark with zero drift; Grok Imagine 2.0 is nearly 3× faster; Seedream 5.0 Lite and Qwen Image 3 hold geometry cheaply; both MAI models rival FLUX for mood, with layered fog and varied inhabited window lighting.</blockquote>
+    </div>
+  </div>
+</section>
+
+<section class="task" id="t4" data-task="t4">
+  <div class="wrap">
+    <div class="section-grid">
+      <div class="task-index"><div class="task-num">04</div><div class="task-mode">Image augment</div></div>
+      <div>
+        <h3 class="task-title">Swap two materials, change nothing else</h3>
+        <p class="task-verdict">Thirteen of thirteen executed both substitutions and held the rest of the materiality. The finding here was geometry, not materials.</p>
+        <details class="task-instruction">
+          <summary>Instruction given to every model</summary>
+          <p>"Keep the building geometry, camera angle, composition, and all other materials unchanged. Make two material changes: 1) Replace the gold/bronze vertical fin cladding on the right-hand podium volume with iridescent chromic perforated metal panels, maintaining the same panel/fin proportions. 2) Replace the signage wall's pink/mauve stone cladding (ground-level, left of centre) with hot-pink glossy plastic cladding, keeping the signage lettering and layout unchanged. Maintain existing daylight lighting throughout, and keep all other materials unchanged."</p>
+        </details>
+      </div>
+    </div>
+  </div>
+  <div class="compare compare--task" data-role="band">
+    <img class="compare-base" data-role="base" src="eval_results/sources/test4-input.jpg" alt="Source render — Test 4">
+    <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
+    <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
+    <div class="compare-tag compare-tag--left">Source</div>
+    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+  </div>
+  <div class="wrap">
+    <div class="card-strip" data-role="cards"></div>
+    <div class="section-grid task-read">
+      <div class="eyebrow">The read</div>
+      <blockquote>Every expansion model performed both substitutions while keeping the building intact. Grok Imagine 2.0 and FLUX.2 Max rendered the most convincing iridescent cladding without disturbing adjacent curtain wall; both MAI models produced surgically clean boundary masks with vibrant specular reflections. gpt-image-1.5 changed the podium again — its third drift across four tasks.</blockquote>
+    </div>
+  </div>
+</section>
+
+<section class="task" id="t5" data-task="t5">
+  <div class="wrap">
+    <div class="section-grid">
+      <div class="task-index"><div class="task-num">05</div><div class="task-mode">Image augment</div></div>
+      <div>
+        <h3 class="task-title">Zoom into one terrace without redesigning it</h3>
+        <p class="task-verdict">The task that separates the field. Five of thirteen held the constraint; the rest quietly re-rendered the whole elevation or invented a new building.</p>
+        <details class="task-instruction">
+          <summary>Instruction given to every model</summary>
+          <p>"This is a resolution and detail upscale, not a redesign. Zoom into the highlighted rooftop terrace area exactly as it appears in the source image — do not alter the roofline, canopy shapes, terrace levels, steps, or any existing architectural geometry. Add resolution and richness only: realistic planting, paving detail, people using the space, and sculptural art pieces placed within the existing terrace geometry. The underlying architecture must be recognizably the same design as the source, just rendered at higher detail and closer proximity."</p>
+        </details>
+      </div>
+    </div>
+  </div>
+  <div class="compare compare--task" data-role="band">
+    <img class="compare-base" data-role="base" src="eval_results/sources/test5-input-highlighted.jpg" alt="Source render, highlighted terrace — Test 5">
+    <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
+    <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
+    <div class="compare-tag compare-tag--left">Source</div>
+    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+  </div>
+  <div class="wrap">
+    <div class="card-strip" data-role="cards"></div>
+    <div class="section-grid task-read">
+      <div class="eyebrow">The read</div>
+      <blockquote>Constrained detail development does not track with quality or geometry performance elsewhere — which is exactly why it earns its own task. Seedream 5.0 Lite joins gpt-image-2 as a true, exact crop-and-upscale of the specified terrace; both MAI models did the same, holding curved bronze soffits, stepped seating, glass balustrades and scale figures. FLUX.2 Max held the podium setback terraces. Seedream Pro and both Qwen models re-rendered the full elevation instead of cropping; Nano Banana 2 produced an unrelated building entirely.</blockquote>
+    </div>
+  </div>
+</section>
+
+<section id="cost" class="section">
+  <div class="section-grid">
+    <div class="eyebrow">04 / Cost &amp; speed</div>
+    <div>
+      <h2>What a run costs, and what it costs at volume.</h2>
+      <p class="lede">Average across all logged runs, at standard output resolution. Mean $0.055 / gen, median $0.047. Bars are relative to the priciest model in the set.</p>
+      <div class="cost-head-row"><span>Model</span><span style="text-align:right;">Cost</span><span>Relative spend</span><span style="text-align:right;">Avg time</span></div>
+      <div id="cost-list"></div>
+      <div class="volume-wrap">
+        <div class="volume-label">Volume projection</div>
+        <div class="table-scroll">
+          <table id="volume-table">
+            <thead>
+              <tr><th>Model</th><th class="right">100</th><th class="right">1,000</th><th class="right">10,000</th></tr>
+            </thead>
+            <tbody id="volume-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="method" class="section">
+  <div class="section-grid">
+    <div class="eyebrow">05 / Method</div>
+    <div>
+      <h2 style="margin-bottom:34px;">How a model gets on this page.</h2>
+      <div class="method-grid">
+        <div>
+          <h4>Measured, not judged</h4>
+          <ul>
+            <li>Generation time, per run</li>
+            <li>File size — proxy for detail and compression</li>
+            <li>Cost per generation, from vendor pricing</li>
+            <li>Success rate — usable on first try</li>
+            <li>Retry rate — regenerations to acceptable</li>
+            <li>Output resolution vs required minimum</li>
+            <li>Artifact rate — counted, not rated</li>
+          </ul>
+        </div>
+        <div>
+          <h4>Scored 1–5 by reviewers</h4>
+          <ul>
+            <li>Instruction adherence</li>
+            <li>Architectural accuracy — proportion, scale, detail</li>
+            <li>Style consistency with previous outputs</li>
+            <li>Edit fidelity — did it preserve what should not change</li>
+            <li>Constraint-holding — did it stay inside the boundary</li>
+          </ul>
+          <p>Run blind where possible. Minimum two reviewers, scores averaged. Raw outputs kept so runs stay auditable.</p>
+        </div>
+        <div>
+          <h4>Integrate if it</h4>
+          <ul>
+            <li>Matches or beats baseline on qualitative average</li>
+            <li>Matches or beats baseline on success and artifact rate</li>
+            <li>Is neutral-or-better on speed and cost — or the quality gain justifies the delta</li>
+            <li>Holds constraints reliably on augment tasks, not just surface quality</li>
+          </ul>
+          <p>Otherwise: park it, note why, revisit at the next model refresh.</p>
+        </div>
+      </div>
+      <p class="caveat">Caveat worth stating plainly: one run per model per task. The gpt-image-1.5 geometry pattern repeated across three tasks, which is why it is called a pattern — single-task results are indicative, not settled.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section planned">
+  <div class="section-grid">
+    <div class="eyebrow">06 / Not yet run</div>
+    <div>
+      <h2>Four more tasks, queued.</h2>
+      <p class="lede">Listed so you know what is missing rather than guessing. Nothing below has been generated yet.</p>
+      <div class="planned-list" id="planned-list"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>AEC Model Evals · living document · append new tasks as models reach UAT</span>
+  <span>Edition 01 · Aug 2026</span>
+</footer>
+
 <script>
 (function () {
-  var lightbox = document.getElementById('lightbox');
-  var plainView = document.getElementById('lightboxPlain');
-  var compareView = document.getElementById('lightboxCompare');
-  var plainImg = document.getElementById('lightbox-img');
-  var wrap = document.getElementById('compareWrap');
-  var originalImg = document.getElementById('compareOriginal');
-  var clip = document.getElementById('compareClip');
-  var outputImg = document.getElementById('compareOutput');
-  var handle = document.getElementById('compareHandle');
-  var outputPlainImg = document.getElementById('outputPlainImg');
-  var modelNameEl = document.getElementById('lightboxModelName');
-  var compareLabelLeft = document.querySelector('.compare-label-left');
-  var counter = document.getElementById('lightboxCounter');
-  var prevBtn = document.getElementById('lightboxPrev');
-  var nextBtn = document.getElementById('lightboxNext');
-  var compareToggle = document.getElementById('compareToggle');
-  var hint = document.getElementById('lightboxHint');
+  "use strict";
 
-  var COMPARE_PREF_KEY = 'vizaiCompareEnabled';
-  var compareEnabled = localStorage.getItem(COMPARE_PREF_KEY) === 'on';
-  compareToggle.checked = compareEnabled;
+  var GRADE = {
+    PASS: { cls: 'pill-pass', label: 'PASS' },
+    PART: { cls: 'pill-part', label: 'PART' },
+    FAIL: { cls: 'pill-fail', label: 'FAIL' },
+    '—':  { cls: 'pill-none', label: '—' }
+  };
 
-  // Build one entry per test section (each <h3 id="testN">), collecting that
-  // section's source image and every model-output image that follows it, up
-  // to the next test heading. New tests need no extra wiring: as long as a
-  // section follows the existing gallery-input / model-grid markup pattern,
-  // it gets keyboard navigation and compare-vs-original automatically.
-  var sections = [];
-  var headers = Array.prototype.slice.call(document.querySelectorAll('main h3[id^="test"]'));
-  headers.forEach(function (h, i) {
-    var stopAt = headers[i + 1] || null;
-    var original = null;
-    var outputs = [];
-    var node = h.nextElementSibling;
-    while (node && node !== stopAt) {
-      if (node.classList && node.classList.contains('gallery-input')) {
-        var srcImg = node.querySelector('img');
-        if (srcImg) original = srcImg;
-      }
-      if (node.querySelectorAll) {
-        node.querySelectorAll('.model-card img').forEach(function (img) { outputs.push(img); });
-      }
-      node = node.nextElementSibling;
+  var MODELS = [
+    { name: 'gpt-image-2', tier: 'Baseline', cost: 0.030, speed: 41.5, g: ['PASS','PASS','PASS','PASS'], bestFor: 'Reliability ceiling — passes every fidelity test; slowest and priciest of the baseline set' },
+    { name: 'Nano Banana 2 Lite', tier: 'Baseline', cost: 0.030, speed: 8.2, g: ['PART','PASS','PASS','PART'], bestFor: '3–5× faster and far smaller files than anything else, trades away material fidelity' },
+    { name: 'gpt-image-1.5', tier: 'Baseline', cost: 0.040, speed: 23.8, g: ['FAIL','FAIL','FAIL','FAIL'], bestFor: 'Fast, good atmosphere — but a repeated geometry-drift risk (failed 3 of 4 relevant tasks)' },
+    { name: 'Nano Banana 2', tier: 'Baseline', cost: 0.060, speed: 17.5, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Solid fidelity, but the clearest miss on the constrained zoom' },
+    { name: 'Nano Banana Pro', tier: 'Baseline', cost: 0.120, speed: 25.0, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Best baseline lighting match, tends to crop tighter than the source' },
+    { name: 'Qwen Image 3', tier: 'New', cost: 0.033, speed: 48.5, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Budget-friendly, dependable geometry holding' },
+    { name: 'Seedream 5.0 Lite', tier: 'New', cost: 0.035, speed: 52.2, g: ['PASS','PASS','PASS','PASS'], bestFor: 'Cheap and reliable — one of only two models to cleanly pass the constrained zoom' },
+    { name: 'Qwen Image 3 Pro', tier: 'New', cost: 0.043, speed: 98.2, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Crisp detailing, but the slowest model in the whole benchmark' },
+    { name: 'MAI-Image-2.5', tier: 'New', cost: 0.047, speed: 29.7, g: ['PASS','PASS','PASS','PASS'], bestFor: 'Value frontier pick — passes every task including the constrained zoom' },
+    { name: 'Seedream 5.0 Pro', tier: 'New', cost: 0.048, speed: 85.0, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Highest reference-edge precision, but slow (85–111s)' },
+    { name: 'Grok Imagine Image 2.0', tier: 'New', cost: 0.050, speed: 10.7, g: ['PASS','PASS','PASS','PART'], bestFor: 'Fastest frontier model by a wide margin (~10s)' },
+    { name: 'FLUX.2 Max', tier: 'New', cost: 0.070, speed: 33.0, g: ['PASS','PASS','PASS','PASS'], bestFor: 'Best atmospheric lighting and materials of the whole benchmark' },
+    { name: 'MAI-Image-2.5 Pro', tier: 'New', cost: 0.108, speed: 41.6, g: ['PASS','PASS','PASS','PASS'], bestFor: 'Joins the quality ceiling — passes everything, priciest of the new candidates' }
+  ];
+
+  var SLUG = {
+    'gpt-image-2': 'openai_gpt-image-2',
+    'gpt-image-1.5': 'openai_gpt-image-1.5',
+    'Nano Banana 2': 'google_nano-banana-2',
+    'Nano Banana 2 Lite': 'google_nano-banana-2-lite',
+    'Nano Banana Pro': 'google_nano-banana-pro',
+    'FLUX.2 Max': 'black-forest-labs_flux.2-max',
+    'Grok Imagine Image 2.0': 'x-ai_grok-imagine-image-2.0',
+    'Seedream 5.0 Pro': 'bytedance-seed_seedream-5-0-pro',
+    'Seedream 5.0 Lite': 'bytedance-seed_seedream-5-0-lite',
+    'Qwen Image 3': 'qwen_qwen-image-3',
+    'Qwen Image 3 Pro': 'qwen_qwen-image-3-pro',
+    'MAI-Image-2.5': 'microsoft_mai-image-2.5',
+    'MAI-Image-2.5 Pro': 'microsoft_mai-image-2.5-pro'
+  };
+
+  // image path per [task folder, model] — corrects the source page's mis-wired
+  // test1/gpt-image-2 card, which pointed at test4's input instead of its own output.
+  function imgFor(folder, name) {
+    return 'eval_results/' + folder + '/images/' + SLUG[name] + '.jpg';
+  }
+
+  var TASKS = [
+    {
+      id: 't1', folder: 'test1', source: 'eval_results/sources/test1-input.jpg', defaultSel: 'FLUX.2 Max',
+      runs: [
+        ['gpt-image-2', '39.17s · 2.04 MB', 'PASS'], ['gpt-image-1.5', '23.43s · 2.12 MB', 'FAIL'],
+        ['Nano Banana 2', '15.72s · 1.47 MB', 'PASS'], ['Nano Banana Pro', '26.70s · 1.33 MB', 'PASS'],
+        ['Nano Banana 2 Lite', '8.54s · 165 KB', 'PART'], ['FLUX.2 Max', '34.77s · 717 KB', 'PASS'],
+        ['Grok Imagine Image 2.0', '10.27s · 304 KB', 'PASS'], ['Seedream 5.0 Pro', '111.20s · 456 KB', 'PASS'],
+        ['Seedream 5.0 Lite', '38.11s · 816 KB', 'PASS'], ['Qwen Image 3 Pro', '122.52s · 2.26 MB', 'PASS'],
+        ['Qwen Image 3', '53.96s · 2.10 MB', 'PASS'], ['MAI-Image-2.5', '30.02s · 1.35 MB', 'PASS'],
+        ['MAI-Image-2.5 Pro', '41.61s · 1.27 MB', 'PASS']
+      ]
+    },
+    {
+      id: 't2', folder: 'test2', source: 'eval_results/sources/test1-input.jpg', defaultSel: 'gpt-image-2',
+      runs: [
+        ['gpt-image-2', '40.64s · 2.54 MB', '—'], ['Nano Banana Pro', '25.00s · 1.44 MB', '—'],
+        ['Nano Banana 2', '19.87s · 1.66 MB', '—'], ['gpt-image-1.5', '24.67s · 2.41 MB', '—'],
+        ['Nano Banana 2 Lite', '9.25s · 214 KB', '—'], ['Grok Imagine Image 2.0', '10.72s · 386 KB', '—'],
+        ['FLUX.2 Max', '31.18s · 1.22 MB', '—'], ['Seedream 5.0 Pro', '94.11s · 573 KB', '—'],
+        ['Seedream 5.0 Lite', '43.34s · 1.01 MB', '—'], ['Qwen Image 3 Pro', '88.85s · 2.83 MB', '—'],
+        ['Qwen Image 3', '46.17s · 2.45 MB', '—'], ['MAI-Image-2.5', '27.94s · 1.74 MB', '—'],
+        ['MAI-Image-2.5 Pro', '45.74s · 1.96 MB', '—']
+      ]
+    },
+    {
+      id: 't3', folder: 'test3', source: 'eval_results/sources/test1-input.jpg', defaultSel: 'FLUX.2 Max',
+      runs: [
+        ['gpt-image-1.5', '23.59s · 2.21 MB', 'FAIL'], ['gpt-image-2', '43.56s · 2.02 MB', 'PASS'],
+        ['Nano Banana 2', '19.23s · 1.34 MB', 'PASS'], ['Nano Banana 2 Lite', '5.88s · 123 KB', 'PASS'],
+        ['Nano Banana Pro', '35.95s · 1.34 MB', 'PASS'], ['FLUX.2 Max', '37.27s · 675 KB', 'PASS'],
+        ['Grok Imagine Image 2.0', '12.95s · 280 KB', 'PASS'], ['Seedream 5.0 Pro', '87.59s · 304 KB', 'PASS'],
+        ['Seedream 5.0 Lite', '55.49s · 561 KB', 'PASS'], ['Qwen Image 3 Pro', '104.85s · 2.00 MB', 'PASS'],
+        ['Qwen Image 3', '45.54s · 1.99 MB', 'PASS'], ['MAI-Image-2.5', '28.15s · 1.40 MB', 'PASS'],
+        ['MAI-Image-2.5 Pro', '34.40s · 1.31 MB', 'PASS']
+      ]
+    },
+    {
+      id: 't4', folder: 'test4', source: 'eval_results/sources/test4-input.jpg', defaultSel: 'Grok Imagine Image 2.0',
+      runs: [
+        ['gpt-image-1.5', '22.38s · 2.24 MB', 'FAIL'], ['gpt-image-2', '41.94s · 2.03 MB', 'PASS'],
+        ['Nano Banana 2', '21.88s · 1.54 MB', 'PASS'], ['Nano Banana 2 Lite', '7.68s · 221 KB', 'PASS'],
+        ['Nano Banana Pro', '27.47s · 1.56 MB', 'PASS'], ['FLUX.2 Max', '29.54s · 832 KB', 'PASS'],
+        ['Grok Imagine Image 2.0', '9.85s · 312 KB', 'PASS'], ['Seedream 5.0 Pro', '99.78s · 525 KB', 'PASS'],
+        ['Seedream 5.0 Lite', '79.88s · 1.07 MB', 'PASS'], ['Qwen Image 3 Pro', '98.52s · 2.46 MB', 'PASS'],
+        ['Qwen Image 3', '55.93s · 2.25 MB', 'PASS'], ['MAI-Image-2.5', '31.80s · 1.41 MB', 'PASS'],
+        ['MAI-Image-2.5 Pro', '45.45s · 1.49 MB', 'PASS']
+      ]
+    },
+    {
+      id: 't5', folder: 'test5', source: 'eval_results/sources/test5-input-highlighted.jpg', defaultSel: 'Seedream 5.0 Lite',
+      runs: [
+        ['gpt-image-2', '41.24s · 2.49 MB', 'PASS'], ['Nano Banana 2 Lite', '6.96s · 328 KB', 'PART'],
+        ['gpt-image-1.5', '23.02s · 3.03 MB', 'FAIL'], ['Nano Banana Pro', '39.96s · 2.23 MB', 'FAIL'],
+        ['Nano Banana 2', '21.25s · 2.11 MB', 'FAIL'], ['FLUX.2 Max', '32.23s · 1.18 MB', 'PASS'],
+        ['Grok Imagine Image 2.0', '9.88s · 406 KB', 'PART'], ['Seedream 5.0 Pro', '32.08s · 503 KB', 'FAIL'],
+        ['Seedream 5.0 Lite', '44.05s · 1.71 MB', 'PASS'], ['Qwen Image 3 Pro', '76.47s · 2.66 MB', 'FAIL'],
+        ['Qwen Image 3', '40.67s · 2.61 MB', 'FAIL'], ['MAI-Image-2.5', '30.49s · 1.82 MB', 'PASS'],
+        ['MAI-Image-2.5 Pro', '40.68s · 1.87 MB', 'PASS']
+      ]
     }
-    sections.push({ original: original, outputs: outputs });
-  });
+  ];
 
-  var current = null; // { section, index }
+  var PICKS = [
+    { role: 'If fidelity is the job', model: 'gpt-image-2', stat: '$0.030 · 41.5s · 4/4 pass', why: 'Clean across every task run: geometry held, materials correct, signage legible, and the only baseline model to hold the constrained zoom. You pay for it in seconds, not dollars.' },
+    { role: 'Best value', model: 'MAI-Image-2.5', stat: '$0.047 · 29.7s · 4/4 pass', why: 'Passes everything including the zoom, at moderate speed and mid-tier cost. The pick if you want one default model and no asterisks.' },
+    { role: 'If speed is the job', model: 'Grok Imagine Image 2.0', stat: '$0.050 · 10.7s · 3/4 pass', why: 'Roughly 10 seconds a generation — fast enough for interactive work. Only the constrained zoom slips, where it drifts into a freeform redesign.' },
+    { role: 'Cheapest that still holds', model: 'Seedream 5.0 Lite', stat: '$0.035 · 52.2s · 4/4 pass', why: 'The bargain of the benchmark: one of two models to cleanly crop-and-upscale the terrace. Slow, so batch it rather than sit and wait.' }
+  ];
 
-  function getModelName(outEl) {
-    var card = outEl.closest('.model-card');
-    var nameEl = card && card.querySelector('.card-head .name');
-    if (nameEl) return nameEl.textContent.trim();
-    return (outEl.alt || '').replace(/^test\d+_(output_)?/, '').replace(/-/g, ' ');
+  var PLANNED = [
+    { title: 'Image create — 6 prompts × 5 disciplines × 4 styles', note: 'Masterplan aerials, street-level photoreal, interiors, public realm sketch, signage graphics', status: 'Queued' },
+    { title: 'Video create — fly-through, day-to-night, hard case', note: '4–6 prompts, camera movement through massing described only', status: 'Queued' },
+    { title: 'Video animate — pan, fly-through, environmental motion', note: '4–6 input/instruction pairs from a static render', status: 'Queued' },
+    { title: 'Outpainting — extend beyond frame', note: 'Not a realistic studio workflow', status: 'Dropped' },
+    { title: 'Colour-snap / map conversion', note: 'Only one model handles it — no comparative value', status: 'Dropped' }
+  ];
+
+  function el(tag, cls, html) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+  function pill(grade) {
+    var g = GRADE[grade] || GRADE['—'];
+    return '<span class="pill ' + g.cls + '">' + g.label + '</span>';
   }
 
-  function closeLightbox() {
-    lightbox.classList.remove('active');
-    current = null;
+  /* ---------- compare bands (drag-to-wipe) ---------- */
+  function bindCompareBand(band, base, clip, out, handle, tag) {
+    function layout() {
+      var w = band.getBoundingClientRect().width;
+      out.style.width = w + 'px';
+    }
+    function setPct(pct) {
+      pct = Math.max(2, Math.min(98, pct));
+      clip.style.width = pct + '%';
+      handle.style.left = pct + '%';
+    }
+    band.addEventListener('pointermove', function (e) {
+      var r = band.getBoundingClientRect();
+      setPct(((e.clientX - r.left) / r.width) * 100);
+    });
+    window.addEventListener('resize', layout);
+    layout();
+    return { setOutput: function (src, label) { out.src = src; tag.textContent = label; layout(); } };
   }
 
-  function openPlain(src, alt) {
-    plainImg.src = src;
-    plainImg.alt = alt || '';
-    plainView.style.display = 'flex';
-    compareView.style.display = 'none';
-    lightbox.classList.add('active');
-  }
+  /* ---------- hero ---------- */
+  var heroTask = TASKS[0];
+  var heroBand = bindCompareBand(
+    document.getElementById('hero-compare'),
+    document.getElementById('hero-base'),
+    document.getElementById('hero-clip'),
+    document.getElementById('hero-out'),
+    document.getElementById('hero-handle'),
+    document.getElementById('hero-tag')
+  );
+  var heroChipsWrap = document.getElementById('hero-chips');
+  var heroSelected = heroTask.defaultSel;
 
-  function sizeCompareWrap() {
-    var nw = originalImg.naturalWidth || 1200;
-    var nh = originalImg.naturalHeight || 800;
-    var maxW = window.innerWidth * 0.88;
-    var maxH = window.innerHeight * 0.68;
-    var scale = Math.min(maxW / nw, maxH / nh, 1);
-    var w = Math.round(nw * scale);
-    var h = Math.round(nh * scale);
-    wrap.style.width = w + 'px';
-    wrap.style.height = h + 'px';
-    outputImg.style.width = w + 'px';
-  }
-
-  function setSlider(pct) {
-    pct = Math.max(0, Math.min(100, pct));
-    clip.style.width = pct + '%';
-    handle.style.left = pct + '%';
-  }
-
-  function renderCompareMode() {
-    wrap.style.display = 'block';
-    outputPlainImg.style.display = 'none';
-    hint.textContent = 'Drag to compare · ← → to browse · Esc to close';
-    var ready = originalImg.complete && originalImg.naturalWidth
-      ? Promise.resolve()
-      : new Promise(function (resolve) { originalImg.onload = resolve; });
-    ready.then(function () {
-      sizeCompareWrap();
-      setSlider(50);
+  function selectHero(name, time) {
+    heroSelected = name;
+    heroBand.setOutput(imgFor(heroTask.folder, name), name + ' · ' + time);
+    Array.prototype.forEach.call(heroChipsWrap.children, function (c) {
+      c.classList.toggle('active', c.dataset.name === name);
     });
   }
+  heroTask.runs.forEach(function (r) {
+    var name = r[0], meta = r[1];
+    var btn = el('button', 'chip', name);
+    btn.dataset.name = name;
+    btn.addEventListener('click', function () { selectHero(name, meta); });
+    heroChipsWrap.appendChild(btn);
+  });
+  (function () {
+    var initial = heroTask.runs.find(function (r) { return r[0] === heroSelected; });
+    selectHero(initial[0], initial[1]);
+  })();
 
-  function renderPlainOutputMode(outEl) {
-    wrap.style.display = 'none';
-    outputPlainImg.src = outEl.src;
-    outputPlainImg.alt = outEl.alt || '';
-    outputPlainImg.style.display = 'block';
-    hint.textContent = '← → to browse · Esc to close';
-  }
-
-  function showOutput(sectionIndex, outputIndex) {
-    var section = sections[sectionIndex];
-    if (!section || !section.original || !section.outputs.length) return;
-    outputIndex = ((outputIndex % section.outputs.length) + section.outputs.length) % section.outputs.length;
-    current = { section: sectionIndex, index: outputIndex };
-    var outEl = section.outputs[outputIndex];
-    var modelName = getModelName(outEl);
-    originalImg.src = section.original.src;
-    outputImg.src = outEl.src;
-    counter.textContent = (outputIndex + 1) + ' / ' + section.outputs.length;
-    modelNameEl.textContent = modelName;
-    compareLabelLeft.textContent = modelName;
-    plainView.style.display = 'none';
-    compareView.style.display = 'flex';
-    lightbox.classList.add('active');
-
-    if (compareEnabled) {
-      renderCompareMode();
-    } else {
-      renderPlainOutputMode(outEl);
-    }
-  }
-
-  function step(delta) {
-    if (!current) return;
-    showOutput(current.section, current.index + delta);
-  }
-
-  compareToggle.addEventListener('change', function () {
-    compareEnabled = compareToggle.checked;
-    localStorage.setItem(COMPARE_PREF_KEY, compareEnabled ? 'on' : 'off');
-    if (current) showOutput(current.section, current.index);
+  /* ---------- picks ---------- */
+  var picksGrid = document.getElementById('picks-grid');
+  PICKS.forEach(function (p) {
+    var card = el('div', 'pick-card');
+    card.innerHTML =
+      '<div class="pick-role">' + p.role + '</div>' +
+      '<div class="pick-model">' + p.model + '</div>' +
+      '<div class="pick-stat">' + p.stat + '</div>' +
+      '<p class="pick-why">' + p.why + '</p>';
+    picksGrid.appendChild(card);
   });
 
-  sections.forEach(function (section, sectionIndex) {
-    if (section.original) {
-      section.original.addEventListener('click', function () {
-        openPlain(section.original.src, section.original.alt);
-      });
-    }
-    section.outputs.forEach(function (img, outputIndex) {
-      img.addEventListener('click', function () {
-        showOutput(sectionIndex, outputIndex);
-      });
+  /* ---------- leaderboard ---------- */
+  var boardBody = document.getElementById('board-body');
+  var sortLabelEl = document.getElementById('sort-label');
+  var sortLabels = { cost: 'ranked by cost', fidelity: 'ranked by tasks held', speed: 'ranked by speed' };
+
+  function passCount(m) { return m.g.filter(function (x) { return x === 'PASS'; }).length; }
+
+  function renderBoard(sortBy) {
+    var rows = MODELS.slice().sort(function (a, b) {
+      if (sortBy === 'fidelity') return passCount(b) - passCount(a) || a.cost - b.cost;
+      if (sortBy === 'speed') return a.speed - b.speed;
+      return a.cost - b.cost;
+    });
+    boardBody.innerHTML = '';
+    rows.forEach(function (m) {
+      var tr = el('tr');
+      tr.innerHTML =
+        '<td class="model-name">' + m.name + '</td>' +
+        '<td class="tier">' + m.tier + '</td>' +
+        '<td class="right mono-cell">$' + m.cost.toFixed(3) + '</td>' +
+        '<td class="right mono-cell" style="color:var(--ink-soft);">' + m.speed.toFixed(1) + 's</td>' +
+        '<td class="num">' + pill(m.g[0]) + '</td>' +
+        '<td class="num">' + pill(m.g[1]) + '</td>' +
+        '<td class="num">' + pill(m.g[2]) + '</td>' +
+        '<td class="num">' + pill(m.g[3]) + '</td>' +
+        '<td class="best-for">' + m.bestFor + '</td>';
+      boardBody.appendChild(tr);
+    });
+    sortLabelEl.textContent = sortLabels[sortBy];
+  }
+  document.querySelectorAll('.sort-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.sort-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      renderBoard(btn.dataset.sort);
     });
   });
+  renderBoard('cost');
 
-  prevBtn.addEventListener('click', function (e) { e.stopPropagation(); step(-1); });
-  nextBtn.addEventListener('click', function (e) { e.stopPropagation(); step(1); });
+  /* ---------- cost & volume ---------- */
+  var costList = document.getElementById('cost-list');
+  var volumeBody = document.getElementById('volume-body');
+  var maxCost = Math.max.apply(null, MODELS.map(function (m) { return m.cost; }));
+  var byCost = MODELS.slice().sort(function (a, b) { return a.cost - b.cost; });
 
-  // Click on the dimmed backdrop closes; clicks inside the image/controls don't.
-  lightbox.addEventListener('click', closeLightbox);
-  plainImg.addEventListener('click', function (e) { e.stopPropagation(); });
-  outputPlainImg.addEventListener('click', function (e) { e.stopPropagation(); });
-  compareView.querySelector('.lightbox-nav').addEventListener('click', function (e) { e.stopPropagation(); });
-
-  var dragging = false;
-  function pctFromEvent(e) {
-    var rect = wrap.getBoundingClientRect();
-    return ((e.clientX - rect.left) / rect.width) * 100;
-  }
-  wrap.addEventListener('pointerdown', function (e) {
-    dragging = true;
-    wrap.setPointerCapture(e.pointerId);
-    setSlider(pctFromEvent(e));
-  });
-  wrap.addEventListener('pointermove', function (e) {
-    if (!dragging) return;
-    setSlider(pctFromEvent(e));
-  });
-  ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (evt) {
-    wrap.addEventListener(evt, function () { dragging = false; });
-  });
-  wrap.addEventListener('click', function (e) { e.stopPropagation(); });
-
-  window.addEventListener('keydown', function (e) {
-    if (!lightbox.classList.contains('active')) return;
-    if (e.key === 'Escape') { closeLightbox(); return; }
-    if (compareView.style.display === 'none') return;
-    if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
-    if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
+  byCost.forEach(function (m) {
+    var row = el('div', 'cost-row');
+    var barPct = ((m.cost / maxCost) * 100).toFixed(1) + '%';
+    var barColor = m.tier === 'Baseline' ? '#9A938A' : 'var(--accent)';
+    row.innerHTML =
+      '<span class="cost-name">' + m.name + '</span>' +
+      '<span class="cost-cost">$' + m.cost.toFixed(3) + '</span>' +
+      '<span class="cost-bar-track"><span class="cost-bar-fill" style="width:' + barPct + ';background:' + barColor + ';"></span></span>' +
+      '<span class="cost-time">' + m.speed.toFixed(1) + 's</span>';
+    costList.appendChild(row);
   });
 
-  window.addEventListener('resize', function () {
-    if (current) sizeCompareWrap();
+  byCost.forEach(function (m) {
+    var tr = el('tr');
+    tr.innerHTML =
+      '<td class="model-name">' + m.name + '</td>' +
+      '<td class="right mono-cell">$' + (m.cost * 100).toFixed(2) + '</td>' +
+      '<td class="right mono-cell">$' + Math.round(m.cost * 1000) + '</td>' +
+      '<td class="right mono-cell">$' + (m.cost * 10000).toLocaleString('en-US') + '</td>';
+    volumeBody.appendChild(tr);
+  });
+
+  /* ---------- planned ---------- */
+  var plannedList = document.getElementById('planned-list');
+  PLANNED.forEach(function (p) {
+    var row = el('div', 'planned-row');
+    row.innerHTML =
+      '<div><div class="planned-title">' + p.title + '</div><div class="planned-note">' + p.note + '</div></div>' +
+      '<span class="planned-status">' + p.status + '</span>';
+    plannedList.appendChild(row);
+  });
+
+  /* ---------- task sections ---------- */
+  TASKS.forEach(function (t) {
+    var section = document.querySelector('.task[data-task="' + t.id + '"]');
+    var band = section.querySelector('[data-role="band"]');
+    var base = section.querySelector('[data-role="base"]');
+    var clip = section.querySelector('[data-role="clip"]');
+    var out = section.querySelector('[data-role="out"]');
+    var handle = section.querySelector('[data-role="handle"]');
+    var tag = section.querySelector('[data-role="tag"]');
+    var cardsWrap = section.querySelector('[data-role="cards"]');
+
+    var bound = bindCompareBand(band, base, clip, out, handle, tag);
+    var selected = t.defaultSel;
+
+    function select(name, meta) {
+      selected = name;
+      bound.setOutput(imgFor(t.folder, name), name + ' · ' + meta);
+      Array.prototype.forEach.call(cardsWrap.children, function (c) {
+        c.classList.toggle('active', c.dataset.name === name);
+      });
+    }
+
+    t.runs.forEach(function (r) {
+      var name = r[0], meta = r[1], grade = r[2];
+      var card = el('button', 'run-card');
+      card.type = 'button';
+      card.dataset.name = name;
+      var img = el('img', 'thumb');
+      img.src = imgFor(t.folder, name);
+      img.alt = name + ' output — Test ' + t.id.slice(1);
+      img.loading = 'lazy';
+      card.appendChild(img);
+      var body = el('div', 'card-body');
+      body.innerHTML =
+        '<div class="card-row"><span class="card-name">' + name + '</span>' + pill(grade) + '</div>' +
+        '<span class="card-meta">' + meta + '</span>';
+      card.appendChild(body);
+      card.addEventListener('click', function () { select(name, meta); });
+      cardsWrap.appendChild(card);
+    });
+
+    var initial = t.runs.find(function (r) { return r[0] === selected; });
+    select(initial[0], initial[1]);
   });
 })();
 </script>
