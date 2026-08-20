@@ -75,7 +75,7 @@
   /* Top bar */
   .topbar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
   .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 52px; gap: 32px; }
-  .brand { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
+  .brand { font-family: var(--mono); font-weight: 700; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
   .nav-links { display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; overflow-x: auto; }
   .nav-links a { color: var(--ink-soft); white-space: nowrap; }
   .nav-links a:hover { color: var(--ink); }
@@ -137,6 +137,45 @@
   @media (max-width: 720px) { .section-grid { grid-template-columns: 1fr; gap: 16px; } }
   .section h2 { font-family: var(--serif); font-weight: 400; font-size: 44px; line-height: 1.06; margin: 0 0 14px; }
   .section p.lede { font-size: 17px; max-width: 620px; margin: 0 0 28px; color: var(--ink-body); }
+
+  .task-index { display: flex; flex-wrap: wrap; gap: 1px; background: var(--line); border: 1px solid var(--line); margin-bottom: 8px; }
+  .task-index-item { flex: 1 1 160px; background: var(--paper); padding: 16px 18px; display: flex; align-items: baseline; gap: 10px; }
+  .task-index-item:hover { background: color-mix(in srgb, var(--paper), var(--ink) 4%); }
+  .task-index .tii-num { font-family: var(--serif); font-size: 22px; color: var(--accent); line-height: 1; }
+  .task-index .tii-label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; color: var(--ink-body); }
+
+  /* Model rail — fixed to the viewport edge, vertically centred, so it stays
+     put and stays centred while the tasks scroll past underneath it. Only
+     shown while a task section is actually in view (see IntersectionObserver
+     below), and only on viewports wide enough that it won't overlap the
+     1280px content column. */
+  .model-rail {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 30;
+    width: 176px;
+    max-height: 82vh;
+    overflow-y: auto;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .model-rail.visible { opacity: 1; pointer-events: auto; }
+  .model-rail-label { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); padding: 12px 14px 8px; }
+  .model-rail-list { display: flex; flex-direction: column; }
+  .model-rail-btn { font-family: var(--sans); font-size: 12.5px; text-align: left; background: none; border: none; border-top: 1px solid var(--line); color: var(--ink-body); padding: 8px 14px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .model-rail-btn:hover { color: var(--ink); background: color-mix(in srgb, var(--paper), var(--ink) 4%); }
+  .model-rail-btn.active { color: var(--accent); font-weight: 500; }
+  .model-rail-btn .rc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); opacity: 0; flex-shrink: 0; }
+  .model-rail-btn.active .rc-dot { opacity: 1; }
+  .model-rail-reset { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); background: none; border: none; border-top: 1px solid var(--line); width: 100%; text-align: left; padding: 10px 14px; cursor: pointer; }
+  .model-rail-reset:hover { color: var(--ink); }
+  @media (max-width: 1600px) { .model-rail { display: none; } }
 
   /* Picks */
   .picks-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
@@ -350,12 +389,20 @@
   </div>
 </section>
 
+<div id="tasksRegion">
 <section id="tasks" class="section">
   <div class="section-grid">
     <div class="eyebrow">03 / The tasks</div>
     <div>
       <h2>Five things an AEC team actually asks for.</h2>
-      <p class="lede" style="margin-bottom:0;">Same source render, same aspect ratio, one run per model. The instruction is printed verbatim so you can re-run it yourself and compare against what is here.</p>
+      <p class="lede">Same source render, same aspect ratio, one run per model. The instruction is printed verbatim so you can re-run it yourself and compare against what is here.</p>
+      <nav class="task-index" aria-label="Jump to a task">
+        <a href="#t1" class="task-index-item"><span class="tii-num">01</span><span class="tii-label">Re-render as photoreal</span></a>
+        <a href="#t2" class="task-index-item"><span class="tii-num">02</span><span class="tii-label">Render &rarr; sketch</span></a>
+        <a href="#t3" class="task-index-item"><span class="tii-num">03</span><span class="tii-label">Mood swap</span></a>
+        <a href="#t4" class="task-index-item"><span class="tii-num">04</span><span class="tii-label">Material swap</span></a>
+        <a href="#t5" class="task-index-item"><span class="tii-num">05</span><span class="tii-label">Constrained zoom</span></a>
+      </nav>
     </div>
   </div>
 </section>
@@ -509,6 +556,7 @@
     </div>
   </div>
 </section>
+</div>
 
 <section id="cost" class="section">
   <div class="section-grid">
@@ -593,6 +641,12 @@
   <span>AEC Model Evals · living document · append new tasks as models reach UAT</span>
   <span>Edition 01 · Aug 2026</span>
 </footer>
+
+<aside class="model-rail" id="modelRail">
+  <div class="model-rail-label">Pin one model across all tasks</div>
+  <div class="model-rail-list" id="modelRailList"></div>
+  <button type="button" class="model-rail-reset" id="modelRailReset">Reset to defaults</button>
+</aside>
 
 <script>
 (function () {
@@ -906,6 +960,7 @@
   });
 
   /* ---------- task sections ---------- */
+  var taskControllers = [];
   TASKS.forEach(function (t) {
     var section = document.querySelector('.task[data-task="' + t.id + '"]');
     var band = section.querySelector('[data-role="band"]');
@@ -948,7 +1003,64 @@
 
     var initial = t.runs.find(function (r) { return r[0] === selected; });
     select(initial[0], initial[1]);
+
+    taskControllers.push({ select: select, defaultSel: t.defaultSel, runs: t.runs });
   });
+
+  /* ---------- model rail: pin one model across the hero band + every task ---------- */
+  (function () {
+    var railList = document.getElementById('modelRailList');
+    var railReset = document.getElementById('modelRailReset');
+    var railEl = document.getElementById('modelRail');
+
+    function setActiveButton(name) {
+      Array.prototype.forEach.call(railList.children, function (b) {
+        b.classList.toggle('active', name !== null && b.dataset.name === name);
+      });
+    }
+
+    function pinModel(name) {
+      var heroRun = heroTask.runs.find(function (r) { return r[0] === name; });
+      if (heroRun) selectHero(heroRun[0], heroRun[1]);
+      taskControllers.forEach(function (tc) {
+        var run = tc.runs.find(function (r) { return r[0] === name; });
+        if (run) tc.select(run[0], run[1]);
+      });
+      setActiveButton(name);
+    }
+
+    MODELS.forEach(function (m) {
+      var btn = el('button', 'model-rail-btn', '<span>' + m.name + '</span><span class="rc-dot"></span>');
+      btn.type = 'button';
+      btn.dataset.name = m.name;
+      btn.addEventListener('click', function () { pinModel(m.name); });
+      railList.appendChild(btn);
+    });
+
+    railReset.addEventListener('click', function () {
+      var heroInitial = heroTask.runs.find(function (r) { return r[0] === heroTask.defaultSel; });
+      selectHero(heroInitial[0], heroInitial[1]);
+      taskControllers.forEach(function (tc) {
+        var run = tc.runs.find(function (r) { return r[0] === tc.defaultSel; });
+        tc.select(run[0], run[1]);
+      });
+      setActiveButton(null);
+    });
+
+    // Visible only while the tasks region is actually on screen, and stays
+    // vertically centred throughout via fixed positioning + CSS transform.
+    var tasksRegion = document.getElementById('tasksRegion');
+    if (tasksRegion && 'IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          railEl.classList.toggle('visible', entry.isIntersecting);
+        });
+      }, { rootMargin: '-10% 0px -10% 0px' });
+      io.observe(tasksRegion);
+    } else {
+      railEl.classList.add('visible');
+    }
+  })();
 })();
 </script>
 </body>
