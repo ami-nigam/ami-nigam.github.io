@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "ratings": {
+    "t1": {
+      "gpt-image-2": { "quality": 5 },
+      "Nano Banana 2 Lite": { "quality": 2 },
+      "gpt-image-1.5": { "quality": 3 },
+      "Nano Banana 2": { "quality": 3 },
+      "Nano Banana Pro": { "quality": 3 },
+      "Qwen Image 3": { "quality": 1 },
+      "Seedream 5.0 Lite": { "quality": 2 },
+      "Qwen Image 3 Pro": { "quality": 2 },
+      "MAI-Image-2.5": { "quality": 3 },
+      "Seedream 5.0 Pro": { "quality": 5 },
+      "Grok Imagine Image 2.0": { "quality": 3 },
+      "FLUX.2 Max": { "quality": 4 },
+      "MAI-Image-2.5 Pro": { "quality": 3 }
+    },
+    "t2": {
+      "gpt-image-2": { "quality": 5 },
+      "Nano Banana 2 Lite": { "quality": 2 },
+      "gpt-image-1.5": { "quality": 2 },
+      "Nano Banana 2": { "quality": 4 },
+      "Nano Banana Pro": { "quality": 4 },
+      "Qwen Image 3": { "quality": 2 },
+      "Seedream 5.0 Lite": { "quality": 3 },
+      "Qwen Image 3 Pro": { "quality": 3 },
+      "MAI-Image-2.5": { "quality": 3 },
+      "Seedream 5.0 Pro": { "quality": 5 },
+      "Grok Imagine Image 2.0": { "quality": 4 },
+      "FLUX.2 Max": { "quality": 2 },
+      "MAI-Image-2.5 Pro": { "quality": 3 }
+    },
+    "t3": {
+      "gpt-image-2": { "quality": 4 },
+      "Nano Banana 2 Lite": { "quality": 2 },
+      "gpt-image-1.5": { "quality": 5 },
+      "Nano Banana 2": { "quality": 4 },
+      "Nano Banana Pro": { "quality": 5 },
+      "Qwen Image 3": { "quality": 2 },
+      "Seedream 5.0 Lite": { "quality": 3 },
+      "Qwen Image 3 Pro": { "quality": 2 },
+      "MAI-Image-2.5": { "quality": 3 },
+      "Seedream 5.0 Pro": { "quality": 5 },
+      "Grok Imagine Image 2.0": { "quality": 3 },
+      "FLUX.2 Max": { "quality": 5 },
+      "MAI-Image-2.5 Pro": { "quality": 3 }
+    },
+    "t4": {
+      "gpt-image-2": { "quality": 4 },
+      "Nano Banana 2 Lite": { "quality": 2 },
+      "gpt-image-1.5": { "quality": 4 },
+      "Nano Banana 2": { "quality": 4 },
+      "Nano Banana Pro": { "quality": 5 },
+      "Qwen Image 3": { "quality": 2 },
+      "Seedream 5.0 Lite": { "quality": 2 },
+      "Qwen Image 3 Pro": { "quality": 2 },
+      "MAI-Image-2.5": { "quality": 2 },
+      "Seedream 5.0 Pro": { "quality": 4 },
+      "Grok Imagine Image 2.0": { "quality": 2 },
+      "FLUX.2 Max": { "quality": 3 },
+      "MAI-Image-2.5 Pro": { "quality": 2 }
+    },
+    "t5": {
+      "gpt-image-2": { "quality": 4 },
+      "Nano Banana 2 Lite": { "quality": 2 },
+      "gpt-image-1.5": { "quality": 3 },
+      "Nano Banana 2": { "quality": 4 },
+      "Nano Banana Pro": { "quality": 4 },
+      "Qwen Image 3": { "quality": 2 },
+      "Seedream 5.0 Lite": { "quality": 3 },
+      "Qwen Image 3 Pro": { "quality": 3 },
+      "MAI-Image-2.5": { "quality": 3 },
+      "Seedream 5.0 Pro": { "quality": 3 },
+      "Grok Imagine Image 2.0": { "quality": 4 },
+      "FLUX.2 Max": { "quality": 3 },
+      "MAI-Image-2.5 Pro": { "quality": 2 }
+    }
+  }
+}
