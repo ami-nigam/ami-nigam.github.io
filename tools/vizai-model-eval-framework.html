@@ -350,7 +350,20 @@
      and pushes the rating bar off the bottom of the screen. */
   .judge-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
   .judge-images { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--line); min-height: 0; }
-  .judge-images.compare { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1px; }
+  /* Same drag-to-wipe as the compare bands on the rest of the page. With compare
+     off the clip sits at 100% and the base is hidden, so this is simply the
+     output filling the frame — one element doing both jobs. */
+  .judge-compare { position: relative; background: #16140F; overflow: hidden; min-height: 0; }
+  .judge-compare.on { cursor: ew-resize; user-select: none; touch-action: none; }
+  .jc-base, .jc-out { position: absolute; top: 0; left: 0; height: 100%; object-fit: contain; display: block; pointer-events: none; }
+  .jc-base { width: 100%; }
+  .jc-clip { position: absolute; inset: 0; height: 100%; overflow: hidden; }
+  .jc-handle { position: absolute; top: 0; bottom: 0; width: 2px; background: rgba(255,255,255,0.9); pointer-events: none; transform: translateX(-1px); }
+  .jc-handle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 38px; height: 38px; border-radius: 50%; background: #FBFAF7; color: #17191B; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; box-shadow: 0 4px 18px rgba(0,0,0,0.35); }
+  /* Scoped to .judge-compare so these beat .judge-pane-tag, which is defined
+     later in the sheet and would otherwise pin both tags to the left. */
+  .judge-compare .jc-tag-left { left: 10px; right: auto; }
+  .judge-compare .jc-tag-right { right: 10px; left: auto; }
   .judge-pane { position: relative; background: #16140F; display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .judge-pane img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
   .judge-pane-tag { position: absolute; top: 10px; left: 10px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.92); background: rgba(0,0,0,0.55); padding: 4px 8px; }
@@ -428,8 +441,10 @@
       <img class="compare-out" id="hero-out" src="" alt="">
     </div>
     <div class="compare-handle" id="hero-handle" style="left:50%"><span>&#8596;</span></div>
-    <div class="compare-tag compare-tag--left">Source · Enscape</div>
-    <div class="compare-tag compare-tag--right" id="hero-tag"></div>
+    <!-- The clip sits on the LEFT, so the left of the wipe is the model output
+         and the right is the source showing through from behind. -->
+    <div class="compare-tag compare-tag--left" id="hero-tag"></div>
+    <div class="compare-tag compare-tag--right">Source · Enscape</div>
   </div>
 
   <div class="chip-row">
@@ -557,8 +572,8 @@
     <img class="compare-base" data-role="base" src="eval_results/sources/test1-input.jpg" alt="Source render — Test 1">
     <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
     <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
-    <div class="compare-tag compare-tag--left">Source</div>
-    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+    <div class="compare-tag compare-tag--left" data-role="tag"></div>
+    <div class="compare-tag compare-tag--right">Source</div>
   </div>
   <div class="wrap">
     <div class="card-strip" data-role="cards"></div>
@@ -587,8 +602,8 @@
     <img class="compare-base" data-role="base" src="eval_results/sources/test1-input.jpg" alt="Source render — Test 2">
     <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
     <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
-    <div class="compare-tag compare-tag--left">Source</div>
-    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+    <div class="compare-tag compare-tag--left" data-role="tag"></div>
+    <div class="compare-tag compare-tag--right">Source</div>
   </div>
   <div class="wrap">
     <div class="card-strip" data-role="cards"></div>
@@ -617,8 +632,8 @@
     <img class="compare-base" data-role="base" src="eval_results/sources/test1-input.jpg" alt="Source render — Test 3">
     <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
     <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
-    <div class="compare-tag compare-tag--left">Source</div>
-    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+    <div class="compare-tag compare-tag--left" data-role="tag"></div>
+    <div class="compare-tag compare-tag--right">Source</div>
   </div>
   <div class="wrap">
     <div class="card-strip" data-role="cards"></div>
@@ -647,8 +662,8 @@
     <img class="compare-base" data-role="base" src="eval_results/sources/test4-input.jpg" alt="Source render — Test 4">
     <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
     <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
-    <div class="compare-tag compare-tag--left">Source</div>
-    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+    <div class="compare-tag compare-tag--left" data-role="tag"></div>
+    <div class="compare-tag compare-tag--right">Source</div>
   </div>
   <div class="wrap">
     <div class="card-strip" data-role="cards"></div>
@@ -677,8 +692,8 @@
     <img class="compare-base" data-role="base" src="eval_results/sources/test5-input-highlighted.jpg" alt="Source render, highlighted terrace — Test 5">
     <div class="compare-clip" data-role="clip" style="width:50%"><img class="compare-out" data-role="out" src="" alt=""></div>
     <div class="compare-handle" data-role="handle" style="left:50%"><span>&#8596;</span></div>
-    <div class="compare-tag compare-tag--left">Source</div>
-    <div class="compare-tag compare-tag--right" data-role="tag"></div>
+    <div class="compare-tag compare-tag--left" data-role="tag"></div>
+    <div class="compare-tag compare-tag--right">Source</div>
   </div>
   <div class="wrap">
     <div class="card-strip" data-role="cards"></div>
@@ -719,8 +734,15 @@
   <div class="judge-body" id="judge-body">
     <div class="judge-main">
       <div class="judge-images" id="judge-images">
-        <div class="judge-pane" id="judge-pane-src" hidden><img id="judge-src" alt="Source render"><span class="judge-pane-tag">Source</span></div>
-        <div class="judge-pane"><img id="judge-out" alt="Model output"><span class="judge-pane-tag" id="judge-out-tag" hidden></span></div>
+        <div class="judge-compare" id="judge-compare">
+          <img class="jc-base" id="judge-src" alt="Source render">
+          <div class="jc-clip" id="judge-clip"><img class="jc-out" id="judge-out" alt="Model output"></div>
+          <div class="jc-handle" id="judge-handle" hidden><span>&#8596;</span></div>
+          <!-- The clip sits on the left, so the left of the wipe is the OUTPUT
+               and the right is the source showing through from behind. -->
+          <span class="judge-pane-tag jc-tag-left" id="judge-tag-left" hidden></span>
+          <span class="judge-pane-tag jc-tag-right" id="judge-tag-right" hidden>Source</span>
+        </div>
       </div>
       <div class="judge-rate">
         <span class="judge-rate-lead">Quality</span>
@@ -1417,6 +1439,50 @@
     var starsWrap = document.getElementById('judge-stars');
     var queue = [], idx = 0;
 
+    /* ---- compare wipe: the same drag-to-reveal used by the bands elsewhere on
+       the page. Off by default, in which case the clip sits at 100% and the
+       base is hidden, so the band is simply the output at full frame. ---- */
+    var band = document.getElementById('judge-compare');
+    var baseImg = document.getElementById('judge-src');
+    var outImg = document.getElementById('judge-out');
+    var clip = document.getElementById('judge-clip');
+    var handle = document.getElementById('judge-handle');
+    var tagL = document.getElementById('judge-tag-left');
+    var tagR = document.getElementById('judge-tag-right');
+    var compareOn = false;
+
+    function layoutBand() {
+      // The output is sized to the band, not to the clip, so wiping reveals it
+      // in place instead of squeezing it as the clip narrows.
+      outImg.style.width = band.getBoundingClientRect().width + 'px';
+    }
+    function setWipe(pct) {
+      pct = Math.max(2, Math.min(98, pct));
+      clip.style.width = pct + '%';
+      handle.style.left = pct + '%';
+    }
+    function applyCompare(on) {
+      compareOn = on;
+      band.classList.toggle('on', on);
+      baseImg.style.visibility = on ? 'visible' : 'hidden';
+      handle.hidden = !on;
+      tagL.hidden = !on;
+      tagR.hidden = !on;
+      // Not setWipe() for the off state — its 2–98% drag clamp would shave a
+      // sliver off the right edge of the image you are actually rating.
+      if (on) { setWipe(50); } else { clip.style.width = '100%'; }
+      layoutBand();
+      document.getElementById('judge-compare-toggle').textContent =
+        on ? 'Hide source' : 'Compare with source';
+    }
+    band.addEventListener('pointermove', function (e) {
+      if (!compareOn) return;
+      var r = band.getBoundingClientRect();
+      setWipe(((e.clientX - r.left) / r.width) * 100);
+    });
+    window.addEventListener('resize', layoutBand);
+    outImg.addEventListener('load', layoutBand);
+
     function buildQueue() {
       queue = [];
       EVAL.rubrics.tasks.forEach(function (t) {
@@ -1458,10 +1524,11 @@
       document.getElementById('judge-task-num').textContent = 'Task ' + entry.task.number;
       document.getElementById('judge-task-title').textContent = entry.task.title;
       document.getElementById('judge-prompt').textContent = '"' + entry.task.prompt + '"';
-      document.getElementById('judge-src').src = entry.task.source;
-      document.getElementById('judge-out').src = imgFor(entry.task.folder, entry.model);
-      document.getElementById('judge-out').alt = entry.model + ' output — task ' + entry.task.number;
-      document.getElementById('judge-out-tag').textContent = entry.model;
+      baseImg.src = entry.task.source;
+      outImg.src = imgFor(entry.task.folder, entry.model);
+      outImg.alt = entry.model + ' output — task ' + entry.task.number;
+      tagL.textContent = entry.model;
+      layoutBand();
       document.getElementById('judge-prev').disabled = idx === 0;
       document.getElementById('judge-next').disabled = idx === queue.length - 1;
       renderCriteria(entry);
@@ -1544,20 +1611,9 @@
           toggle.textContent = showing ? 'Hide structural analysis' : 'Show structural analysis';
         });
 
-        // Both extras default off. The bare output is the rating view; the
-        // source and the verdicts are there when you want to check something,
-        // not sitting in frame shaping the score.
-        var srcPane = document.getElementById('judge-pane-src');
-        var outTag = document.getElementById('judge-out-tag');
-        var images = document.getElementById('judge-images');
-        var cmp = document.getElementById('judge-compare-toggle');
-        cmp.addEventListener('click', function () {
-          var showing = srcPane.hidden;
-          srcPane.hidden = !showing;
-          outTag.hidden = !showing;
-          images.classList.toggle('compare', showing);
-          cmp.textContent = showing ? 'Hide source' : 'Compare with source';
-        });
+        document.getElementById('judge-compare-toggle')
+          .addEventListener('click', function () { applyCompare(!compareOn); });
+        applyCompare(false);
 
         openBtn.addEventListener('click', open);
         document.getElementById('judge-close').addEventListener('click', close);
