@@ -1,0 +1,4 @@
+# Comparison sheets are generated from the committed images by `evalkit.py prep`
+# — regenerable, and large. The rubric, the verdicts and the scores are the
+# artifacts worth keeping.
+sheets/
