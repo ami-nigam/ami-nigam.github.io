@@ -727,7 +727,8 @@
     <div class="judge-bar-right">
       <button class="judge-btn" id="judge-prev" type="button">&larr; Prev</button>
       <button class="judge-btn" id="judge-next" type="button">Next &rarr;</button>
-      <button class="judge-btn" id="judge-export" type="button">Export ratings.json</button>
+      <button class="judge-btn" id="judge-copy" type="button">Copy ratings JSON</button>
+      <button class="judge-btn" id="judge-export" type="button">Download</button>
       <button class="judge-btn" id="judge-close" type="button">Close</button>
     </div>
   </div>
@@ -1563,8 +1564,29 @@
         (done ? ' · export from inside the panel to save them to eval_results/ratings.json' : '');
     }
 
+    function ratingsPayload() {
+      return JSON.stringify({ version: 1, ratings: EVAL.ratings }, null, 2) + '\n';
+    }
+
+    // There is no server behind this page — GitHub Pages only serves files — so
+    // ratings cannot be written back from the browser. localStorage keeps them
+    // safe across reloads; getting them into the repo needs one manual hop, and
+    // pasting is usually the quicker of the two.
+    function copyRatings() {
+      var btn = document.getElementById('judge-copy');
+      var done = function (ok) {
+        btn.textContent = ok ? 'Copied — paste it to Claude' : 'Copy failed';
+        setTimeout(function () { btn.textContent = 'Copy ratings JSON'; }, 2600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(ratingsPayload()).then(function () { done(true); }, function () { done(false); });
+      } else {
+        done(false);
+      }
+    }
+
     function exportRatings() {
-      var payload = JSON.stringify({ version: 1, ratings: EVAL.ratings }, null, 2) + '\n';
+      var payload = ratingsPayload();
       var url = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
       var a = el('a');
       a.href = url;
@@ -1619,6 +1641,7 @@
         document.getElementById('judge-close').addEventListener('click', close);
         document.getElementById('judge-prev').addEventListener('click', function () { show(idx - 1); });
         document.getElementById('judge-next').addEventListener('click', function () { show(idx + 1); });
+        document.getElementById('judge-copy').addEventListener('click', copyRatings);
         document.getElementById('judge-export').addEventListener('click', exportRatings);
         updateProgress();
       }
