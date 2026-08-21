@@ -53,6 +53,9 @@
     --none-bg: rgba(255,255,255,0.07);
   }
   body { transition: background-color 0.2s ease, color 0.2s ease; }
+  /* An explicit `display` on a class beats the [hidden] attribute's UA default,
+     so the flex rows below would stay visible when hidden. Restore the meaning. */
+  [hidden] { display: none !important; }
   * { box-sizing: border-box; }
   body {
     margin: 0;
@@ -74,9 +77,15 @@
 
   /* Top bar */
   .topbar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
-  .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 52px; gap: 32px; }
+  /* overflow:hidden here keeps the scrolling link row from adding to the
+     document's own scroll width on narrow screens. It sits on the inner
+     wrapper, not on .topbar or the root, so the sticky topbar still sticks. */
+  .topbar-inner { max-width: 1280px; margin: 0 auto; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; height: 52px; gap: 32px; overflow: hidden; }
   .brand { font-family: var(--mono); font-weight: 700; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink); white-space: nowrap; }
-  .nav-links { display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; overflow-x: auto; }
+  /* min-width:0 lets the flex item shrink so overflow-x actually scrolls the
+     link row, instead of the row widening the topbar past the viewport. */
+  .nav-links { display: flex; align-items: center; gap: 22px; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; overflow-x: auto; min-width: 0; scrollbar-width: none; }
+  .nav-links::-webkit-scrollbar { display: none; }
   .nav-links a { color: var(--ink-soft); white-space: nowrap; }
   .nav-links a:hover { color: var(--ink); }
   .theme-toggle { background: none; border: none; cursor: pointer; padding: 0; color: var(--ink-soft); display: flex; align-items: center; line-height: 0; transition: color 0.2s ease; flex-shrink: 0; }
@@ -134,6 +143,10 @@
   .section { max-width: 1280px; margin: 0 auto; padding: 96px 40px 0; }
   @media (max-width: 640px) { .section { padding: 64px 20px 0; } }
   .section-grid { border-top: 1px solid var(--line); padding-top: 20px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 64px; }
+  /* Grid items default to min-width:auto, so anything with a wide intrinsic size
+     (the scatter's 900-unit viewBox, the wide tables) pushes the whole page
+     sideways on narrow screens instead of shrinking or scrolling in its own box. */
+  .section-grid > * { min-width: 0; }
   @media (max-width: 720px) { .section-grid { grid-template-columns: 1fr; gap: 16px; } }
   .section h2 { font-family: var(--serif); font-weight: 400; font-size: 44px; line-height: 1.06; margin: 0 0 14px; }
   .section p.lede { font-size: 17px; max-width: 620px; margin: 0 0 28px; color: var(--ink-body); }
@@ -263,6 +276,84 @@
   .planned-status { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--none); white-space: nowrap; border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); padding: 3px 8px; }
 
   footer { max-width: 1280px; margin: 96px auto 0; padding: 22px 40px 72px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+
+  /* Adherence x quality scatter.
+     One hue throughout — tier is encoded by mark shape (filled = new candidate,
+     hollow = baseline), not by a second colour. A pink/grey pair failed CVD
+     separation in dark mode (deutan ΔE 5.9, below the ΔE 6 floor) and the grey
+     read as a non-colour besides, so shape carries it and stays legible for
+     colourblind readers and in print. */
+  .plot-wrap { margin: 0 0 40px; min-width: 0; }
+  .plot-filters { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .plot-filters .pf-lead { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin-right: 4px; }
+  .pf-btn { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 1px solid var(--line); color: var(--ink-soft); padding: 5px 11px; cursor: pointer; transition: color 0.15s ease, border-color 0.15s ease; }
+  .pf-btn:hover { color: var(--ink); border-color: var(--ink-soft); }
+  .pf-btn.active { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+  .plot-figure { position: relative; }
+  .plot-svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .plot-grid line { stroke: var(--line); stroke-width: 1; }
+  .plot-axis line { stroke: var(--ink-soft); stroke-width: 1; }
+  .plot-axis text, .plot-tick { font-family: var(--mono); font-size: 10px; fill: var(--ink-soft); }
+  .plot-axis-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; fill: var(--ink-soft); }
+  .plot-quadrant { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--ink-soft); opacity: 0.55; }
+  /* 2px surface ring so overlapping dots stay countable. */
+  .plot-dot { fill: var(--accent); stroke: var(--paper); stroke-width: 2; cursor: pointer; }
+  .plot-dot--baseline { fill: var(--paper); stroke: var(--accent); stroke-width: 2.5; }
+  .plot-dot:hover, .plot-dot.hot { stroke: var(--ink); }
+  .plot-label { font-family: var(--mono); font-size: 10px; fill: var(--ink); pointer-events: none; }
+  .plot-hit { fill: transparent; cursor: pointer; }
+  .plot-legend { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; margin-top: 16px; font-family: var(--mono); font-size: 10.5px; color: var(--ink-soft); }
+  .plot-legend span { display: inline-flex; align-items: center; gap: 7px; }
+  .plot-legend i { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .plot-legend i.solid { background: var(--accent); }
+  .plot-legend i.hollow { border: 2px solid var(--accent); }
+  .plot-tip { position: absolute; pointer-events: none; opacity: 0; transform: translate(-50%, -100%); background: var(--ink); color: var(--paper); padding: 9px 12px; font-family: var(--mono); font-size: 11px; line-height: 1.5; white-space: nowrap; transition: opacity 0.12s ease; z-index: 5; }
+  .plot-tip.on { opacity: 1; }
+  .plot-tip b { font-weight: 500; }
+  .plot-tip em { font-style: normal; opacity: 0.65; }
+  .plot-empty { border: 1px solid var(--line); padding: 30px 32px; font-size: 14.5px; line-height: 1.65; color: var(--ink-body); }
+  .plot-empty code { font-family: var(--mono); font-size: 12.5px; background: color-mix(in srgb, var(--ink) 7%, transparent); padding: 2px 6px; }
+  .plot-note { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); margin-top: 12px; line-height: 1.5; }
+
+  /* Judging panel */
+  .judge-open { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 9px 16px; cursor: pointer; }
+  .judge-open:hover { background: var(--accent); border-color: var(--accent); }
+  .judge-progress { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); margin-top: 12px; }
+  .judge-overlay { position: fixed; inset: 0; z-index: 90; background: var(--paper); display: none; flex-direction: column; }
+  .judge-overlay.open { display: flex; }
+  .judge-bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 28px; height: 54px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+  .judge-bar-left { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+  .judge-count { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+  .judge-model { font-size: 15px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .judge-bar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .judge-btn { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 1px solid var(--line); color: var(--ink-soft); padding: 6px 12px; cursor: pointer; }
+  .judge-btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-soft); }
+  .judge-btn:disabled { opacity: 0.35; cursor: default; }
+  .judge-body { flex: 1; display: grid; grid-template-columns: 380px minmax(0, 1fr); min-height: 0; }
+  @media (max-width: 900px) { .judge-body { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); } }
+  .judge-side { border-right: 1px solid var(--line); overflow-y: auto; padding: 24px 26px 32px; }
+  @media (max-width: 900px) { .judge-side { border-right: none; border-bottom: 1px solid var(--line); max-height: 42vh; } }
+  .judge-task { font-family: var(--serif); font-size: 22px; line-height: 1.15; margin: 6px 0 14px; }
+  .judge-prompt { font-family: var(--mono); font-size: 11.5px; line-height: 1.65; color: var(--ink-body); margin: 0 0 22px; max-height: 128px; overflow-y: auto; padding-right: 6px; }
+  .judge-crit { border-top: 1px solid var(--line); padding: 11px 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: baseline; }
+  .judge-crit-label { font-size: 13px; }
+  .judge-crit-ev { grid-column: 1 / -1; font-size: 12px; line-height: 1.55; color: var(--ink-soft); }
+  .judge-adherence { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-top: 1px solid var(--ink); padding-top: 12px; margin-top: 4px; }
+  .judge-adherence b { font-family: var(--mono); font-size: 20px; font-weight: 500; }
+  .judge-unscored { font-size: 13px; line-height: 1.6; color: var(--ink-soft); border: 1px solid var(--line); padding: 16px 18px; }
+  .judge-main { display: flex; flex-direction: column; min-width: 0; }
+  .judge-images { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); min-height: 0; }
+  .judge-pane { position: relative; background: #16140F; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .judge-pane img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+  .judge-pane-tag { position: absolute; top: 10px; left: 10px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.92); background: rgba(0,0,0,0.55); padding: 4px 8px; }
+  .judge-rate { flex-shrink: 0; border-top: 1px solid var(--line); padding: 16px 28px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+  .judge-rate-lead { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+  .judge-stars { display: flex; gap: 6px; }
+  .judge-star { width: 42px; height: 34px; border: 1px solid var(--line); background: none; color: var(--ink-soft); font-family: var(--mono); font-size: 13px; cursor: pointer; transition: all 0.12s ease; }
+  .judge-star:hover { border-color: var(--ink-soft); color: var(--ink); }
+  .judge-star.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .judge-hint { font-family: var(--mono); font-size: 10.5px; color: var(--ink-soft); margin-left: auto; }
+  @media (max-width: 700px) { .judge-images { grid-template-columns: 1fr; } .judge-hint { display: none; } }
 </style>
 </head>
 <body>
@@ -274,6 +365,7 @@
       <a href="#picks">Picks</a>
       <a href="#board">Leaderboard</a>
       <a href="#tasks">Tasks</a>
+      <a href="#judging">Judging</a>
       <a href="#cost">Cost</a>
       <a href="#method">Method</a>
       <button id="toggle-theme" class="theme-toggle" aria-label="Toggle light/dark mode">
@@ -360,12 +452,42 @@
       </div>
     </div>
     <div>
-      <h2>All thirteen, <span id="sort-label">ranked by cost</span>.</h2>
-      <p class="lede">Task 02 is not scored here — nothing drifted, so it does not separate anyone. It is a style choice, and it lives with the other evidence below.</p>
+      <h2>Following orders, and looking good, are two different skills.</h2>
+      <p class="lede">Every output is graded twice. A vision model checks it against each explicit requirement of the instruction it was given — that is the horizontal axis. The vertical axis is a human eye on the same image. A model can sit far right and low: it did exactly as it was told, and the result is lifeless.</p>
+
+      <div class="plot-wrap" id="plot-wrap">
+        <div class="plot-filters" id="plot-filters" hidden>
+          <span class="pf-lead">Task</span>
+          <button class="pf-btn active" type="button" data-task="all">All five</button>
+          <button class="pf-btn" type="button" data-task="t1">01</button>
+          <button class="pf-btn" type="button" data-task="t2">02</button>
+          <button class="pf-btn" type="button" data-task="t3">03</button>
+          <button class="pf-btn" type="button" data-task="t4">04</button>
+          <button class="pf-btn" type="button" data-task="t5">05</button>
+        </div>
+        <div class="plot-figure" id="plot-figure" hidden>
+          <svg class="plot-svg" id="plot-svg" viewBox="0 0 900 500" role="img" aria-labelledby="plot-title plot-desc">
+            <title id="plot-title">Prompt adherence against human quality rating, by model</title>
+            <desc id="plot-desc">A scatter plot. Horizontal axis is machine-graded prompt adherence from 0 to 100. Vertical axis is a hand-entered quality rating from 1 to 5. The same figures appear in the leaderboard table below this chart.</desc>
+          </svg>
+          <div class="plot-tip" id="plot-tip"></div>
+        </div>
+        <div class="plot-legend" id="plot-legend" hidden>
+          <span><i class="solid"></i> New candidate</span>
+          <span><i class="hollow"></i> Baseline</span>
+          <span>Hover a point for its cost, speed and per-task detail.</span>
+        </div>
+        <p class="plot-note" id="plot-note" hidden></p>
+      </div>
+
+      <h3 style="font-family:var(--serif);font-weight:400;font-size:26px;margin:0 0 6px;">All thirteen, <span id="sort-label">ranked by cost</span>.</h3>
+      <p class="lede">Pass marks below are the original per-task verdicts. Where a rubric score exists it is shown alongside, and the two can disagree — a PASS that only just held is a low pass, and the score says so.</p>
       <div class="sort-toggle">
         <button class="sort-btn active" data-sort="cost">Cost</button>
         <button class="sort-btn" data-sort="fidelity">Fidelity</button>
         <button class="sort-btn" data-sort="speed">Speed</button>
+        <button class="sort-btn" data-sort="adherence" data-needs-scores hidden>Adherence</button>
+        <button class="sort-btn" data-sort="quality" data-needs-ratings hidden>Quality</button>
       </div>
       <div class="table-scroll">
         <table id="board-table">
@@ -375,6 +497,8 @@
               <th>Tier</th>
               <th class="right">Cost</th>
               <th class="right">Speed</th>
+              <th class="right" data-needs-scores hidden>Adh.</th>
+              <th class="right" data-needs-ratings hidden>Qual.</th>
               <th class="num">01</th>
               <th class="num">03</th>
               <th class="num">04</th>
@@ -558,9 +682,55 @@
 </section>
 </div>
 
+<section id="judging" class="section">
+  <div class="section-grid">
+    <div class="eyebrow">04 / Judging</div>
+    <div>
+      <h2>Rate the half a machine should not.</h2>
+      <p class="lede">The vision judge has already checked every image against each explicit requirement of its instruction, with a line of visual evidence per criterion. What it deliberately does not grade is whether the picture is any good. Step through the set, score craft one to five, and export.</p>
+      <button class="judge-open" id="judge-open" type="button">Open judging panel</button>
+      <p class="judge-progress" id="judge-progress"></p>
+    </div>
+  </div>
+</section>
+
+<div class="judge-overlay" id="judge-overlay" role="dialog" aria-modal="true" aria-label="Judging panel">
+  <div class="judge-bar">
+    <div class="judge-bar-left">
+      <span class="judge-count" id="judge-count"></span>
+      <span class="judge-model" id="judge-model-name"></span>
+    </div>
+    <div class="judge-bar-right">
+      <button class="judge-btn" id="judge-prev" type="button">&larr; Prev</button>
+      <button class="judge-btn" id="judge-next" type="button">Next &rarr;</button>
+      <button class="judge-btn" id="judge-export" type="button">Export ratings.json</button>
+      <button class="judge-btn" id="judge-close" type="button">Close</button>
+    </div>
+  </div>
+  <div class="judge-body">
+    <aside class="judge-side">
+      <div class="eyebrow" id="judge-task-num"></div>
+      <h3 class="judge-task" id="judge-task-title"></h3>
+      <p class="judge-prompt" id="judge-prompt"></p>
+      <div id="judge-criteria"></div>
+    </aside>
+    <div class="judge-main">
+      <div class="judge-images">
+        <div class="judge-pane"><img id="judge-src" alt="Source render"><span class="judge-pane-tag">Source</span></div>
+        <div class="judge-pane"><img id="judge-out" alt="Model output"><span class="judge-pane-tag" id="judge-out-tag">Output</span></div>
+      </div>
+      <div class="judge-rate">
+        <span class="judge-rate-lead">Quality</span>
+        <div class="judge-stars" id="judge-stars"></div>
+        <span class="judge-hint">1–5 or &larr;/&rarr; to move &nbsp;·&nbsp; saved as you go</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <section id="cost" class="section">
   <div class="section-grid">
-    <div class="eyebrow">04 / Cost &amp; speed</div>
+    <div class="eyebrow">05 / Cost &amp; speed</div>
     <div>
       <h2>What a run costs, and what it costs at volume.</h2>
       <p class="lede">Average across all logged runs, at standard output resolution. Mean $0.058 / gen, median $0.048. Bars are relative to the priciest model in the set. gpt-image-2 and gpt-image-1.5 predate this benchmark's automated cost logging and are priced by OpenAI's quality tier instead — shown as a range, sorted here on their medium-tier price.</p>
@@ -583,7 +753,7 @@
 
 <section id="method" class="section">
   <div class="section-grid">
-    <div class="eyebrow">05 / Method</div>
+    <div class="eyebrow">06 / Method</div>
     <div>
       <h2 style="margin-bottom:34px;">How a model gets on this page.</h2>
       <div class="method-grid">
@@ -628,7 +798,7 @@
 
 <section class="section planned">
   <div class="section-grid">
-    <div class="eyebrow">06 / Not yet run</div>
+    <div class="eyebrow">07 / Not yet run</div>
     <div>
       <h2>Four more tasks, queued.</h2>
       <p class="lede">Listed so you know what is missing rather than guessing. Nothing below has been generated yet.</p>
@@ -885,7 +1055,10 @@
   /* ---------- leaderboard ---------- */
   var boardBody = document.getElementById('board-body');
   var sortLabelEl = document.getElementById('sort-label');
-  var sortLabels = { cost: 'ranked by cost', fidelity: 'ranked by tasks held', speed: 'ranked by speed' };
+  var sortLabels = {
+    cost: 'ranked by cost', fidelity: 'ranked by tasks held', speed: 'ranked by speed',
+    adherence: 'ranked by prompt adherence', quality: 'ranked by quality rating'
+  };
 
   function passCount(m) { return m.g.filter(function (x) { return x === 'PASS'; }).length; }
 
@@ -905,20 +1078,41 @@
     return '$' + fmt1(m.cost * n);
   }
 
+  var currentSort = 'cost';
+
+  // Sorts on a score put models that have no score yet at the bottom rather
+  // than treating a missing score as zero, which would read as "scored badly".
+  function byScore(get) {
+    return function (a, b) {
+      var x = get(a), y = get(b);
+      if (x == null && y == null) return a.cost - b.cost;
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return y - x || a.cost - b.cost;
+    };
+  }
+
   function renderBoard(sortBy) {
+    currentSort = sortBy;
     var rows = MODELS.slice().sort(function (a, b) {
       if (sortBy === 'fidelity') return passCount(b) - passCount(a) || a.cost - b.cost;
       if (sortBy === 'speed') return a.speed - b.speed;
+      if (sortBy === 'adherence') return byScore(function (m) { return EVAL.adherence(m.name, 'all'); })(a, b);
+      if (sortBy === 'quality') return byScore(function (m) { return EVAL.quality(m.name, 'all'); })(a, b);
       return a.cost - b.cost;
     });
     boardBody.innerHTML = '';
     rows.forEach(function (m) {
+      var adh = EVAL.adherence(m.name, 'all');
+      var qual = EVAL.quality(m.name, 'all');
       var tr = el('tr');
       tr.innerHTML =
         '<td class="model-name">' + m.name + '</td>' +
         '<td class="tier">' + m.tier + '</td>' +
         '<td class="right mono-cell">' + fmtCost(m) + '</td>' +
         '<td class="right mono-cell" style="color:var(--ink-soft);">' + m.speed.toFixed(1) + 's</td>' +
+        (EVAL.hasScores ? '<td class="right mono-cell">' + (adh == null ? '<span style="color:var(--none);">—</span>' : adh.toFixed(0)) + '</td>' : '') +
+        (EVAL.hasRatings ? '<td class="right mono-cell">' + (qual == null ? '<span style="color:var(--none);">—</span>' : qual.toFixed(1)) + '</td>' : '') +
         '<td class="num">' + pill(m.g[0]) + '</td>' +
         '<td class="num">' + pill(m.g[1]) + '</td>' +
         '<td class="num">' + pill(m.g[2]) + '</td>' +
@@ -935,7 +1129,441 @@
       renderBoard(btn.dataset.sort);
     });
   });
+
+  /* ---------- evaluation data: rubric adherence + hand-entered quality ----------
+     Three files, all optional. rubrics.json is the source of truth for what each
+     task asked for; scores.json is written by tools/eval/score.py; ratings.json
+     is exported from the judging panel below. Any of them missing just narrows
+     what the page shows — nothing here can break the rest of the page, which is
+     why every read goes through the accessors rather than touching the raw JSON.
+
+     Note these are fetches, so the scores and the judging panel only appear when
+     the page is served over HTTP. Opened as a file:// URL the rest still works. */
+  var RATINGS_KEY = 'aecEvalRatings';
+
+  var EVAL = {
+    rubrics: null, scores: null, ratings: {}, hasScores: false, hasRatings: false,
+
+    taskIds: function () {
+      return EVAL.rubrics ? EVAL.rubrics.tasks.map(function (t) { return t.id; }) : [];
+    },
+    task: function (id) {
+      if (!EVAL.rubrics) return null;
+      return EVAL.rubrics.tasks.filter(function (t) { return t.id === id; })[0] || null;
+    },
+    scoreFor: function (model, taskId) {
+      if (!EVAL.scores) return null;
+      var t = EVAL.scores.scores[taskId];
+      return (t && t[model]) || null;
+    },
+    ratingFor: function (model, taskId) {
+      var t = EVAL.ratings[taskId];
+      var r = t && t[model];
+      return r && typeof r.quality === 'number' ? r.quality : null;
+    },
+    // taskId 'all' averages across only the tasks that actually have a value,
+    // so a partially-judged run still plots honestly instead of dragging
+    // everything toward zero.
+    adherence: function (model, taskId) {
+      if (taskId && taskId !== 'all') {
+        var s = EVAL.scoreFor(model, taskId);
+        return s ? s.adherence : null;
+      }
+      var vals = EVAL.taskIds().map(function (id) {
+        var s = EVAL.scoreFor(model, id);
+        return s ? s.adherence : null;
+      }).filter(function (v) { return v != null; });
+      if (!vals.length) return null;
+      return vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+    },
+    quality: function (model, taskId) {
+      if (taskId && taskId !== 'all') return EVAL.ratingFor(model, taskId);
+      var vals = EVAL.taskIds().map(function (id) { return EVAL.ratingFor(model, id); })
+        .filter(function (v) { return v != null; });
+      if (!vals.length) return null;
+      return vals.reduce(function (a, b) { return a + b; }, 0) / vals.length;
+    },
+    setRating: function (model, taskId, quality) {
+      if (!EVAL.ratings[taskId]) EVAL.ratings[taskId] = {};
+      EVAL.ratings[taskId][model] = { quality: quality };
+      EVAL.hasRatings = true;
+      try {
+        localStorage.setItem(RATINGS_KEY, JSON.stringify({ version: 1, ratings: EVAL.ratings }));
+      } catch (e) { /* private mode — the in-memory copy still works for this session */ }
+    },
+    ratedCount: function () {
+      var n = 0;
+      Object.keys(EVAL.ratings).forEach(function (t) { n += Object.keys(EVAL.ratings[t]).length; });
+      return n;
+    }
+  };
+
+  function getJSON(url) {
+    return fetch(url).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+  }
+
+  /* ---------- adherence x quality scatter ---------- */
+  var plot = (function () {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = document.getElementById('plot-svg');
+    var tip = document.getElementById('plot-tip');
+    var figure = document.getElementById('plot-figure');
+    var filters = document.getElementById('plot-filters');
+    var legend = document.getElementById('plot-legend');
+    var note = document.getElementById('plot-note');
+    var wrap = document.getElementById('plot-wrap');
+    var W = 900, H = 500, M = { top: 30, right: 34, bottom: 60, left: 68 };
+    var active = 'all';
+
+    function node(name, attrs, text) {
+      var e = document.createElementNS(NS, name);
+      Object.keys(attrs || {}).forEach(function (k) { e.setAttribute(k, attrs[k]); });
+      if (text != null) e.textContent = text;
+      return e;
+    }
+
+    function showEmpty(message) {
+      figure.hidden = true; filters.hidden = true; legend.hidden = true; note.hidden = true;
+      var box = el('div', 'plot-empty', message);
+      wrap.appendChild(box);
+    }
+
+    function render() {
+      var points = [], unrated = [], unscored = 0;
+      MODELS.forEach(function (m) {
+        var a = EVAL.adherence(m.name, active);
+        var q = EVAL.quality(m.name, active);
+        if (a == null) { unscored++; return; }
+        if (q == null) { unrated.push(m.name); return; }
+        points.push({ name: m.name, x: a, y: q, model: m });
+      });
+
+      svg.innerHTML = '';
+      var defsKeep = ['plot-title', 'plot-desc'];
+      defsKeep.forEach(function (id) {
+        var tag = id === 'plot-title' ? 'title' : 'desc';
+        svg.appendChild(node(tag, { id: id }, id === 'plot-title'
+          ? 'Prompt adherence against human quality rating, by model'
+          : 'A scatter plot. Horizontal axis is machine-graded prompt adherence from 0 to 100. Vertical axis is a hand-entered quality rating from 1 to 5. The same figures appear in the leaderboard table below this chart.'));
+      });
+
+      // Adherence clusters high, so the x domain starts just below the lowest
+      // point rather than at 0 — a 0-100 axis would squash the whole field into
+      // the right-hand third and hide the differences the chart exists to show.
+      var lo = 0, hi = 100;
+      if (points.length) {
+        var min = Math.min.apply(null, points.map(function (p) { return p.x; }));
+        lo = Math.max(0, Math.floor((min - 8) / 10) * 10);
+        if (hi - lo < 20) lo = Math.max(0, hi - 20);
+      }
+      var plotW = W - M.left - M.right, plotH = H - M.top - M.bottom;
+      function sx(v) { return M.left + ((v - lo) / (hi - lo)) * plotW; }
+      function sy(v) { return M.top + plotH - ((v - 0.6) / 4.8) * plotH; }
+
+      var grid = node('g', { class: 'plot-grid' });
+      [1, 2, 3, 4, 5].forEach(function (q) {
+        grid.appendChild(node('line', { x1: M.left, x2: M.left + plotW, y1: sy(q), y2: sy(q) }));
+      });
+      var step = (hi - lo) <= 30 ? 5 : 10;
+      for (var v = lo; v <= hi; v += step) {
+        grid.appendChild(node('line', { x1: sx(v), x2: sx(v), y1: M.top, y2: M.top + plotH }));
+      }
+      svg.appendChild(grid);
+
+      var axis = node('g', { class: 'plot-axis' });
+      [1, 2, 3, 4, 5].forEach(function (q) {
+        axis.appendChild(node('text', { x: M.left - 12, y: sy(q) + 4, 'text-anchor': 'end', class: 'plot-tick' }, String(q)));
+      });
+      for (var v2 = lo; v2 <= hi; v2 += step) {
+        axis.appendChild(node('text', { x: sx(v2), y: M.top + plotH + 22, 'text-anchor': 'middle', class: 'plot-tick' }, String(v2)));
+      }
+      axis.appendChild(node('text', { x: M.left + plotW / 2, y: H - 14, 'text-anchor': 'middle', class: 'plot-axis-title' }, 'Prompt adherence — graded against the rubric'));
+      var yTitle = node('text', { x: 18, y: M.top + plotH / 2, 'text-anchor': 'middle', class: 'plot-axis-title', transform: 'rotate(-90 18 ' + (M.top + plotH / 2) + ')' }, 'Quality — rated by eye');
+      axis.appendChild(yTitle);
+      svg.appendChild(axis);
+
+      if (!points.length) {
+        svg.appendChild(node('text', {
+          x: M.left + plotW / 2, y: M.top + plotH / 2, 'text-anchor': 'middle', class: 'plot-tick'
+        }, EVAL.hasScores ? 'Nothing rated yet — open the judging panel below.' : 'No scores yet.'));
+      } else {
+        svg.appendChild(node('text', { x: M.left + plotW - 6, y: M.top + 16, 'text-anchor': 'end', class: 'plot-quadrant' }, 'Obeyed and looks good'));
+        svg.appendChild(node('text', { x: M.left + plotW - 6, y: M.top + plotH - 8, 'text-anchor': 'end', class: 'plot-quadrant' }, 'Obeyed, but flat'));
+      }
+
+      // Label the standouts only — 13 labels is unreadable. Rank by combined
+      // score, then place each label in the first candidate position that
+      // collides with nothing: not another label, and not a dot either, since a
+      // mark landing mid-word is as bad as two labels overlapping. Anything that
+      // cannot be placed cleanly stays on hover only.
+      var ranked = points.slice().sort(function (a, b) {
+        return (b.x / 20 + b.y) - (a.x / 20 + a.y);
+      });
+      var boxes = points.map(function (p) {
+        return { x1: sx(p.x) - 10, y1: sy(p.y) - 10, x2: sx(p.x) + 10, y2: sy(p.y) + 10 };
+      });
+      function free(b) {
+        if (b.x1 < M.left || b.x2 > M.left + plotW || b.y1 < M.top || b.y2 > M.top + plotH) return false;
+        return !boxes.some(function (o) {
+          return !(b.x2 < o.x1 || b.x1 > o.x2 || b.y2 < o.y1 || b.y1 > o.y2);
+        });
+      }
+
+      points.forEach(function (p) {
+        var cx = sx(p.x), cy = sy(p.y);
+        var isBaseline = p.model.tier === 'Baseline';
+        var dot = node('circle', {
+          cx: cx, cy: cy, r: 7,
+          class: 'plot-dot' + (isBaseline ? ' plot-dot--baseline' : '')
+        });
+        // A transparent disc wider than the mark, so the point is easy to hit.
+        var hit = node('circle', { cx: cx, cy: cy, r: 16, class: 'plot-hit' });
+        function show() {
+          dot.classList.add('hot');
+          var per = active === 'all'
+            ? EVAL.taskIds().map(function (id) {
+                var a = EVAL.adherence(p.name, id);
+                return a == null ? null : EVAL.task(id).number + ' ' + a.toFixed(0);
+              }).filter(Boolean).join(' · ')
+            : '';
+          tip.innerHTML = '<b>' + p.name + '</b><br>' +
+            'Adherence ' + p.x.toFixed(1) + ' · Quality ' + p.y.toFixed(1) + '<br>' +
+            '<em>' + fmtCost(p.model) + ' · ' + p.model.speed.toFixed(1) + 's</em>' +
+            (per ? '<br><em>' + per + '</em>' : '');
+          var box = svg.getBoundingClientRect();
+          tip.style.left = (cx / W) * box.width + 'px';
+          tip.style.top = ((cy / H) * box.height - 14) + 'px';
+          tip.classList.add('on');
+        }
+        function hide() { dot.classList.remove('hot'); tip.classList.remove('on'); }
+        hit.addEventListener('mouseenter', show);
+        hit.addEventListener('mouseleave', hide);
+        hit.addEventListener('click', show);
+        svg.appendChild(dot);
+        svg.appendChild(hit);
+      });
+
+      ranked.slice(0, 6).forEach(function (p) {
+        var cx = sx(p.x), cy = sy(p.y);
+        var w = p.name.length * 5.9 + 6, h = 14;
+        var spots = [
+          { x: cx + 13, y: cy + 4, anchor: 'start' },
+          { x: cx - 13, y: cy + 4, anchor: 'end' },
+          { x: cx, y: cy - 15, anchor: 'middle' },
+          { x: cx, y: cy + 22, anchor: 'middle' }
+        ];
+        for (var i = 0; i < spots.length; i++) {
+          var s = spots[i];
+          var x1 = s.anchor === 'start' ? s.x : s.anchor === 'end' ? s.x - w : s.x - w / 2;
+          var box = { x1: x1, y1: s.y - h + 3, x2: x1 + w, y2: s.y + 3 };
+          if (free(box)) {
+            boxes.push(box);
+            svg.appendChild(node('text', { x: s.x, y: s.y, 'text-anchor': s.anchor, class: 'plot-label' }, p.name));
+            return;
+          }
+        }
+      });
+
+      var msgs = [];
+      if (unrated.length) msgs.push(unrated.length + ' model' + (unrated.length === 1 ? '' : 's') + ' scored but not yet rated, so not plotted: ' + unrated.join(', ') + '.');
+      if (unscored) msgs.push(unscored + ' model' + (unscored === 1 ? '' : 's') + ' not yet scored.');
+      note.textContent = msgs.join(' ');
+      note.hidden = !msgs.length;
+    }
+
+    filters.addEventListener('click', function (e) {
+      var btn = e.target.closest('.pf-btn');
+      if (!btn) return;
+      active = btn.dataset.task;
+      Array.prototype.forEach.call(filters.querySelectorAll('.pf-btn'), function (b) {
+        b.classList.toggle('active', b === btn);
+      });
+      render();
+    });
+
+    return {
+      start: function () {
+        if (!EVAL.hasScores) {
+          showEmpty('No rubric scores yet. Run <code>python tools/eval/score.py</code> to grade every output against its task rubric, then reload — the chart, the two extra leaderboard columns and the judging panel all appear once <code>eval_results/scores.json</code> exists. If you are reading this over <code>file://</code>, serve the folder over HTTP instead.');
+          return;
+        }
+        figure.hidden = false; filters.hidden = false; legend.hidden = false;
+        render();
+      },
+      refresh: function () { if (EVAL.hasScores) render(); }
+    };
+  })();
+
+  /* ---------- judging panel ---------- */
+  var judging = (function () {
+    var overlay = document.getElementById('judge-overlay');
+    var openBtn = document.getElementById('judge-open');
+    var progressEl = document.getElementById('judge-progress');
+    var starsWrap = document.getElementById('judge-stars');
+    var queue = [], idx = 0;
+
+    function buildQueue() {
+      queue = [];
+      EVAL.rubrics.tasks.forEach(function (t) {
+        MODELS.forEach(function (m) { queue.push({ task: t, model: m.name }); });
+      });
+    }
+
+    function renderCriteria(entry) {
+      var wrap = document.getElementById('judge-criteria');
+      wrap.innerHTML = '';
+      var score = EVAL.scoreFor(entry.model, entry.task.id);
+      if (!score) {
+        wrap.appendChild(el('div', 'judge-unscored',
+          'Not scored yet. Run <code>python tools/eval/score.py --task ' + entry.task.id +
+          '</code> to grade this one against the rubric. You can still rate it by eye.'));
+        return;
+      }
+      entry.task.criteria.forEach(function (c) {
+        var v = score.criteria[c.id];
+        if (!v) return;
+        var row = el('div', 'judge-crit');
+        row.innerHTML =
+          '<span class="judge-crit-label">' + c.label + '</span>' +
+          pill(v.verdict === 'pass' ? 'PASS' : v.verdict === 'partial' ? 'PART' : 'FAIL') +
+          '<span class="judge-crit-ev">' + v.evidence + '</span>';
+        wrap.appendChild(row);
+      });
+      var total = el('div', 'judge-adherence');
+      total.innerHTML = '<span class="eyebrow">Adherence</span><b>' + score.adherence.toFixed(1) + '</b>';
+      wrap.appendChild(total);
+    }
+
+    function show(i) {
+      idx = Math.max(0, Math.min(queue.length - 1, i));
+      var entry = queue[idx];
+      document.getElementById('judge-count').textContent = (idx + 1) + ' / ' + queue.length;
+      document.getElementById('judge-model-name').textContent = entry.model;
+      document.getElementById('judge-task-num').textContent = 'Task ' + entry.task.number;
+      document.getElementById('judge-task-title').textContent = entry.task.title;
+      document.getElementById('judge-prompt').textContent = '"' + entry.task.prompt + '"';
+      document.getElementById('judge-src').src = entry.task.source;
+      document.getElementById('judge-out').src = imgFor(entry.task.folder, entry.model);
+      document.getElementById('judge-out-tag').textContent = entry.model;
+      document.getElementById('judge-prev').disabled = idx === 0;
+      document.getElementById('judge-next').disabled = idx === queue.length - 1;
+      renderCriteria(entry);
+
+      var current = EVAL.ratingFor(entry.model, entry.task.id);
+      Array.prototype.forEach.call(starsWrap.children, function (b) {
+        b.classList.toggle('on', Number(b.dataset.v) === current);
+      });
+    }
+
+    function rate(v) {
+      var entry = queue[idx];
+      EVAL.setRating(entry.model, entry.task.id, v);
+      Array.prototype.forEach.call(starsWrap.children, function (b) {
+        b.classList.toggle('on', Number(b.dataset.v) === v);
+      });
+      updateProgress();
+      // First rating of the session brings the quality column and sort out of hiding.
+      document.querySelectorAll('[data-needs-ratings]').forEach(function (n) { n.hidden = false; });
+      plot.refresh();
+      renderBoard(currentSort);
+      // Rating is the whole interaction, so advancing on it keeps the loop
+      // tight; the last card stays put rather than wrapping round.
+      if (idx < queue.length - 1) setTimeout(function () { show(idx + 1); }, 140);
+    }
+
+    function updateProgress() {
+      if (!EVAL.rubrics) return;
+      var total = EVAL.rubrics.tasks.length * MODELS.length;
+      var done = EVAL.ratedCount();
+      progressEl.textContent = done + ' of ' + total + ' images rated' +
+        (done ? ' · export from inside the panel to save them to eval_results/ratings.json' : '');
+    }
+
+    function exportRatings() {
+      var payload = JSON.stringify({ version: 1, ratings: EVAL.ratings }, null, 2) + '\n';
+      var url = URL.createObjectURL(new Blob([payload], { type: 'application/json' }));
+      var a = el('a');
+      a.href = url;
+      a.download = 'ratings.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    function open() { overlay.classList.add('open'); show(idx); document.body.style.overflow = 'hidden'; }
+    function close() { overlay.classList.remove('open'); document.body.style.overflow = ''; }
+
+    document.addEventListener('keydown', function (e) {
+      if (!overlay.classList.contains('open')) return;
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key === 'ArrowLeft') { show(idx - 1); return; }
+      if (e.key === 'ArrowRight') { show(idx + 1); return; }
+      if (/^[1-5]$/.test(e.key)) { rate(Number(e.key)); }
+    });
+
+    return {
+      start: function () {
+        if (!EVAL.rubrics) {
+          openBtn.disabled = true;
+          progressEl.textContent = 'Rubrics could not be loaded — serve this folder over HTTP rather than opening the file directly.';
+          return;
+        }
+        buildQueue();
+        [1, 2, 3, 4, 5].forEach(function (v) {
+          var b = el('button', 'judge-star', String(v));
+          b.type = 'button';
+          b.dataset.v = v;
+          b.addEventListener('click', function () { rate(v); });
+          starsWrap.appendChild(b);
+        });
+        openBtn.addEventListener('click', open);
+        document.getElementById('judge-close').addEventListener('click', close);
+        document.getElementById('judge-prev').addEventListener('click', function () { show(idx - 1); });
+        document.getElementById('judge-next').addEventListener('click', function () { show(idx + 1); });
+        document.getElementById('judge-export').addEventListener('click', exportRatings);
+        updateProgress();
+      }
+    };
+  })();
+
+  /* ---------- load the evaluation data, then light everything up ---------- */
   renderBoard('cost');
+  Promise.all([
+    getJSON('eval/rubrics.json'),
+    getJSON('eval_results/scores.json'),
+    getJSON('eval_results/ratings.json')
+  ]).then(function (res) {
+    EVAL.rubrics = res[0];
+    EVAL.scores = res[1] && res[1].scores ? res[1] : null;
+    EVAL.hasScores = !!(EVAL.rubrics && EVAL.scores);
+
+    // The committed file is the baseline; anything rated in this browser and not
+    // yet exported sits on top of it, so a half-finished pass survives a reload.
+    var fileRatings = (res[2] && res[2].ratings) || {};
+    var localRatings = {};
+    try {
+      var stored = localStorage.getItem(RATINGS_KEY);
+      if (stored) localRatings = (JSON.parse(stored) || {}).ratings || {};
+    } catch (e) { /* unreadable storage is not worth failing the page over */ }
+
+    EVAL.ratings = {};
+    Object.keys(fileRatings).forEach(function (t) { EVAL.ratings[t] = Object.assign({}, fileRatings[t]); });
+    Object.keys(localRatings).forEach(function (t) {
+      EVAL.ratings[t] = Object.assign({}, EVAL.ratings[t] || {}, localRatings[t]);
+    });
+    EVAL.hasRatings = EVAL.ratedCount() > 0;
+
+    if (EVAL.hasScores) {
+      document.querySelectorAll('[data-needs-scores]').forEach(function (n) { n.hidden = false; });
+    }
+    if (EVAL.hasRatings) {
+      document.querySelectorAll('[data-needs-ratings]').forEach(function (n) { n.hidden = false; });
+    }
+    renderBoard(currentSort);
+    plot.start();
+    judging.start();
+  });
 
   /* ---------- cost & volume ---------- */
   var costList = document.getElementById('cost-list');
