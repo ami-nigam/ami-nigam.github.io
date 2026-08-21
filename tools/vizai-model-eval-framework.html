@@ -436,8 +436,8 @@
     <dl class="stat-list">
       <div class="stat-row"><dt>Models</dt><dd>13</dd></div>
       <div class="stat-row"><dt>Tasks run</dt><dd>5 of 9</dd></div>
-      <div class="stat-row"><dt>Generations</dt><dd>60+</dd></div>
-      <div class="stat-row"><dt>Cheapest pass</dt><dd>$0.035</dd></div>
+      <div class="stat-row"><dt>Images judged</dt><dd>65</dd></div>
+      <div class="stat-row"><dt>Craft &harr; constraint</dt><dd>r 0.11</dd></div>
       <div class="stat-row" style="border-bottom: none;"><dt>Updated</dt><dd>Aug 2026</dd></div>
     </dl>
   </div>
@@ -577,7 +577,7 @@
       <div class="task-index"><div class="task-num">01</div><div class="task-mode">Image augment</div></div>
       <div>
         <h3 class="task-title">Re-render an Enscape output as photoreal</h3>
-        <p class="task-verdict">Twelve of thirteen held the massing and the camera. gpt-image-1.5 drifted the cantilever — the first instance of a pattern that repeats.</p>
+        <p class="task-verdict">Five models re-render this scene without touching the building. The rest pay for their photorealism somewhere — usually by dollying the camera in or quietly re-cladding a tower.</p>
         <details class="task-instruction">
           <summary>Instruction given to every model</summary>
           <p>"Render this scene as a photorealistic architectural visualization, preserving the exact building massing and camera angle: the curved-top glass tower on the left, the fin-clad tower behind it, and the mixed-height podium with retail signage zones and landscaped terraces below. Match the existing materiality (glass curtain wall, bronze/gold metal cladding, white vertical fins on the right-hand towers), daylight lighting, shadows, and street-level activity (vehicles, planting, signage)."</p>
@@ -597,7 +597,7 @@
     <div class="card-strip" data-role="cards"></div>
     <div class="section-grid task-read">
       <div class="eyebrow">The read</div>
-      <blockquote>All eight expansion candidates held massing and camera without the cantilever drift seen in gpt-image-1.5. Grok Imagine 2.0 delivers top-tier crispness at extreme speed; FLUX.2 Max sets the standard for daylight speculars and warm bronze reflectivity; Seedream 5.0 Lite and Qwen Image 3 give dependable geometry holding at low cost. Both MAI models returned flawless 1:1 camera and massing fidelity.</blockquote>
+      <blockquote>Five clean sweeps — gpt-image-2, both Seedreams and both MAI models — and only two of those five also look the part. gpt-image-2 and Seedream 5.0 Pro take 100 and a 5 for craft; the other three hold the building perfectly and return something closer to a tidied render than a photograph. The failures are instructive: Nano Banana 2 scores 60.7 not for a wobbly line but for re-cladding the left tower's glass curtain wall in bronze fins, and gpt-image-1.5 lands at 50.0 having moved the camera and rebuilt the podium. FLUX.2 Max is the sharpest illustration of the split — the best daylight in the task, rated 4, on a building whose towers it reproportioned, scoring 71.4.</blockquote>
     </div>
   </div>
 </section>
@@ -608,7 +608,7 @@
       <div class="task-index"><div class="task-num">02</div><div class="task-mode">Image augment</div></div>
       <div>
         <h3 class="task-title">Turn the render back into a concept sketch</h3>
-        <p class="task-verdict">Nothing drifted here, so this one does not rank anybody. It is a question of which hand you want — marker, pencil, ink or watercolour.</p>
+        <p class="task-verdict">Which hand you want is a preference. Whether you got a drawing at all is not — and two models returned the render with a wash over it.</p>
         <details class="task-instruction">
           <summary>Instruction given to every model</summary>
           <p>"Convert this render into a loose hand-drawn/marker concept sketch, preserving the composition and massing exactly. Muted tones, visible linework, concept-stage feel."</p>
@@ -628,7 +628,7 @@
     <div class="card-strip" data-role="cards"></div>
     <div class="section-grid task-read">
       <div class="eyebrow">The read</div>
-      <blockquote>gpt-image-2 ranked best on hand-drawn feel but is slowest and heaviest. Grok Imagine 2.0 produced the crispest watercolour/ink sketch with instant turnaround; FLUX.2 Max a coloured-pencil-on-vellum aesthetic; Seedream 5.0 Pro authentic design-office Copic marker; MAI-Image-2.5 crisp technical pen-and-marker; MAI-Image-2.5 Pro a competition-board watercolour on parchment with perfect massing.</blockquote>
+      <blockquote>Six models take a clean 100 here, and among those six the choice really is only which hand you want: gpt-image-2's ink and watercolour, Seedream 5.0 Pro's design-office marker, Nano Banana Pro's pen-and-ochre, Grok's marker, Seedream 5.0 Lite's technical line, MAI-Image-2.5 Pro's watercolour on parchment. But the task does rank the bottom. Nano Banana 2 Lite scores 66.7 because it did not convert the image — the render survives underneath a blue sky wash, glass reflections and photographic planting intact — and both Qwen models do a milder version of the same thing, laying graphite over a rendering rather than drawing. That is a failure to follow the instruction, not a style you might happen to dislike.</blockquote>
     </div>
   </div>
 </section>
@@ -639,7 +639,7 @@
       <div class="task-index"><div class="task-num">03</div><div class="task-mode">Image augment</div></div>
       <div>
         <h3 class="task-title">Swap the mood — blue hour, fog, cinematic uplift</h3>
-        <p class="task-verdict">Atmosphere is close to solved. Every expansion model delivered dusk, fog and wet reflections; gpt-image-1.5 lost the geometry again doing it.</p>
+        <p class="task-verdict">Blue hour and warm glow are solved. Wet pavement and genuinely dense fog are not — five models leave the street bone dry, and only one model in thirteen hits every requirement.</p>
         <details class="task-instruction">
           <summary>Instruction given to every model</summary>
           <p>"Uplift this render into a cinematic photorealistic visualization, preserving the building massing and camera angle. Set the atmosphere to blue hour — deep blue-violet sky, low ambient light, building facades and signage glowing warmly against the cool dusk light. Add heavy, dense atmospheric fog rolling through the street and lower levels, thick enough to soften and partially obscure the base of the towers and diffuse the light from signage and windows. Interior floors should read as inhabited — visible variation in window lighting, hints of interior activity such as figures, furniture silhouettes, or desk lamps, rather than uniform flat glow. Wet pavement with reflections of the glowing facades and lights. Push contrast and mood to be highly dramatic and cinematic."</p>
@@ -659,7 +659,7 @@
     <div class="card-strip" data-role="cards"></div>
     <div class="section-grid task-read">
       <div class="eyebrow">The read</div>
-      <blockquote>No model in the initial batch hit all six checklist items, and gpt-image-2 garbled the signage text. FLUX.2 Max produced the best atmospheric lighting and interior occupancy of the entire benchmark with zero drift; Grok Imagine 2.0 is nearly 3× faster; Seedream 5.0 Lite and Qwen Image 3 hold geometry cheaply; both MAI models rival FLUX for mood, with layered fog and varied inhabited window lighting.</blockquote>
+      <blockquote>MAI-Image-2.5 Pro is the only clean sweep of the nine criteria. The two that separate the field are the ones easiest to skip: a genuinely wet street, which Nano Banana 2, Nano Banana 2 Lite, Nano Banana Pro, Seedream 5.0 Pro and Qwen Image 3 all omit entirely, and fog thick enough to actually obscure the tower bases rather than haze the background. The instruction's most specific demand — interiors that read as inhabited, with variation rather than a flat glow — is where the Nano Banana models are strongest; Pro's are the best in the benchmark. FLUX.2 Max is worth reading closely against its own reputation: superb wet reflections and interior depth, rated 5, but pushed past blue hour into night, with fog that never thickens and a podium that has grown extra volumes. 79.4, not the clean sheet.</blockquote>
     </div>
   </div>
 </section>
@@ -670,7 +670,7 @@
       <div class="task-index"><div class="task-num">04</div><div class="task-mode">Image augment</div></div>
       <div>
         <h3 class="task-title">Swap two materials, change nothing else</h3>
-        <p class="task-verdict">Thirteen of thirteen executed both substitutions and held the rest of the materiality. The finding here was geometry, not materials.</p>
+        <p class="task-verdict">Thirteen of thirteen performed both substitutions. Only two did nothing else — which makes this the hardest task in the benchmark, not the easiest.</p>
         <details class="task-instruction">
           <summary>Instruction given to every model</summary>
           <p>"Keep the building geometry, camera angle, composition, and all other materials unchanged. Make two material changes: 1) Replace the gold/bronze vertical fin cladding on the right-hand podium volume with iridescent chromic perforated metal panels, maintaining the same panel/fin proportions. 2) Replace the signage wall's pink/mauve stone cladding (ground-level, left of centre) with hot-pink glossy plastic cladding, keeping the signage lettering and layout unchanged. Maintain existing daylight lighting throughout, and keep all other materials unchanged."</p>
@@ -690,7 +690,7 @@
     <div class="card-strip" data-role="cards"></div>
     <div class="section-grid task-read">
       <div class="eyebrow">The read</div>
-      <blockquote>Every expansion model performed both substitutions while keeping the building intact. Grok Imagine 2.0 and FLUX.2 Max rendered the most convincing iridescent cladding without disturbing adjacent curtain wall; both MAI models produced surgically clean boundary masks with vibrant specular reflections. gpt-image-1.5 changed the podium again — its third drift across four tasks.</blockquote>
+      <blockquote>Doing the two swaps is easy; the instruction's real test is the clause that says change nothing else, and it has the lowest mean score of the five tasks at 75.1. Only gpt-image-2 and Nano Banana 2 Lite are genuinely surgical — both swaps executed, every other surface left alone. FLUX.2 Max spread iridescence across four further podium volumes that were bronze and white in the source. Grok painted three. Qwen Image 3 added a second hot-pink wall the instruction never mentioned, and MAI-Image-2.5 ran the pink several storeys up past the low stone wall it was meant for. None of that is visible in a pass mark; all of it is visible the moment you put source and output in one frame.</blockquote>
     </div>
   </div>
 </section>
@@ -701,7 +701,7 @@
       <div class="task-index"><div class="task-num">05</div><div class="task-mode">Image augment</div></div>
       <div>
         <h3 class="task-title">Zoom into one terrace without redesigning it</h3>
-        <p class="task-verdict">The task that separates the field. Five of thirteen held the constraint; the rest quietly re-rendered the whole elevation or invented a new building.</p>
+        <p class="task-verdict">Five models return an exact crop of the marked terrace. The rest range from enlarging the ledge into a plaza to inventing a rooftop garden on a different building in a different city.</p>
         <details class="task-instruction">
           <summary>Instruction given to every model</summary>
           <p>"This is a resolution and detail upscale, not a redesign. Zoom into the highlighted rooftop terrace area exactly as it appears in the source image — do not alter the roofline, canopy shapes, terrace levels, steps, or any existing architectural geometry. Add resolution and richness only: realistic planting, paving detail, people using the space, and sculptural art pieces placed within the existing terrace geometry. The underlying architecture must be recognizably the same design as the source, just rendered at higher detail and closer proximity."</p>
@@ -721,7 +721,7 @@
     <div class="card-strip" data-role="cards"></div>
     <div class="section-grid task-read">
       <div class="eyebrow">The read</div>
-      <blockquote>Constrained detail development does not track with quality or geometry performance elsewhere — which is exactly why it earns its own task. Seedream 5.0 Lite joins gpt-image-2 as a true, exact crop-and-upscale of the specified terrace; both MAI models did the same, holding curved bronze soffits, stepped seating, glass balustrades and scale figures. FLUX.2 Max held the podium setback terraces. Seedream Pro and both Qwen models re-rendered the full elevation instead of cropping; Nano Banana 2 produced an unrelated building entirely.</blockquote>
+      <blockquote>Five exact crops: gpt-image-2, Qwen Image 3 Pro, MAI-Image-2.5, MAI-Image-2.5 Pro and Nano Banana 2 Lite, each holding the curved bronze soffit, the fluted white cylinders beneath it and the terrace levels, adding only the planting, paving, people and sculpture asked for. Two earlier calls need correcting against the images: Qwen Image 3 Pro was described here as re-rendering the full elevation and in fact delivers one of the cleanest zooms in the task, while Seedream 5.0 Lite, described as an exact crop, reshaped the canopy from a smooth swoop into a radial fan and turned the ledge into a circular plaza — good work, but not the constraint. At the bottom, Seedream 5.0 Pro did not zoom at all, Grok invented a structural fin that exists nowhere in the source, and gpt-image-1.5 produced a genuinely lovely roof garden belonging to another building, hills on the horizon included.</blockquote>
     </div>
   </div>
 </section>
@@ -1029,10 +1029,10 @@
   var PICKS = [
     { role: 'If you only run one', model: 'gpt-image-2', stat: '99.4 adherence · 4.4 quality · $0.053 · 41.5s', why: 'The only model in the top-right corner: it follows the instruction better than anything else here and the results still look good. Priced by quality tier — budget the medium tier as the realistic default, not the $0.006 floor.' },
     { role: 'Best craft per dollar', model: 'Seedream 5.0 Pro', stat: '83.0 adherence · 4.4 quality · $0.048 · 85.0s', why: 'Ties gpt-image-2 for the best-looking output in the benchmark at a fraction of its realistic cost. It gives up some obedience to get there — it did not zoom on task 05 — and it is slow, so batch it.' },
-    { role: 'If the picture is the deliverable', model: 'Nano Banana Pro', stat: '90.9 adherence · 4.2 quality · $0.134 · 25.0s', why: 'The strongest all-rounder after gpt-image-2, and the best interior occupancy in the benchmark. The priciest model here, which only makes sense when the image goes in front of a client.' },
-    { role: 'If speed is the job', model: 'Nano Banana 2 Lite', stat: '89.0 adherence · 2.0 quality · $0.034 · 8.2s', why: 'Cheapest and fastest in the field, and it holds the building better than models costing four times as much. It also rates lowest of the thirteen on craft — use it to iterate, not to produce the final image.' },
+    { role: 'If the picture is the deliverable', model: 'Nano Banana 2', stat: '75.5 adherence · 3.8 quality · $0.067 · 17.5s', why: 'Third-best craft in the field at half the price of Nano Banana Pro and two-thirds its time, with the strongest inhabited interiors on the mood swap. You pay for it in obedience: it dollied in and re-clad the left tower on task 01, and invented a pavilion on task 05. Art-direct it and check the geometry — or pay double for Nano Banana Pro, which is the same idea at 90.9.' },
+    { role: 'Fastest draft loop', model: 'Nano Banana 2 Lite', stat: '89.0 adherence · 2.0 quality · $0.034 · 8.2s', why: 'Cheapest and fastest in the field, and it holds the building better than models costing four times as much — including a clean sweep on the material swap. It also rates lowest of the thirteen on craft. Iterate with it, then produce the final image elsewhere.' },
     { role: 'Handsome, but not for edits', model: 'FLUX.2 Max', stat: '71.7 adherence · 3.4 quality · $0.070 · 33.0s', why: 'The best atmosphere in the benchmark and the least controllable. On the material swap it scored 53.3, spreading iridescence across four volumes nobody asked it to touch. Fine for mood, risky when the geometry matters.' },
-    { role: 'Skip', model: 'Qwen Image 3', stat: '68.0 adherence · 1.8 quality · $0.033 · 48.5s', why: 'Bottom-left on both axes — the only model that is neither obedient nor good-looking. It is the cheapest here, and that is the whole of the argument for it.' }
+    { role: 'Fast enough to work live', model: 'Grok Imagine Image 2.0', stat: '75.7 adherence · 3.2 quality · $0.050 · 10.7s', why: 'Around ten seconds a generation with craft that holds up — the fastest model here whose output you would actually put on a screen in front of someone. Constraint is where it slips: 60.0 on the material swap, where it painted three volumes it was not asked to, and it crops the tower top out of frame on several tasks.' }
   ];
 
   var PLANNED = [
