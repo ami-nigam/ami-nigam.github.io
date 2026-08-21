@@ -1,0 +1,160 @@
+{
+  "t1": {
+    "gpt-image-2": {
+      "summary": "The cleanest re-render in the field. Nothing moved, nothing was re-clad, and the material response is genuinely photographic rather than a tidied render.",
+      "criteria": {
+        "massing": ["pass", "Curved-top tower, fin-clad slab behind and the stepped podium all sit at the same size and relative position as the source; the cantilevered terraces keep their exact profile."],
+        "camera": ["pass", "Framing, horizon and apparent focal length are indistinguishable from the source."],
+        "materiality": ["pass", "Glass curtain wall, the bronze louvred box on the right and the white vertical fins on the podium volumes are all on the same surfaces as the source."],
+        "lighting": ["pass", "Clear daylight with shadows falling in the same direction and length as the source."],
+        "photoreal": ["pass", "Glass carries believable multi-layer reflection and the podium materials have real microdetail; reads as photography rather than a real-time render."],
+        "street_life": ["pass", "Vehicles along the street edge, planting to the kerb and lit retail signage all present and correctly scaled."],
+        "signage_integrity": ["pass", "The SIGNAGE block on the left reads cleanly and the green LED screen is preserved intact."]
+      }
+    },
+    "gpt-image-1.5": {
+      "summary": "The most photographic image in the task and the least faithful. The camera dollied in and the podium was substantially redesigned — a beautiful picture of a different building.",
+      "criteria": {
+        "massing": ["fail", "The fin-clad slab behind is replaced by a stepped glass volume, the bronze louvred box becomes a boxier dark mass, and the terrace levels are restructured."],
+        "camera": ["fail", "Camera has dollied in and dropped; the podium fills far more of the frame and the horizon sits lower than the source."],
+        "materiality": ["partial", "Glass and gold soffits survive, but the white vertical fins that define the podium volumes are largely gone."],
+        "lighting": ["pass", "Daylight retained with shadows still cast from the upper left, consistent with the source sun."],
+        "photoreal": ["pass", "Convincingly photographic — atmospheric depth, crowd detail and believable glass; the strongest photoreal read of the thirteen."],
+        "street_life": ["pass", "Dense vehicles, street trees, planting and signage, plus a populated ground plane."],
+        "signage_integrity": ["pass", "SIGNAGE lettering is legible and the green screen survives as coherent imagery."]
+      }
+    },
+    "Nano Banana 2": {
+      "summary": "Dollied in and re-clad the left tower from glass to bronze fins. Handsome and lively, but two of the instruction's three named materials moved.",
+      "criteria": {
+        "massing": ["partial", "The three principal volumes remain in the right relative positions, but the middle tower is reshaped into an angular white-finned mass and the podium volumes are rearranged."],
+        "camera": ["fail", "Clear dolly forward — the building fills substantially more of the frame and the ground plane sits much closer than the source."],
+        "materiality": ["partial", "The left tower's glass curtain wall has been re-clad in dark bronze vertical fins; bronze and white fins appear elsewhere but on the wrong surfaces."],
+        "lighting": ["pass", "Daylight held with shadow direction matching the source."],
+        "photoreal": ["pass", "Strongly photographic — populated pavements, traffic and convincing atmospheric falloff on the background towers."],
+        "street_life": ["pass", "Buses, cars, pedestrians, street trees and multiple signage zones."],
+        "signage_integrity": ["pass", "SIGNAGE reads cleanly; the green screen is swapped for a photographic billboard but no lettering is garbled."]
+      }
+    },
+    "Nano Banana 2 Lite": {
+      "summary": "Holds the building almost exactly, but barely lifts the image beyond the source render — the cheapest way to keep your geometry and the least photoreal gain.",
+      "criteria": {
+        "massing": ["pass", "All volumes present at source proportions and positions; the terrace profiles and podium stepping are intact."],
+        "camera": ["pass", "Framing and horizon match the source."],
+        "materiality": ["pass", "Glass, the olive-bronze louvred box and the white podium fins are all on their original surfaces."],
+        "lighting": ["pass", "Daylight preserved with consistent shadow direction."],
+        "photoreal": ["partial", "Only a marginal uplift on the source — sky gradient and glass improve slightly, but the podium still reads as a real-time render rather than photography."],
+        "street_life": ["pass", "Vehicles along the street, planting and signage all present."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen preserved."]
+      }
+    },
+    "Nano Banana Pro": {
+      "summary": "Geometrically faithful and materially correct, but the photoreal uplift is restrained — a cleaner render more than a photograph.",
+      "criteria": {
+        "massing": ["pass", "Every volume holds its silhouette, floor count and position; terraces and podium stepping unchanged."],
+        "camera": ["pass", "Near-identical framing and horizon, with only a negligible tightening."],
+        "materiality": ["pass", "Glass curtain wall, bronze louvred box and white vertical fins all correctly placed."],
+        "lighting": ["pass", "Daylight and shadow direction consistent with the source."],
+        "photoreal": ["partial", "Crisper than the source but retains flat ambient shading across the podium; the glass lacks the layered reflection that reads as photographic. The green LED screen is also dropped to plain facade."],
+        "street_life": ["pass", "Vehicles, street planting and signage present at plausible scale."],
+        "signage_integrity": ["pass", "SIGNAGE block legible and uncorrupted."]
+      }
+    },
+    "FLUX.2 Max": {
+      "summary": "The most atmospheric daylight of the field, achieved by quietly reproportioning the towers and relocating the bronze box. High craft, mid fidelity.",
+      "criteria": {
+        "massing": ["partial", "Composition is recognisable, but the left tower reads taller and more slender, the fin-clad slab becomes a dark angular mass, and the bronze louvred box is resized and shifted right."],
+        "camera": ["partial", "Slight dolly forward — the building sits larger in frame, with added foreground street furniture compressing the depth."],
+        "materiality": ["partial", "Glass is preserved and enriched, but the muted bronze louvre becomes saturated solid gold and the middle tower's white fins darken."],
+        "lighting": ["pass", "Warm daylight with shadow direction matching the source sun."],
+        "photoreal": ["pass", "Outstanding — overhead wires, traffic signals, wet specular highlights and true material microdetail throughout."],
+        "street_life": ["pass", "Cars, planting, pedestrians and multiple retail signage zones."],
+        "signage_integrity": ["pass", "SIGNAGE reads correctly; smaller retail lettering is invented but coherent rather than scrambled."]
+      }
+    },
+    "Grok Imagine Image 2.0": {
+      "summary": "Near-top fidelity at roughly ten seconds a generation. Only a slight tightening of frame separates it from the perfect scores.",
+      "criteria": {
+        "massing": ["pass", "All volumes present at correct proportions and positions; terrace cantilevers and podium stepping intact."],
+        "camera": ["partial", "Angle is held exactly but the frame is modestly tighter — the building occupies more of the canvas than the source."],
+        "materiality": ["pass", "Glass, the bronze-olive louvred box and the white podium fins all correctly placed."],
+        "lighting": ["pass", "Daylight with matching shadow direction; added cloud does not alter the sun position."],
+        "photoreal": ["pass", "Crisp and photographic — convincing glass reflection, foliage detail and depth on the background towers."],
+        "street_life": ["pass", "Cars, auto-rickshaws, pedestrians, street trees and planting throughout."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen preserved."]
+      }
+    },
+    "Seedream 5.0 Pro": {
+      "summary": "A flawless hold on geometry and materials with a genuine photographic lift. Slow, but nothing drifted.",
+      "criteria": {
+        "massing": ["pass", "Every volume matches the source in silhouette, proportion and position."],
+        "camera": ["pass", "Framing, horizon and focal length match the source."],
+        "materiality": ["pass", "Glass, bronze louvred box and white vertical fins all on their original surfaces."],
+        "lighting": ["pass", "Daylight preserved with identical shadow direction."],
+        "photoreal": ["pass", "Richer glass reflection and photographic autumn planting; reads as a photograph rather than a render."],
+        "street_life": ["pass", "Vehicles, dense street planting and signage all present."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green screen intact."]
+      }
+    },
+    "Seedream 5.0 Lite": {
+      "summary": "Matches its Pro sibling on fidelity at two-thirds the cost — nothing moved, and the photographic gain is real.",
+      "criteria": {
+        "massing": ["pass", "All volumes hold position and proportion, including the terrace cantilevers and podium stepping."],
+        "camera": ["pass", "Framing and horizon match the source."],
+        "materiality": ["pass", "Glass, the olive-bronze louvred box and white podium fins are correctly retained."],
+        "lighting": ["pass", "Daylight and shadow direction consistent with the source."],
+        "photoreal": ["pass", "Improved sky gradient, believable glass reflection and photographic autumn foliage."],
+        "street_life": ["pass", "Vehicles along the kerb, planting and signage present."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen preserved."]
+      }
+    },
+    "Qwen Image 3": {
+      "summary": "Geometry broadly holds, but the podium's white fins are re-clad in gold — the building's material hierarchy is redistributed.",
+      "criteria": {
+        "massing": ["partial", "Tower volumes hold, but the podium is restructured and the right-hand louvred box is enlarged relative to the source."],
+        "camera": ["pass", "Framing and horizon are effectively unchanged."],
+        "materiality": ["partial", "The white vertical fins on the podium volumes are replaced with gold louvres, spreading bronze well beyond its source extent."],
+        "lighting": ["pass", "Daylight preserved with consistent shadow direction."],
+        "photoreal": ["pass", "Warm, crisp render with believable glass and material depth."],
+        "street_life": ["pass", "Vehicles, street planting and signage present."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green screen retained."]
+      }
+    },
+    "Qwen Image 3 Pro": {
+      "summary": "Costs and takes more than Qwen Image 3 and holds less: the towers are reproportioned and the frame tightens, on top of the same gold-for-white substitution.",
+      "criteria": {
+        "massing": ["partial", "The left tower reads shorter and wider, the fin-clad slab becomes a stepped glass volume, and the podium is rebuilt around enlarged gold louvres."],
+        "camera": ["partial", "Noticeably tighter framing — the building sits larger with the base closer to the lower edge."],
+        "materiality": ["partial", "White podium fins substituted for gold louvres; glass is preserved but bronze is over-applied."],
+        "lighting": ["pass", "Daylight with shadow direction consistent with the source."],
+        "photoreal": ["pass", "Crisp and warm with convincing glass and foliage detail."],
+        "street_life": ["pass", "Vehicles, planting and signage all present."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen retained."]
+      }
+    },
+    "MAI-Image-2.5": {
+      "summary": "Full marks at mid-tier cost and thirty seconds — nothing moved, nothing was re-clad, and the ground plane comes alive.",
+      "criteria": {
+        "massing": ["pass", "All volumes hold silhouette, proportion and relative position."],
+        "camera": ["pass", "Framing and horizon match the source."],
+        "materiality": ["pass", "Glass, the olive-bronze louvred box and white podium fins all correctly retained."],
+        "lighting": ["pass", "Daylight preserved with matching shadow direction."],
+        "photoreal": ["pass", "Photographic material response and depth, with believable vehicle and foliage detail."],
+        "street_life": ["pass", "Dense traffic, street trees, planting and signage across the frame."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen preserved."]
+      }
+    },
+    "MAI-Image-2.5 Pro": {
+      "summary": "The closest 1:1 of the thirteen. Effectively the source render resolved to photographic quality with nothing else touched.",
+      "criteria": {
+        "massing": ["pass", "Every volume, terrace profile and podium step matches the source exactly."],
+        "camera": ["pass", "Framing, horizon and focal length are indistinguishable from the source."],
+        "materiality": ["pass", "Glass, bronze louvred box and white vertical fins all precisely retained."],
+        "lighting": ["pass", "Identical daylight condition and shadow direction."],
+        "photoreal": ["pass", "Restrained but genuine — layered glass reflection, resolved planting and a livelier ground plane."],
+        "street_life": ["pass", "Vehicles, street planting and signage present at correct scale."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen intact."]
+      }
+    }
+  }
+}
