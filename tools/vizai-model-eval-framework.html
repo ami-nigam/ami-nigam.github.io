@@ -329,10 +329,15 @@
   .judge-btn { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: 1px solid var(--line); color: var(--ink-soft); padding: 6px 12px; cursor: pointer; }
   .judge-btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-soft); }
   .judge-btn:disabled { opacity: 0.35; cursor: default; }
-  .judge-body { flex: 1; display: grid; grid-template-columns: 380px minmax(0, 1fr); min-height: 0; }
-  @media (max-width: 900px) { .judge-body { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); } }
-  .judge-side { border-right: 1px solid var(--line); overflow-y: auto; padding: 24px 26px 32px; }
-  @media (max-width: 900px) { .judge-side { border-right: none; border-bottom: 1px solid var(--line); max-height: 42vh; } }
+  /* The image is the whole panel by default. Rating craft means looking at one
+     picture, not diffing two — the structural comparison is the other half of
+     the workflow and lives in the sheets, not here. */
+  .judge-body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .judge-body.with-analysis { grid-template-columns: minmax(0, 1fr) 380px; }
+  @media (max-width: 900px) { .judge-body.with-analysis { grid-template-columns: 1fr; grid-template-rows: minmax(0, 1fr) auto; } }
+  .judge-side { border-left: 1px solid var(--line); overflow-y: auto; padding: 24px 26px 32px; }
+  @media (max-width: 900px) { .judge-side { border-left: none; border-top: 1px solid var(--line); max-height: 42vh; } }
+  .judge-task-chip { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); border: 1px solid var(--line); padding: 3px 8px; white-space: nowrap; }
   .judge-task { font-family: var(--serif); font-size: 22px; line-height: 1.15; margin: 6px 0 14px; }
   .judge-prompt { font-family: var(--mono); font-size: 11.5px; line-height: 1.65; color: var(--ink-body); margin: 0 0 22px; max-height: 128px; overflow-y: auto; padding-right: 6px; }
   .judge-crit { border-top: 1px solid var(--line); padding: 11px 0; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: baseline; }
@@ -341,8 +346,11 @@
   .judge-adherence { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; border-top: 1px solid var(--ink); padding-top: 12px; margin-top: 4px; }
   .judge-adherence b { font-family: var(--mono); font-size: 20px; font-weight: 500; }
   .judge-unscored { font-size: 13px; line-height: 1.6; color: var(--ink-soft); border: 1px solid var(--line); padding: 16px 18px; }
-  .judge-main { display: flex; flex-direction: column; min-width: 0; }
-  .judge-images { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); min-height: 0; }
+  /* min-height:0 on both, or the image pane refuses to shrink below its content
+     and pushes the rating bar off the bottom of the screen. */
+  .judge-main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+  .judge-images { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--line); min-height: 0; }
+  .judge-images.compare { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1px; }
   .judge-pane { position: relative; background: #16140F; display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .judge-pane img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
   .judge-pane-tag { position: absolute; top: 10px; left: 10px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.92); background: rgba(0,0,0,0.55); padding: 4px 8px; }
@@ -687,7 +695,7 @@
     <div class="eyebrow">04 / Judging</div>
     <div>
       <h2>Rate the half a machine should not.</h2>
-      <p class="lede">The vision judge has already checked every image against each explicit requirement of its instruction, with a line of visual evidence per criterion. What it deliberately does not grade is whether the picture is any good. Step through the set, score craft one to five, and export.</p>
+      <p class="lede">Adherence is already graded — every image checked against each explicit requirement of its instruction, with a line of visual evidence per criterion. What that grading deliberately does not answer is whether the picture is any good. So the panel shows you the output on its own, with no source to diff against and no verdicts in view: one image, one question, one to five. The structural analysis is a click away if you want it, but it stays shut by default so it cannot lean on the rating.</p>
       <button class="judge-open" id="judge-open" type="button">Open judging panel</button>
       <p class="judge-progress" id="judge-progress"></p>
     </div>
@@ -698,6 +706,7 @@
   <div class="judge-bar">
     <div class="judge-bar-left">
       <span class="judge-count" id="judge-count"></span>
+      <span class="judge-task-chip" id="judge-task-chip"></span>
       <span class="judge-model" id="judge-model-name"></span>
     </div>
     <div class="judge-bar-right">
@@ -707,24 +716,30 @@
       <button class="judge-btn" id="judge-close" type="button">Close</button>
     </div>
   </div>
-  <div class="judge-body">
-    <aside class="judge-side">
+  <div class="judge-body" id="judge-body">
+    <div class="judge-main">
+      <div class="judge-images" id="judge-images">
+        <div class="judge-pane" id="judge-pane-src" hidden><img id="judge-src" alt="Source render"><span class="judge-pane-tag">Source</span></div>
+        <div class="judge-pane"><img id="judge-out" alt="Model output"><span class="judge-pane-tag" id="judge-out-tag" hidden></span></div>
+      </div>
+      <div class="judge-rate">
+        <span class="judge-rate-lead">Quality</span>
+        <div class="judge-stars" id="judge-stars"></div>
+        <button class="judge-btn" id="judge-compare-toggle" type="button">Compare with source</button>
+        <button class="judge-btn" id="judge-analysis-toggle" type="button">Show structural analysis</button>
+        <span class="judge-hint">1–5 or &larr;/&rarr; to move &nbsp;·&nbsp; saved as you go</span>
+      </div>
+    </div>
+    <!-- Collapsed by default, and after the image in source order: the adherence
+         verdicts are a different judgement from this one, and "FAIL — massing
+         drifted" sitting beside the picture would anchor a rating meant to be
+         about craft alone. -->
+    <aside class="judge-side" id="judge-side" hidden>
       <div class="eyebrow" id="judge-task-num"></div>
       <h3 class="judge-task" id="judge-task-title"></h3>
       <p class="judge-prompt" id="judge-prompt"></p>
       <div id="judge-criteria"></div>
     </aside>
-    <div class="judge-main">
-      <div class="judge-images">
-        <div class="judge-pane"><img id="judge-src" alt="Source render"><span class="judge-pane-tag">Source</span></div>
-        <div class="judge-pane"><img id="judge-out" alt="Model output"><span class="judge-pane-tag" id="judge-out-tag">Output</span></div>
-      </div>
-      <div class="judge-rate">
-        <span class="judge-rate-lead">Quality</span>
-        <div class="judge-stars" id="judge-stars"></div>
-        <span class="judge-hint">1–5 or &larr;/&rarr; to move &nbsp;·&nbsp; saved as you go</span>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -1439,11 +1454,13 @@
       var entry = queue[idx];
       document.getElementById('judge-count').textContent = (idx + 1) + ' / ' + queue.length;
       document.getElementById('judge-model-name').textContent = entry.model;
+      document.getElementById('judge-task-chip').textContent = 'Task ' + entry.task.number + ' — ' + entry.task.title;
       document.getElementById('judge-task-num').textContent = 'Task ' + entry.task.number;
       document.getElementById('judge-task-title').textContent = entry.task.title;
       document.getElementById('judge-prompt').textContent = '"' + entry.task.prompt + '"';
       document.getElementById('judge-src').src = entry.task.source;
       document.getElementById('judge-out').src = imgFor(entry.task.folder, entry.model);
+      document.getElementById('judge-out').alt = entry.model + ' output — task ' + entry.task.number;
       document.getElementById('judge-out-tag').textContent = entry.model;
       document.getElementById('judge-prev').disabled = idx === 0;
       document.getElementById('judge-next').disabled = idx === queue.length - 1;
@@ -1517,6 +1534,31 @@
           b.addEventListener('click', function () { rate(v); });
           starsWrap.appendChild(b);
         });
+        var side = document.getElementById('judge-side');
+        var body = document.getElementById('judge-body');
+        var toggle = document.getElementById('judge-analysis-toggle');
+        toggle.addEventListener('click', function () {
+          var showing = side.hidden;
+          side.hidden = !showing;
+          body.classList.toggle('with-analysis', showing);
+          toggle.textContent = showing ? 'Hide structural analysis' : 'Show structural analysis';
+        });
+
+        // Both extras default off. The bare output is the rating view; the
+        // source and the verdicts are there when you want to check something,
+        // not sitting in frame shaping the score.
+        var srcPane = document.getElementById('judge-pane-src');
+        var outTag = document.getElementById('judge-out-tag');
+        var images = document.getElementById('judge-images');
+        var cmp = document.getElementById('judge-compare-toggle');
+        cmp.addEventListener('click', function () {
+          var showing = srcPane.hidden;
+          srcPane.hidden = !showing;
+          outTag.hidden = !showing;
+          images.classList.toggle('compare', showing);
+          cmp.textContent = showing ? 'Hide source' : 'Compare with source';
+        });
+
         openBtn.addEventListener('click', open);
         document.getElementById('judge-close').addEventListener('click', close);
         document.getElementById('judge-prev').addEventListener('click', function () { show(idx - 1); });
