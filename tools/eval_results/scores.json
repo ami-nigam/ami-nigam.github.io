@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-21T11:48:28+00:00",
+  "generated": "2026-08-21T12:11:53+00:00",
   "judge_model": "claude-opus-5 (in-session, vision)",
   "rubric_version": 1,
   "scores": {
@@ -458,6 +458,972 @@
         },
         "judged_at": "2026-08-21T11:48:28+00:00",
         "summary": "The cleanest re-render in the field. Nothing moved, nothing was re-clad, and the material response is genuinely photographic rather than a tidied render."
+      }
+    },
+    "t2": {
+      "FLUX.2 Max": {
+        "adherence": 87.5,
+        "criteria": {
+          "composition": {
+            "evidence": "Viewpoint and framing follow the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Sketchy, unresolved and clearly exploratory.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "Outstanding coloured-pencil character \u2014 directional hatching in the sky, visible paper grain, pigment breaking over texture.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Construction lines visible throughout, including overrun at the corners.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "The curved tower holds, but the volume behind becomes a blockier mass and the podium's stepping is simplified.",
+            "verdict": "partial"
+          },
+          "muted_tones": {
+            "evidence": "Desaturated pencil palette of greys, pale blues and dusty pinks.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "The most convincing media of the thirteen \u2014 coloured pencil with real paper tooth \u2014 on a slightly reshaped building."
+      },
+      "Grok Imagine Image 2.0": {
+        "adherence": 100.0,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing effectively unchanged from the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Loose treatment with an open, lightly indicated foreground.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "Marker over ink with paper texture, sketched trees and loosely drawn vehicles.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Strong visible linework across facades and the background towers.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "Curved tower, the slab behind and the podium with its louvred box all hold position and proportion.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Muted greys, olives and warm tans.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "A clean marker-and-ink sketch that holds the building, delivered in about ten seconds."
+      },
+      "MAI-Image-2.5": {
+        "adherence": 91.7,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing and viewpoint match the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Tightly and evenly resolved across the whole sheet \u2014 reads as a finished presentation drawing rather than a concept-stage sketch.",
+            "verdict": "partial"
+          },
+          "hand_drawn": {
+            "evidence": "Genuine pen-and-marker with hand-drawn trees, vehicles and figures.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Crisp technical pen linework throughout.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "Every volume holds proportion and relative position.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Building and ground are muted, but the sky wash is a notably saturated blue against an otherwise restrained sheet.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "A crisp technical pen-and-marker board. Well drawn and accurate, but finished enough to read as presentation rather than concept."
+      },
+      "MAI-Image-2.5 Pro": {
+        "adherence": 100.0,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing and viewpoint unchanged.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Loose sky and lightly indicated background keep it exploratory.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "True watercolour behaviour \u2014 pooling, soft edges, visible paper tone \u2014 over hand-inked line.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Ink construction lines visible throughout, with deliberate overrun.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes match the source precisely, including terrace profiles and podium stepping.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Warm parchment ground with restrained blue and green washes.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "Watercolour on cream parchment with ink construction lines \u2014 competition-board quality, and the building is exact."
+      },
+      "Nano Banana 2": {
+        "adherence": 87.5,
+        "criteria": {
+          "composition": {
+            "evidence": "Viewpoint and the placement of elements in the frame follow the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Loose and diagrammatic, with hand-lettered signage labels.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "Marker wash over ink with sketched cars, trees and street furniture \u2014 reads as a drawn sheet, not a filtered render.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Visible construction and outline linework throughout the facades.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "The curved tower and podium hold, but the finned slab behind becomes a jagged angular peak and the bronze box is redrawn as a wider tan volume.",
+            "verdict": "partial"
+          },
+          "muted_tones": {
+            "evidence": "Restrained blue wash and tan blocks.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "A convincing marker sketch with hand-drawn cars and annotation-style labels; the volume behind the main tower is reshaped."
+      },
+      "Nano Banana 2 Lite": {
+        "adherence": 66.7,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing identical to the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Reads as a finished render with a filter, not an early-stage sketch.",
+            "verdict": "fail"
+          },
+          "hand_drawn": {
+            "evidence": "The building is still a photorealistic render: glass reflections, photographic planting and the green LED screen all survive unaltered. Only the sky carries a wash.",
+            "verdict": "fail"
+          },
+          "linework": {
+            "evidence": "Some added edge linework on the towers and line-drawn background blocks, but the podium has no drawn line at all.",
+            "verdict": "partial"
+          },
+          "massing": {
+            "evidence": "Geometry is untouched, which is unsurprising given the render itself is largely still there.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Overall desaturated relative to the source.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "Not a sketch. The render is intact underneath a blue sky wash and a light line overlay \u2014 exactly the filtered-render failure the instruction rules out."
+      },
+      "Nano Banana Pro": {
+        "adherence": 100.0,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing and viewpoint match the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Open foreground and unresolved background read as exploratory.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "Convincing pen-and-marker with wash bleed, uneven strokes and sketched trees; no trace of a filtered photograph.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Confident visible construction linework leads the whole drawing.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "Every volume holds silhouette, proportion and position, including the terrace cantilevers.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Restrained ochres, greys and greens on white paper.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "Textbook design-office hand: pen construction lines, ochre and grey marker, loose foliage \u2014 and the building held exactly."
+      },
+      "Qwen Image 3": {
+        "adherence": 79.2,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing follows the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Reads as a rendered elevation given a pencil finish rather than an exploratory sketch.",
+            "verdict": "partial"
+          },
+          "hand_drawn": {
+            "evidence": "Genuine graphite texture in the sky and line-drawn background towers, but the building core is still a rendered image \u2014 glass reflections and photographic planting show through the treatment.",
+            "verdict": "partial"
+          },
+          "linework": {
+            "evidence": "Some edge linework and drawn background blocks, but the mass is carried tonally rather than by line.",
+            "verdict": "partial"
+          },
+          "massing": {
+            "evidence": "Volumes, proportions and positions all hold.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Strongly desaturated, close to greyscale.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "A graphite treatment applied over a render rather than a drawing made of line \u2014 the building survives, the medium does not convince."
+      },
+      "Qwen Image 3 Pro": {
+        "adherence": 87.5,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing matches the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Still quite resolved \u2014 closer to a finished rendering than a concept sketch.",
+            "verdict": "partial"
+          },
+          "hand_drawn": {
+            "evidence": "Pencil hatching in the sky and sketched tower outlines are genuine, but the facades remain a rendered image beneath the treatment.",
+            "verdict": "partial"
+          },
+          "linework": {
+            "evidence": "Visible construction linework along tower edges, terraces and the background blocks.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes hold proportion and position.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Restrained greys and pale blues.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "The same render-underneath approach as Qwen Image 3, but with enough drawn sky and outline to read more convincingly as a sheet."
+      },
+      "Seedream 5.0 Lite": {
+        "adherence": 100.0,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing matches the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Open and unresolved, clearly an early-stage drawing.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "Reads as drawn rather than filtered \u2014 hand-hatched sky, sketched trees, wash applied loosely over line.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Linework dominates: the drawing is built from outline and construction lines.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "Every volume holds proportion and position, including the podium stepping and louvred box.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Mostly white paper with restrained blue and green washes.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "Line-led ink drawing with light wash \u2014 the most technical hand here, and the building is untouched."
+      },
+      "Seedream 5.0 Pro": {
+        "adherence": 100.0,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing and viewpoint unchanged.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Loose foreground and lightly indicated background read as concept-stage.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "Genuine marker and watercolour behaviour with visible stroke ends and pooling at the edges.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Ink outlines define every volume, with visible overrun.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes match the source in proportion and relative position.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Soft blues, tans and greens throughout.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "Marker and watercolour on white, building held exactly \u2014 one of the cleanest conversions in the task."
+      },
+      "gpt-image-1.5": {
+        "adherence": 75.0,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing is tighter than the source, with the building filling more of the sheet and less sky above.",
+            "verdict": "partial"
+          },
+          "concept_stage": {
+            "evidence": "Unfinished edges and open foreground read as an early-stage sketch.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "Clean pen-and-wash with genuine hand character in the linework and foliage.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Strong, confident ink linework defines every plane.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes are present but reproportioned: the left tower reads shorter and wider, and the finned slab behind becomes a curved-top glass volume.",
+            "verdict": "partial"
+          },
+          "muted_tones": {
+            "evidence": "Very restrained \u2014 largely white paper with grey and green washes.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "An accomplished pen-and-wash drawing that redesigned the building doing it \u2014 the second tower changes form and the frame tightens."
+      },
+      "gpt-image-2": {
+        "adherence": 100.0,
+        "criteria": {
+          "composition": {
+            "evidence": "Framing and viewpoint unchanged from the source.",
+            "verdict": "pass"
+          },
+          "concept_stage": {
+            "evidence": "Loose edges and unresolved background read as design-stage rather than a finished board.",
+            "verdict": "pass"
+          },
+          "hand_drawn": {
+            "evidence": "Genuine media behaviour: watercolour bleed in the sky, uneven ink pressure, background towers drawn as loose vertical strokes rather than filtered geometry.",
+            "verdict": "pass"
+          },
+          "linework": {
+            "evidence": "Deliberate outline and construction linework carries the drawing throughout.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "Curved-top tower, the volume behind and the stepped podium all hold their proportions and relative positions.",
+            "verdict": "pass"
+          },
+          "muted_tones": {
+            "evidence": "Restrained blues, tans and greens; nothing saturated.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:07:49+00:00",
+        "summary": "A proper drawing \u2014 watercolour sky, ink construction lines, background towers reduced to loose verticals \u2014 with the building held exactly."
+      }
+    },
+    "t3": {
+      "FLUX.2 Max": {
+        "adherence": 79.4,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Blue-violet in hue but darkened close to full night; the residual sky light that defines blue hour is largely gone.",
+            "verdict": "partial"
+          },
+          "camera": {
+            "evidence": "Viewpoint and horizon broadly match the source.",
+            "verdict": "pass"
+          },
+          "cinematic": {
+            "evidence": "The most atmospheric image in the task \u2014 heavy contrast and real depth.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Haze at the right edge and around the base, but the tower base stays legible rather than being softened away.",
+            "verdict": "partial"
+          },
+          "inhabited_interiors": {
+            "evidence": "Excellent floor-by-floor variation with visible interior structure and figures at street level.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "The tower holds, but the podium extends substantially further right than the source with additional volumes that were not there.",
+            "verdict": "partial"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible on the podium wall.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Rich warm facade and signage glow against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "Strongly wet foreground carrying clear reflections of the lit facades.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "Superb wet street and interior depth, pushed past blue hour into night, on a podium that has grown extra volumes to the right."
+      },
+      "Grok Imagine Image 2.0": {
+        "adherence": 82.4,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Blue-violet dusk with cloud structure and low ambient.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Clearly dollied in \u2014 the curved top of the main tower is cropped out of frame entirely.",
+            "verdict": "fail"
+          },
+          "cinematic": {
+            "evidence": "Dramatic contrast and strong atmosphere.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Fog rolls through the street and lower levels, softening the base and the background towers.",
+            "verdict": "pass"
+          },
+          "inhabited_interiors": {
+            "evidence": "Varied window lighting across floors with warm interior depth.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "Every volume within frame holds proportion and position.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible and the green LED screen preserved.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Strong warm glow from podium and signage against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "Wet pavement with clear reflections of the facades and lights in the foreground.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "Everything atmospheric lands \u2014 fog, wet street, blue hour, occupancy \u2014 but the frame tightened enough to crop the tower top off."
+      },
+      "MAI-Image-2.5": {
+        "adherence": 82.4,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Blue-violet dusk grading warm at the horizon.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Slightly lower and tighter than the source, with noticeably more foreground road in frame.",
+            "verdict": "partial"
+          },
+          "cinematic": {
+            "evidence": "Strong contrast and cinematic depth.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Fog rolls through the street and around the base, obscuring the lower levels and background.",
+            "verdict": "pass"
+          },
+          "inhabited_interiors": {
+            "evidence": "The tower reads largely uniform dark blue with only scattered lit bays; little sense of occupancy above the podium.",
+            "verdict": "partial"
+          },
+          "massing": {
+            "evidence": "Volumes hold position and proportion.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE reads cleanly on the left, but the right-hand retail sign is garbled into invented glyphs.",
+            "verdict": "partial"
+          },
+          "warm_glow": {
+            "evidence": "Strong warm facade and signage glow against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "Outstanding \u2014 a fully wet street carrying long, clear reflections of the facades and lights.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "The best wet street in the benchmark and real fog through the scene, let down by flat tower interiors and a garbled retail sign."
+      },
+      "MAI-Image-2.5 Pro": {
+        "adherence": 100.0,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Deep blue-violet dusk with cloud structure and low ambient.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Framing and horizon match the source.",
+            "verdict": "pass"
+          },
+          "cinematic": {
+            "evidence": "Dramatic contrast and strong atmospheric depth.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Fog rolls through the street and lower levels, obscuring the base and softening the background towers.",
+            "verdict": "pass"
+          },
+          "inhabited_interiors": {
+            "evidence": "Varied window lighting floor to floor with warm occupied bays and visible interior depth.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes hold silhouette, proportion and position.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible and the green LED screen intact.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Warm facade and signage glow reads clearly against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "Wet pavement carrying clear reflections of the glowing facades and street lights.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "The only clean sweep in the task \u2014 every atmospheric requirement met with the building untouched."
+      },
+      "Nano Banana 2": {
+        "adherence": 82.4,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Deep blue-violet dusk with low ambient light.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Framing effectively unchanged.",
+            "verdict": "pass"
+          },
+          "cinematic": {
+            "evidence": "Moody but restrained; contrast is not pushed to the dramatic level asked for.",
+            "verdict": "partial"
+          },
+          "fog": {
+            "evidence": "Atmospheric haze softens the background, but the tower base stays clearly legible \u2014 not the dense fog through the street the instruction asks for.",
+            "verdict": "partial"
+          },
+          "inhabited_interiors": {
+            "evidence": "Excellent \u2014 floor-by-floor variation with figures and furniture silhouettes visible at the glass.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes hold position and proportion.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "The SIGNAGE lettering is lost to a glowing blur and the green LED screen is replaced by an indistinct warm panel.",
+            "verdict": "partial"
+          },
+          "warm_glow": {
+            "evidence": "Warm interior and podium light reads clearly against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "The ground plane is dry, with no reflection of the glowing facades.",
+            "verdict": "fail"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "Outstanding interior occupancy \u2014 figures visible at the glass \u2014 but the street stays dry and the fog never becomes dense."
+      },
+      "Nano Banana 2 Lite": {
+        "adherence": 85.3,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Blue-violet dusk with low ambient.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Framing matches the source.",
+            "verdict": "pass"
+          },
+          "cinematic": {
+            "evidence": "Atmospheric but restrained in contrast.",
+            "verdict": "partial"
+          },
+          "fog": {
+            "evidence": "Haze softens the background and mid-ground, but the tower base remains clearly visible.",
+            "verdict": "partial"
+          },
+          "inhabited_interiors": {
+            "evidence": "Strong floor-by-floor variation with visible figures and furniture.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "Volumes, proportions and positions all preserved.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible and the green screen preserved.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Warm interior light against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "Dry ground plane with no facade reflection.",
+            "verdict": "fail"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "Holds the building and lights the interiors convincingly at the lowest cost in the field; loses the wet street and the density of the fog."
+      },
+      "Nano Banana Pro": {
+        "adherence": 88.2,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Deep blue-violet dusk.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Framing and horizon match the source.",
+            "verdict": "pass"
+          },
+          "cinematic": {
+            "evidence": "High contrast and genuinely dramatic mood.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Haze around the background and base, but nothing dense enough to obscure the tower base or diffuse the signage.",
+            "verdict": "partial"
+          },
+          "inhabited_interiors": {
+            "evidence": "The strongest read in the task \u2014 distinct figures, varied interior colour and clearly occupied floors.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes hold silhouette and position.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible; the LED screen is recoloured but no lettering is garbled.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Very strong warm glow from facades and podium against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "The street is dry; no reflections of the glowing facades.",
+            "verdict": "fail"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "The best inhabited interiors in the benchmark \u2014 coloured, populated, floor by floor. Undone by a dry street and thin fog."
+      },
+      "Qwen Image 3": {
+        "adherence": 61.8,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Deep blue-violet dusk.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Dollied in far enough to crop the top of the main tower out of frame.",
+            "verdict": "fail"
+          },
+          "cinematic": {
+            "evidence": "Moody with good contrast.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Fog through the street and lower levels, softening the base.",
+            "verdict": "pass"
+          },
+          "inhabited_interiors": {
+            "evidence": "The podium reads occupied but the tower is largely uniform dark glass with only a few lit bays.",
+            "verdict": "partial"
+          },
+          "massing": {
+            "evidence": "The podium is restructured \u2014 the louvred box is replaced by different volumes and the white fins are gone.",
+            "verdict": "partial"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE and ENTRANCE both legible.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Warm podium and retail glow against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "Dry ground plane with no facade reflection.",
+            "verdict": "fail"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "Atmosphere is fine; the building is not. It cropped the tower top off and rebuilt the podium, and the interiors stay mostly dark."
+      },
+      "Qwen Image 3 Pro": {
+        "adherence": 73.5,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Blue-violet dusk with a warm horizon band.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Tighter framing than the source, with the tower top close to the frame edge.",
+            "verdict": "partial"
+          },
+          "cinematic": {
+            "evidence": "Good contrast and atmospheric depth.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Fog at street level and along the right edge, softening the base.",
+            "verdict": "pass"
+          },
+          "inhabited_interiors": {
+            "evidence": "The tower is largely dark with little window variation; only the podium reads occupied.",
+            "verdict": "partial"
+          },
+          "massing": {
+            "evidence": "The gold louvred box sits higher and further right than the source, and the podium beneath it is rearranged.",
+            "verdict": "partial"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible and the green screen preserved.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Warm podium and signage glow against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "Some reflective sheen and light streaking in the foreground, but no clear facade reflection.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "Better framed than Qwen Image 3 but softer everywhere else \u2014 the tower reads unoccupied and the podium box has floated out of place."
+      },
+      "Seedream 5.0 Lite": {
+        "adherence": 97.1,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Deep blue dusk with low ambient light.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Framing and horizon match the source.",
+            "verdict": "pass"
+          },
+          "cinematic": {
+            "evidence": "Dramatic blue-hour mood with good depth.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Fog rolls through the street and lower levels, obscuring the base and the background towers to the right.",
+            "verdict": "pass"
+          },
+          "inhabited_interiors": {
+            "evidence": "Strongly varied window lighting with lit and dark bays across floors.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "Every volume holds silhouette, proportion and position.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible and the green LED screen preserved.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Warm podium and window light reads clearly against the cool blue.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "The foreground road carries some reflective sheen, but the reflections of the facades are indistinct.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "Near-perfect at the cheapest price in the field \u2014 real fog through the street, held geometry, varied interiors. Only the wet pavement is soft."
+      },
+      "Seedream 5.0 Pro": {
+        "adherence": 88.2,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Deep blue-violet grading to magenta at the right \u2014 clearly dusk.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Framing matches the source.",
+            "verdict": "pass"
+          },
+          "cinematic": {
+            "evidence": "Strong mood and contrast.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Haze at the base and right edge, but not dense enough to obscure the tower base or diffuse the signage.",
+            "verdict": "partial"
+          },
+          "inhabited_interiors": {
+            "evidence": "Good floor-by-floor variation with warm occupied bays.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes hold proportion and position.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Warm interiors and signage against the cool sky.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "The street reads dry, with no facade reflection.",
+            "verdict": "fail"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "A handsome blue hour with a magenta gradient and solid interior variation; the fog is thin and the street never wets."
+      },
+      "gpt-image-1.5": {
+        "adherence": 61.8,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Deep blue-violet with dramatic cloud structure and low ambient.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Dollied in with a lowered horizon; the building fills far more of the frame than the source.",
+            "verdict": "fail"
+          },
+          "cinematic": {
+            "evidence": "Extremely dramatic \u2014 the strongest mood in the task.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Heavy fog rolling through the street, obscuring the base and diffusing the light sources.",
+            "verdict": "pass"
+          },
+          "inhabited_interiors": {
+            "evidence": "Strongly varied window lighting with warm interior depth across floors.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "The tower is reproportioned much shorter and blockier, the terraces are relocated, and the right-hand louvred box is replaced by a different dark volume.",
+            "verdict": "fail"
+          },
+          "signage_integrity": {
+            "evidence": "The lower SIGNAGE block reads cleanly, but a second sign at mid-level is garbled into overlapping glyphs.",
+            "verdict": "partial"
+          },
+          "warm_glow": {
+            "evidence": "Powerful warm facade and signage glow against the cool dusk.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "Clear wet pavement carrying reflections of the facades and street lights.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "The most cinematic image of the thirteen, on a building it substantially rebuilt. Every atmospheric requirement met; massing and camera both lost."
+      },
+      "gpt-image-2": {
+        "adherence": 97.1,
+        "criteria": {
+          "blue_hour_sky": {
+            "evidence": "Deep blue-violet with low ambient \u2014 reads as dusk rather than night.",
+            "verdict": "pass"
+          },
+          "camera": {
+            "evidence": "Framing and horizon match the source.",
+            "verdict": "pass"
+          },
+          "cinematic": {
+            "evidence": "Strong contrast and atmospheric depth.",
+            "verdict": "pass"
+          },
+          "fog": {
+            "evidence": "Dense fog through the street and lower levels, obscuring the tower base and visibly diffusing the background towers.",
+            "verdict": "pass"
+          },
+          "inhabited_interiors": {
+            "evidence": "Window lighting varies floor to floor with lit and dark bays and warm interior depth \u2014 not a uniform glow.",
+            "verdict": "pass"
+          },
+          "massing": {
+            "evidence": "All volumes hold silhouette, proportion and position through the lighting change.",
+            "verdict": "pass"
+          },
+          "signage_integrity": {
+            "evidence": "SIGNAGE legible and the green LED screen intact.",
+            "verdict": "pass"
+          },
+          "warm_glow": {
+            "evidence": "Facades and signage glow warm against the cool sky, giving real colour-temperature contrast.",
+            "verdict": "pass"
+          },
+          "wet_reflections": {
+            "evidence": "The street picks up some sheen and vehicle light, but there is no clear reflection of the glowing facades.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:11:53+00:00",
+        "summary": "Hits almost every requirement: real blue hour, dense fog at the base, and genuinely varied interior lighting. Only the wet pavement is underdone."
       }
     }
   },

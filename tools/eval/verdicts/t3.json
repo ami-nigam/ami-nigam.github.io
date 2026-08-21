@@ -1,0 +1,186 @@
+{
+  "t3": {
+    "gpt-image-2": {
+      "summary": "Hits almost every requirement: real blue hour, dense fog at the base, and genuinely varied interior lighting. Only the wet pavement is underdone.",
+      "criteria": {
+        "massing": ["pass", "All volumes hold silhouette, proportion and position through the lighting change."],
+        "camera": ["pass", "Framing and horizon match the source."],
+        "blue_hour_sky": ["pass", "Deep blue-violet with low ambient — reads as dusk rather than night."],
+        "warm_glow": ["pass", "Facades and signage glow warm against the cool sky, giving real colour-temperature contrast."],
+        "fog": ["pass", "Dense fog through the street and lower levels, obscuring the tower base and visibly diffusing the background towers."],
+        "inhabited_interiors": ["pass", "Window lighting varies floor to floor with lit and dark bays and warm interior depth — not a uniform glow."],
+        "wet_reflections": ["partial", "The street picks up some sheen and vehicle light, but there is no clear reflection of the glowing facades."],
+        "cinematic": ["pass", "Strong contrast and atmospheric depth."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen intact."]
+      }
+    },
+    "gpt-image-1.5": {
+      "summary": "The most cinematic image of the thirteen, on a building it substantially rebuilt. Every atmospheric requirement met; massing and camera both lost.",
+      "criteria": {
+        "massing": ["fail", "The tower is reproportioned much shorter and blockier, the terraces are relocated, and the right-hand louvred box is replaced by a different dark volume."],
+        "camera": ["fail", "Dollied in with a lowered horizon; the building fills far more of the frame than the source."],
+        "blue_hour_sky": ["pass", "Deep blue-violet with dramatic cloud structure and low ambient."],
+        "warm_glow": ["pass", "Powerful warm facade and signage glow against the cool dusk."],
+        "fog": ["pass", "Heavy fog rolling through the street, obscuring the base and diffusing the light sources."],
+        "inhabited_interiors": ["pass", "Strongly varied window lighting with warm interior depth across floors."],
+        "wet_reflections": ["pass", "Clear wet pavement carrying reflections of the facades and street lights."],
+        "cinematic": ["pass", "Extremely dramatic — the strongest mood in the task."],
+        "signage_integrity": ["partial", "The lower SIGNAGE block reads cleanly, but a second sign at mid-level is garbled into overlapping glyphs."]
+      }
+    },
+    "Nano Banana 2": {
+      "summary": "Outstanding interior occupancy — figures visible at the glass — but the street stays dry and the fog never becomes dense.",
+      "criteria": {
+        "massing": ["pass", "All volumes hold position and proportion."],
+        "camera": ["pass", "Framing effectively unchanged."],
+        "blue_hour_sky": ["pass", "Deep blue-violet dusk with low ambient light."],
+        "warm_glow": ["pass", "Warm interior and podium light reads clearly against the cool sky."],
+        "fog": ["partial", "Atmospheric haze softens the background, but the tower base stays clearly legible — not the dense fog through the street the instruction asks for."],
+        "inhabited_interiors": ["pass", "Excellent — floor-by-floor variation with figures and furniture silhouettes visible at the glass."],
+        "wet_reflections": ["fail", "The ground plane is dry, with no reflection of the glowing facades."],
+        "cinematic": ["partial", "Moody but restrained; contrast is not pushed to the dramatic level asked for."],
+        "signage_integrity": ["partial", "The SIGNAGE lettering is lost to a glowing blur and the green LED screen is replaced by an indistinct warm panel."]
+      }
+    },
+    "Nano Banana 2 Lite": {
+      "summary": "Holds the building and lights the interiors convincingly at the lowest cost in the field; loses the wet street and the density of the fog.",
+      "criteria": {
+        "massing": ["pass", "Volumes, proportions and positions all preserved."],
+        "camera": ["pass", "Framing matches the source."],
+        "blue_hour_sky": ["pass", "Blue-violet dusk with low ambient."],
+        "warm_glow": ["pass", "Warm interior light against the cool sky."],
+        "fog": ["partial", "Haze softens the background and mid-ground, but the tower base remains clearly visible."],
+        "inhabited_interiors": ["pass", "Strong floor-by-floor variation with visible figures and furniture."],
+        "wet_reflections": ["fail", "Dry ground plane with no facade reflection."],
+        "cinematic": ["partial", "Atmospheric but restrained in contrast."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green screen preserved."]
+      }
+    },
+    "Nano Banana Pro": {
+      "summary": "The best inhabited interiors in the benchmark — coloured, populated, floor by floor. Undone by a dry street and thin fog.",
+      "criteria": {
+        "massing": ["pass", "All volumes hold silhouette and position."],
+        "camera": ["pass", "Framing and horizon match the source."],
+        "blue_hour_sky": ["pass", "Deep blue-violet dusk."],
+        "warm_glow": ["pass", "Very strong warm glow from facades and podium against the cool sky."],
+        "fog": ["partial", "Haze around the background and base, but nothing dense enough to obscure the tower base or diffuse the signage."],
+        "inhabited_interiors": ["pass", "The strongest read in the task — distinct figures, varied interior colour and clearly occupied floors."],
+        "wet_reflections": ["fail", "The street is dry; no reflections of the glowing facades."],
+        "cinematic": ["pass", "High contrast and genuinely dramatic mood."],
+        "signage_integrity": ["pass", "SIGNAGE legible; the LED screen is recoloured but no lettering is garbled."]
+      }
+    },
+    "FLUX.2 Max": {
+      "summary": "Superb wet street and interior depth, pushed past blue hour into night, on a podium that has grown extra volumes to the right.",
+      "criteria": {
+        "massing": ["partial", "The tower holds, but the podium extends substantially further right than the source with additional volumes that were not there."],
+        "camera": ["pass", "Viewpoint and horizon broadly match the source."],
+        "blue_hour_sky": ["partial", "Blue-violet in hue but darkened close to full night; the residual sky light that defines blue hour is largely gone."],
+        "warm_glow": ["pass", "Rich warm facade and signage glow against the cool sky."],
+        "fog": ["partial", "Haze at the right edge and around the base, but the tower base stays legible rather than being softened away."],
+        "inhabited_interiors": ["pass", "Excellent floor-by-floor variation with visible interior structure and figures at street level."],
+        "wet_reflections": ["pass", "Strongly wet foreground carrying clear reflections of the lit facades."],
+        "cinematic": ["pass", "The most atmospheric image in the task — heavy contrast and real depth."],
+        "signage_integrity": ["pass", "SIGNAGE legible on the podium wall."]
+      }
+    },
+    "Grok Imagine Image 2.0": {
+      "summary": "Everything atmospheric lands — fog, wet street, blue hour, occupancy — but the frame tightened enough to crop the tower top off.",
+      "criteria": {
+        "massing": ["pass", "Every volume within frame holds proportion and position."],
+        "camera": ["fail", "Clearly dollied in — the curved top of the main tower is cropped out of frame entirely."],
+        "blue_hour_sky": ["pass", "Blue-violet dusk with cloud structure and low ambient."],
+        "warm_glow": ["pass", "Strong warm glow from podium and signage against the cool sky."],
+        "fog": ["pass", "Fog rolls through the street and lower levels, softening the base and the background towers."],
+        "inhabited_interiors": ["pass", "Varied window lighting across floors with warm interior depth."],
+        "wet_reflections": ["pass", "Wet pavement with clear reflections of the facades and lights in the foreground."],
+        "cinematic": ["pass", "Dramatic contrast and strong atmosphere."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen preserved."]
+      }
+    },
+    "Seedream 5.0 Pro": {
+      "summary": "A handsome blue hour with a magenta gradient and solid interior variation; the fog is thin and the street never wets.",
+      "criteria": {
+        "massing": ["pass", "All volumes hold proportion and position."],
+        "camera": ["pass", "Framing matches the source."],
+        "blue_hour_sky": ["pass", "Deep blue-violet grading to magenta at the right — clearly dusk."],
+        "warm_glow": ["pass", "Warm interiors and signage against the cool sky."],
+        "fog": ["partial", "Haze at the base and right edge, but not dense enough to obscure the tower base or diffuse the signage."],
+        "inhabited_interiors": ["pass", "Good floor-by-floor variation with warm occupied bays."],
+        "wet_reflections": ["fail", "The street reads dry, with no facade reflection."],
+        "cinematic": ["pass", "Strong mood and contrast."],
+        "signage_integrity": ["pass", "SIGNAGE legible."]
+      }
+    },
+    "Seedream 5.0 Lite": {
+      "summary": "Near-perfect at the cheapest price in the field — real fog through the street, held geometry, varied interiors. Only the wet pavement is soft.",
+      "criteria": {
+        "massing": ["pass", "Every volume holds silhouette, proportion and position."],
+        "camera": ["pass", "Framing and horizon match the source."],
+        "blue_hour_sky": ["pass", "Deep blue dusk with low ambient light."],
+        "warm_glow": ["pass", "Warm podium and window light reads clearly against the cool blue."],
+        "fog": ["pass", "Fog rolls through the street and lower levels, obscuring the base and the background towers to the right."],
+        "inhabited_interiors": ["pass", "Strongly varied window lighting with lit and dark bays across floors."],
+        "wet_reflections": ["partial", "The foreground road carries some reflective sheen, but the reflections of the facades are indistinct."],
+        "cinematic": ["pass", "Dramatic blue-hour mood with good depth."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen preserved."]
+      }
+    },
+    "Qwen Image 3": {
+      "summary": "Atmosphere is fine; the building is not. It cropped the tower top off and rebuilt the podium, and the interiors stay mostly dark.",
+      "criteria": {
+        "massing": ["partial", "The podium is restructured — the louvred box is replaced by different volumes and the white fins are gone."],
+        "camera": ["fail", "Dollied in far enough to crop the top of the main tower out of frame."],
+        "blue_hour_sky": ["pass", "Deep blue-violet dusk."],
+        "warm_glow": ["pass", "Warm podium and retail glow against the cool sky."],
+        "fog": ["pass", "Fog through the street and lower levels, softening the base."],
+        "inhabited_interiors": ["partial", "The podium reads occupied but the tower is largely uniform dark glass with only a few lit bays."],
+        "wet_reflections": ["fail", "Dry ground plane with no facade reflection."],
+        "cinematic": ["pass", "Moody with good contrast."],
+        "signage_integrity": ["pass", "SIGNAGE and ENTRANCE both legible."]
+      }
+    },
+    "Qwen Image 3 Pro": {
+      "summary": "Better framed than Qwen Image 3 but softer everywhere else — the tower reads unoccupied and the podium box has floated out of place.",
+      "criteria": {
+        "massing": ["partial", "The gold louvred box sits higher and further right than the source, and the podium beneath it is rearranged."],
+        "camera": ["partial", "Tighter framing than the source, with the tower top close to the frame edge."],
+        "blue_hour_sky": ["pass", "Blue-violet dusk with a warm horizon band."],
+        "warm_glow": ["pass", "Warm podium and signage glow against the cool sky."],
+        "fog": ["pass", "Fog at street level and along the right edge, softening the base."],
+        "inhabited_interiors": ["partial", "The tower is largely dark with little window variation; only the podium reads occupied."],
+        "wet_reflections": ["partial", "Some reflective sheen and light streaking in the foreground, but no clear facade reflection."],
+        "cinematic": ["pass", "Good contrast and atmospheric depth."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green screen preserved."]
+      }
+    },
+    "MAI-Image-2.5": {
+      "summary": "The best wet street in the benchmark and real fog through the scene, let down by flat tower interiors and a garbled retail sign.",
+      "criteria": {
+        "massing": ["pass", "Volumes hold position and proportion."],
+        "camera": ["partial", "Slightly lower and tighter than the source, with noticeably more foreground road in frame."],
+        "blue_hour_sky": ["pass", "Blue-violet dusk grading warm at the horizon."],
+        "warm_glow": ["pass", "Strong warm facade and signage glow against the cool sky."],
+        "fog": ["pass", "Fog rolls through the street and around the base, obscuring the lower levels and background."],
+        "inhabited_interiors": ["partial", "The tower reads largely uniform dark blue with only scattered lit bays; little sense of occupancy above the podium."],
+        "wet_reflections": ["pass", "Outstanding — a fully wet street carrying long, clear reflections of the facades and lights."],
+        "cinematic": ["pass", "Strong contrast and cinematic depth."],
+        "signage_integrity": ["partial", "SIGNAGE reads cleanly on the left, but the right-hand retail sign is garbled into invented glyphs."]
+      }
+    },
+    "MAI-Image-2.5 Pro": {
+      "summary": "The only clean sweep in the task — every atmospheric requirement met with the building untouched.",
+      "criteria": {
+        "massing": ["pass", "All volumes hold silhouette, proportion and position."],
+        "camera": ["pass", "Framing and horizon match the source."],
+        "blue_hour_sky": ["pass", "Deep blue-violet dusk with cloud structure and low ambient."],
+        "warm_glow": ["pass", "Warm facade and signage glow reads clearly against the cool sky."],
+        "fog": ["pass", "Fog rolls through the street and lower levels, obscuring the base and softening the background towers."],
+        "inhabited_interiors": ["pass", "Varied window lighting floor to floor with warm occupied bays and visible interior depth."],
+        "wet_reflections": ["pass", "Wet pavement carrying clear reflections of the glowing facades and street lights."],
+        "cinematic": ["pass", "Dramatic contrast and strong atmospheric depth."],
+        "signage_integrity": ["pass", "SIGNAGE legible and the green LED screen intact."]
+      }
+    }
+  }
+}

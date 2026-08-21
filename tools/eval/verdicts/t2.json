@@ -1,0 +1,147 @@
+{
+  "t2": {
+    "gpt-image-2": {
+      "summary": "A proper drawing — watercolour sky, ink construction lines, background towers reduced to loose verticals — with the building held exactly.",
+      "criteria": {
+        "massing": ["pass", "Curved-top tower, the volume behind and the stepped podium all hold their proportions and relative positions."],
+        "composition": ["pass", "Framing and viewpoint unchanged from the source."],
+        "hand_drawn": ["pass", "Genuine media behaviour: watercolour bleed in the sky, uneven ink pressure, background towers drawn as loose vertical strokes rather than filtered geometry."],
+        "linework": ["pass", "Deliberate outline and construction linework carries the drawing throughout."],
+        "muted_tones": ["pass", "Restrained blues, tans and greens; nothing saturated."],
+        "concept_stage": ["pass", "Loose edges and unresolved background read as design-stage rather than a finished board."]
+      }
+    },
+    "gpt-image-1.5": {
+      "summary": "An accomplished pen-and-wash drawing that redesigned the building doing it — the second tower changes form and the frame tightens.",
+      "criteria": {
+        "massing": ["partial", "All volumes are present but reproportioned: the left tower reads shorter and wider, and the finned slab behind becomes a curved-top glass volume."],
+        "composition": ["partial", "Framing is tighter than the source, with the building filling more of the sheet and less sky above."],
+        "hand_drawn": ["pass", "Clean pen-and-wash with genuine hand character in the linework and foliage."],
+        "linework": ["pass", "Strong, confident ink linework defines every plane."],
+        "muted_tones": ["pass", "Very restrained — largely white paper with grey and green washes."],
+        "concept_stage": ["pass", "Unfinished edges and open foreground read as an early-stage sketch."]
+      }
+    },
+    "Nano Banana 2": {
+      "summary": "A convincing marker sketch with hand-drawn cars and annotation-style labels; the volume behind the main tower is reshaped.",
+      "criteria": {
+        "massing": ["partial", "The curved tower and podium hold, but the finned slab behind becomes a jagged angular peak and the bronze box is redrawn as a wider tan volume."],
+        "composition": ["pass", "Viewpoint and the placement of elements in the frame follow the source."],
+        "hand_drawn": ["pass", "Marker wash over ink with sketched cars, trees and street furniture — reads as a drawn sheet, not a filtered render."],
+        "linework": ["pass", "Visible construction and outline linework throughout the facades."],
+        "muted_tones": ["pass", "Restrained blue wash and tan blocks."],
+        "concept_stage": ["pass", "Loose and diagrammatic, with hand-lettered signage labels."]
+      }
+    },
+    "Nano Banana 2 Lite": {
+      "summary": "Not a sketch. The render is intact underneath a blue sky wash and a light line overlay — exactly the filtered-render failure the instruction rules out.",
+      "criteria": {
+        "massing": ["pass", "Geometry is untouched, which is unsurprising given the render itself is largely still there."],
+        "composition": ["pass", "Framing identical to the source."],
+        "hand_drawn": ["fail", "The building is still a photorealistic render: glass reflections, photographic planting and the green LED screen all survive unaltered. Only the sky carries a wash."],
+        "linework": ["partial", "Some added edge linework on the towers and line-drawn background blocks, but the podium has no drawn line at all."],
+        "muted_tones": ["pass", "Overall desaturated relative to the source."],
+        "concept_stage": ["fail", "Reads as a finished render with a filter, not an early-stage sketch."]
+      }
+    },
+    "Nano Banana Pro": {
+      "summary": "Textbook design-office hand: pen construction lines, ochre and grey marker, loose foliage — and the building held exactly.",
+      "criteria": {
+        "massing": ["pass", "Every volume holds silhouette, proportion and position, including the terrace cantilevers."],
+        "composition": ["pass", "Framing and viewpoint match the source."],
+        "hand_drawn": ["pass", "Convincing pen-and-marker with wash bleed, uneven strokes and sketched trees; no trace of a filtered photograph."],
+        "linework": ["pass", "Confident visible construction linework leads the whole drawing."],
+        "muted_tones": ["pass", "Restrained ochres, greys and greens on white paper."],
+        "concept_stage": ["pass", "Open foreground and unresolved background read as exploratory."]
+      }
+    },
+    "FLUX.2 Max": {
+      "summary": "The most convincing media of the thirteen — coloured pencil with real paper tooth — on a slightly reshaped building.",
+      "criteria": {
+        "massing": ["partial", "The curved tower holds, but the volume behind becomes a blockier mass and the podium's stepping is simplified."],
+        "composition": ["pass", "Viewpoint and framing follow the source."],
+        "hand_drawn": ["pass", "Outstanding coloured-pencil character — directional hatching in the sky, visible paper grain, pigment breaking over texture."],
+        "linework": ["pass", "Construction lines visible throughout, including overrun at the corners."],
+        "muted_tones": ["pass", "Desaturated pencil palette of greys, pale blues and dusty pinks."],
+        "concept_stage": ["pass", "Sketchy, unresolved and clearly exploratory."]
+      }
+    },
+    "Grok Imagine Image 2.0": {
+      "summary": "A clean marker-and-ink sketch that holds the building, delivered in about ten seconds.",
+      "criteria": {
+        "massing": ["pass", "Curved tower, the slab behind and the podium with its louvred box all hold position and proportion."],
+        "composition": ["pass", "Framing effectively unchanged from the source."],
+        "hand_drawn": ["pass", "Marker over ink with paper texture, sketched trees and loosely drawn vehicles."],
+        "linework": ["pass", "Strong visible linework across facades and the background towers."],
+        "muted_tones": ["pass", "Muted greys, olives and warm tans."],
+        "concept_stage": ["pass", "Loose treatment with an open, lightly indicated foreground."]
+      }
+    },
+    "Seedream 5.0 Pro": {
+      "summary": "Marker and watercolour on white, building held exactly — one of the cleanest conversions in the task.",
+      "criteria": {
+        "massing": ["pass", "All volumes match the source in proportion and relative position."],
+        "composition": ["pass", "Framing and viewpoint unchanged."],
+        "hand_drawn": ["pass", "Genuine marker and watercolour behaviour with visible stroke ends and pooling at the edges."],
+        "linework": ["pass", "Ink outlines define every volume, with visible overrun."],
+        "muted_tones": ["pass", "Soft blues, tans and greens throughout."],
+        "concept_stage": ["pass", "Loose foreground and lightly indicated background read as concept-stage."]
+      }
+    },
+    "Seedream 5.0 Lite": {
+      "summary": "Line-led ink drawing with light wash — the most technical hand here, and the building is untouched.",
+      "criteria": {
+        "massing": ["pass", "Every volume holds proportion and position, including the podium stepping and louvred box."],
+        "composition": ["pass", "Framing matches the source."],
+        "hand_drawn": ["pass", "Reads as drawn rather than filtered — hand-hatched sky, sketched trees, wash applied loosely over line."],
+        "linework": ["pass", "Linework dominates: the drawing is built from outline and construction lines."],
+        "muted_tones": ["pass", "Mostly white paper with restrained blue and green washes."],
+        "concept_stage": ["pass", "Open and unresolved, clearly an early-stage drawing."]
+      }
+    },
+    "Qwen Image 3": {
+      "summary": "A graphite treatment applied over a render rather than a drawing made of line — the building survives, the medium does not convince.",
+      "criteria": {
+        "massing": ["pass", "Volumes, proportions and positions all hold."],
+        "composition": ["pass", "Framing follows the source."],
+        "hand_drawn": ["partial", "Genuine graphite texture in the sky and line-drawn background towers, but the building core is still a rendered image — glass reflections and photographic planting show through the treatment."],
+        "linework": ["partial", "Some edge linework and drawn background blocks, but the mass is carried tonally rather than by line."],
+        "muted_tones": ["pass", "Strongly desaturated, close to greyscale."],
+        "concept_stage": ["partial", "Reads as a rendered elevation given a pencil finish rather than an exploratory sketch."]
+      }
+    },
+    "Qwen Image 3 Pro": {
+      "summary": "The same render-underneath approach as Qwen Image 3, but with enough drawn sky and outline to read more convincingly as a sheet.",
+      "criteria": {
+        "massing": ["pass", "All volumes hold proportion and position."],
+        "composition": ["pass", "Framing matches the source."],
+        "hand_drawn": ["partial", "Pencil hatching in the sky and sketched tower outlines are genuine, but the facades remain a rendered image beneath the treatment."],
+        "linework": ["pass", "Visible construction linework along tower edges, terraces and the background blocks."],
+        "muted_tones": ["pass", "Restrained greys and pale blues."],
+        "concept_stage": ["partial", "Still quite resolved — closer to a finished rendering than a concept sketch."]
+      }
+    },
+    "MAI-Image-2.5": {
+      "summary": "A crisp technical pen-and-marker board. Well drawn and accurate, but finished enough to read as presentation rather than concept.",
+      "criteria": {
+        "massing": ["pass", "Every volume holds proportion and relative position."],
+        "composition": ["pass", "Framing and viewpoint match the source."],
+        "hand_drawn": ["pass", "Genuine pen-and-marker with hand-drawn trees, vehicles and figures."],
+        "linework": ["pass", "Crisp technical pen linework throughout."],
+        "muted_tones": ["partial", "Building and ground are muted, but the sky wash is a notably saturated blue against an otherwise restrained sheet."],
+        "concept_stage": ["partial", "Tightly and evenly resolved across the whole sheet — reads as a finished presentation drawing rather than a concept-stage sketch."]
+      }
+    },
+    "MAI-Image-2.5 Pro": {
+      "summary": "Watercolour on cream parchment with ink construction lines — competition-board quality, and the building is exact.",
+      "criteria": {
+        "massing": ["pass", "All volumes match the source precisely, including terrace profiles and podium stepping."],
+        "composition": ["pass", "Framing and viewpoint unchanged."],
+        "hand_drawn": ["pass", "True watercolour behaviour — pooling, soft edges, visible paper tone — over hand-inked line."],
+        "linework": ["pass", "Ink construction lines visible throughout, with deliberate overrun."],
+        "muted_tones": ["pass", "Warm parchment ground with restrained blue and green washes."],
+        "concept_stage": ["pass", "Loose sky and lightly indicated background keep it exploratory."]
+      }
+    }
+  }
+}
