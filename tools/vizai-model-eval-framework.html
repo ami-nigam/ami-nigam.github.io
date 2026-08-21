@@ -307,7 +307,7 @@
       <div class="stat-row"><dt>Models</dt><dd>13</dd></div>
       <div class="stat-row"><dt>Tasks run</dt><dd>5 of 9</dd></div>
       <div class="stat-row"><dt>Generations</dt><dd>60+</dd></div>
-      <div class="stat-row"><dt>Cheapest pass</dt><dd>$0.030</dd></div>
+      <div class="stat-row"><dt>Cheapest pass</dt><dd>$0.035</dd></div>
       <div class="stat-row" style="border-bottom: none;"><dt>Updated</dt><dd>Aug 2026</dd></div>
     </dl>
   </div>
@@ -563,7 +563,7 @@
     <div class="eyebrow">04 / Cost &amp; speed</div>
     <div>
       <h2>What a run costs, and what it costs at volume.</h2>
-      <p class="lede">Average across all logged runs, at standard output resolution. Mean $0.055 / gen, median $0.047. Bars are relative to the priciest model in the set.</p>
+      <p class="lede">Average across all logged runs, at standard output resolution. Mean $0.058 / gen, median $0.048. Bars are relative to the priciest model in the set. gpt-image-2 and gpt-image-1.5 predate this benchmark's automated cost logging and are priced by OpenAI's quality tier instead — shown as a range, sorted here on their medium-tier price.</p>
       <div class="cost-head-row"><span>Model</span><span style="text-align:right;">Cost</span><span>Relative spend</span><span style="text-align:right;">Avg time</span></div>
       <div id="cost-list"></div>
       <div class="volume-wrap">
@@ -692,11 +692,11 @@
   };
 
   var MODELS = [
-    { name: 'gpt-image-2', tier: 'Baseline', cost: 0.030, speed: 41.5, g: ['PASS','PASS','PASS','PASS'], bestFor: 'Reliability ceiling — passes every fidelity test; slowest and priciest of the baseline set' },
-    { name: 'Nano Banana 2 Lite', tier: 'Baseline', cost: 0.030, speed: 8.2, g: ['PART','PASS','PASS','PART'], bestFor: '3–5× faster and far smaller files than anything else, trades away material fidelity' },
-    { name: 'gpt-image-1.5', tier: 'Baseline', cost: 0.040, speed: 23.8, g: ['FAIL','FAIL','FAIL','FAIL'], bestFor: 'Fast, good atmosphere — but a repeated geometry-drift risk (failed 3 of 4 relevant tasks)' },
-    { name: 'Nano Banana 2', tier: 'Baseline', cost: 0.060, speed: 17.5, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Solid fidelity, but the clearest miss on the constrained zoom' },
-    { name: 'Nano Banana Pro', tier: 'Baseline', cost: 0.120, speed: 25.0, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Best baseline lighting match, tends to crop tighter than the source' },
+    { name: 'gpt-image-2', tier: 'Baseline', cost: 0.053, costLow: 0.006, costHigh: 0.211, speed: 41.5, g: ['PASS','PASS','PASS','PASS'], bestFor: 'Reliability ceiling — passes every fidelity test. Priced by quality tier: $0.006 low to $0.211 high; medium ~$0.053 is the realistic default' },
+    { name: 'Nano Banana 2 Lite', tier: 'Baseline', cost: 0.034, speed: 8.2, g: ['PART','PASS','PASS','PART'], bestFor: '3–5× faster and far smaller files than anything else, trades away material fidelity' },
+    { name: 'gpt-image-1.5', tier: 'Baseline', cost: 0.034, costLow: 0.009, costHigh: 0.133, speed: 23.8, g: ['FAIL','FAIL','FAIL','FAIL'], bestFor: 'Fast, good atmosphere — but a repeated geometry-drift risk (failed 3 of 4 relevant tasks). Priced by quality tier: $0.009 low to $0.133 high' },
+    { name: 'Nano Banana 2', tier: 'Baseline', cost: 0.067, speed: 17.5, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Solid fidelity, but the clearest miss on the constrained zoom' },
+    { name: 'Nano Banana Pro', tier: 'Baseline', cost: 0.134, speed: 25.0, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Best baseline lighting match, tends to crop tighter than the source' },
     { name: 'Qwen Image 3', tier: 'New', cost: 0.033, speed: 48.5, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Budget-friendly, dependable geometry holding' },
     { name: 'Seedream 5.0 Lite', tier: 'New', cost: 0.035, speed: 52.2, g: ['PASS','PASS','PASS','PASS'], bestFor: 'Cheap and reliable — one of only two models to cleanly pass the constrained zoom' },
     { name: 'Qwen Image 3 Pro', tier: 'New', cost: 0.043, speed: 98.2, g: ['PASS','PASS','PASS','FAIL'], bestFor: 'Crisp detailing, but the slowest model in the whole benchmark' },
@@ -793,7 +793,7 @@
   ];
 
   var PICKS = [
-    { role: 'If fidelity is the job', model: 'gpt-image-2', stat: '$0.030 · 41.5s · 4/4 pass', why: 'Clean across every task run: geometry held, materials correct, signage legible, and the only baseline model to hold the constrained zoom. You pay for it in seconds, not dollars.' },
+    { role: 'If fidelity is the job', model: 'gpt-image-2', stat: '$0.006–$0.211 · 41.5s · 4/4 pass', why: 'Clean across every task run: geometry held, materials correct, signage legible, and the only baseline model to hold the constrained zoom. Priced by quality tier — budget for the medium tier (~$0.053) as the realistic default, not the low-tier floor.' },
     { role: 'Best value', model: 'MAI-Image-2.5', stat: '$0.047 · 29.7s · 4/4 pass', why: 'Passes everything including the zoom, at moderate speed and mid-tier cost. The pick if you want one default model and no asterisks.' },
     { role: 'If speed is the job', model: 'Grok Imagine Image 2.0', stat: '$0.050 · 10.7s · 3/4 pass', why: 'Roughly 10 seconds a generation — fast enough for interactive work. Only the constrained zoom slips, where it drifts into a freeform redesign.' },
     { role: 'Cheapest that still holds', model: 'Seedream 5.0 Lite', stat: '$0.035 · 52.2s · 4/4 pass', why: 'The bargain of the benchmark: one of two models to cleanly crop-and-upscale the terrace. Slow, so batch it rather than sit and wait.' }
@@ -889,6 +889,22 @@
 
   function passCount(m) { return m.g.filter(function (x) { return x === 'PASS'; }).length; }
 
+  // gpt-image-2 and gpt-image-1.5 are the only two models here without a
+  // recorded per-generation cost from this benchmark's own logs (they predate
+  // the automated pipeline that produced eval_results/), and OpenAI prices
+  // both by quality tier with a large spread — so they carry costLow/costHigh
+  // and show as a range everywhere cost is displayed. m.cost (the medium-tier
+  // figure) is still used for sorting and the cost bar width.
+  function fmtCost(m) {
+    if (m.costLow != null) return '$' + m.costLow.toFixed(3) + '–$' + m.costHigh.toFixed(3);
+    return '$' + m.cost.toFixed(3);
+  }
+  function fmtScaled(m, n, decimals) {
+    function fmt1(v) { return decimals === 0 ? Math.round(v).toLocaleString('en-US') : v.toFixed(decimals); }
+    if (m.costLow != null) return '$' + fmt1(m.costLow * n) + '–$' + fmt1(m.costHigh * n);
+    return '$' + fmt1(m.cost * n);
+  }
+
   function renderBoard(sortBy) {
     var rows = MODELS.slice().sort(function (a, b) {
       if (sortBy === 'fidelity') return passCount(b) - passCount(a) || a.cost - b.cost;
@@ -901,7 +917,7 @@
       tr.innerHTML =
         '<td class="model-name">' + m.name + '</td>' +
         '<td class="tier">' + m.tier + '</td>' +
-        '<td class="right mono-cell">$' + m.cost.toFixed(3) + '</td>' +
+        '<td class="right mono-cell">' + fmtCost(m) + '</td>' +
         '<td class="right mono-cell" style="color:var(--ink-soft);">' + m.speed.toFixed(1) + 's</td>' +
         '<td class="num">' + pill(m.g[0]) + '</td>' +
         '<td class="num">' + pill(m.g[1]) + '</td>' +
@@ -933,7 +949,7 @@
     var barColor = m.tier === 'Baseline' ? 'var(--none)' : 'var(--accent)';
     row.innerHTML =
       '<span class="cost-name">' + m.name + '</span>' +
-      '<span class="cost-cost">$' + m.cost.toFixed(3) + '</span>' +
+      '<span class="cost-cost">' + fmtCost(m) + '</span>' +
       '<span class="cost-bar-track"><span class="cost-bar-fill" style="width:' + barPct + ';background:' + barColor + ';"></span></span>' +
       '<span class="cost-time">' + m.speed.toFixed(1) + 's</span>';
     costList.appendChild(row);
@@ -943,9 +959,9 @@
     var tr = el('tr');
     tr.innerHTML =
       '<td class="model-name">' + m.name + '</td>' +
-      '<td class="right mono-cell">$' + (m.cost * 100).toFixed(2) + '</td>' +
-      '<td class="right mono-cell">$' + Math.round(m.cost * 1000) + '</td>' +
-      '<td class="right mono-cell">$' + (m.cost * 10000).toLocaleString('en-US') + '</td>';
+      '<td class="right mono-cell">' + fmtScaled(m, 100, 2) + '</td>' +
+      '<td class="right mono-cell">' + fmtScaled(m, 1000, 0) + '</td>' +
+      '<td class="right mono-cell">' + fmtScaled(m, 10000, 0) + '</td>';
     volumeBody.appendChild(tr);
   });
 
