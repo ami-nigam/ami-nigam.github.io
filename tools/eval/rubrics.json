@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "notes": "Source of truth for adherence scoring. Each criterion is a single checkable claim derived verbatim from the task instruction. The vision judge grades every criterion pass / partial / fail with one line of evidence; adherence = 100 * sum(weight * value) / sum(weight), where pass=1.0, partial=0.5, fail=0.0. Weight 3 = an explicit hard constraint the instruction states (breaking it fails the task), 2 = an explicit requested attribute, 1 = a supporting detail. Human quality ratings are kept separately in ratings.json and are never produced by the judge.",
+  "scale": { "pass": 1.0, "partial": 0.5, "fail": 0.0 },
+  "tasks": [
+    {
+      "id": "t1",
+      "folder": "test1",
+      "number": "01",
+      "title": "Re-render an Enscape output as photoreal",
+      "kind": "preservation",
+      "source": "eval_results/sources/test1-input.jpg",
+      "prompt": "Render this scene as a photorealistic architectural visualization, preserving the exact building massing and camera angle: the curved-top glass tower on the left, the fin-clad tower behind it, and the mixed-height podium with retail signage zones and landscaped terraces below. Match the existing materiality (glass curtain wall, bronze/gold metal cladding, white vertical fins on the right-hand towers), daylight lighting, shadows, and street-level activity (vehicles, planting, signage).",
+      "criteria": [
+        { "id": "massing", "weight": 3, "label": "Massing preserved", "test": "The curved-top glass tower on the left, the fin-clad tower behind it, and the mixed-height podium are all present with the same silhouette, proportions, floor counts and relative positions as the source. Any added, removed, resized or relocated volume is a fail." },
+        { "id": "camera", "weight": 3, "label": "Camera angle held", "test": "Viewpoint, framing, apparent focal length and horizon line match the source. A shifted, rotated, dollied or re-cropped camera is a fail; a very slight framing change is partial." },
+        { "id": "materiality", "weight": 2, "label": "Materiality matched", "test": "Glass curtain wall, bronze/gold metal cladding, and white vertical fins on the right-hand towers all appear and are applied to the same surfaces as in the source." },
+        { "id": "lighting", "weight": 2, "label": "Daylight and shadows consistent", "test": "The scene reads as daylight, and shadow direction and length are consistent with the source's sun position." },
+        { "id": "photoreal", "weight": 2, "label": "Genuinely photorealistic", "test": "Reads as photography rather than a real-time render: believable specular response, depth of field, material microdetail and no CG-render tells such as flat ambient occlusion or plastic-looking glass." },
+        { "id": "street_life", "weight": 1, "label": "Street-level activity present", "test": "Vehicles, planting and signage are all present and plausibly scaled at street level." },
+        { "id": "signage_integrity", "weight": 1, "label": "Signage legible, not garbled", "test": "Retail signage zones render as coherent lettering rather than scrambled or invented glyphs." }
+      ]
+    },
+    {
+      "id": "t2",
+      "folder": "test2",
+      "number": "02",
+      "title": "Turn the render back into a concept sketch",
+      "kind": "translation",
+      "source": "eval_results/sources/test1-input.jpg",
+      "prompt": "Convert this render into a loose hand-drawn/marker concept sketch, preserving the composition and massing exactly. Muted tones, visible linework, concept-stage feel.",
+      "criteria": [
+        { "id": "massing", "weight": 3, "label": "Massing preserved exactly", "test": "Building forms, proportions, floor counts and relative positions match the source. The instruction says 'exactly', so any invented, dropped or reshaped volume is a fail even though the medium has changed." },
+        { "id": "composition", "weight": 3, "label": "Composition preserved exactly", "test": "Framing, viewpoint and the placement of elements within the frame match the source." },
+        { "id": "hand_drawn", "weight": 2, "label": "Reads as genuinely hand-drawn", "test": "Looks like a human drawing or marker rendering — variable pressure, imperfect lines, honest media texture — rather than a photo with an edge-detect or posterize filter over it." },
+        { "id": "linework", "weight": 2, "label": "Visible linework", "test": "Deliberate, visible construction and outline linework is present and carries the drawing, rather than pure tonal blocks." },
+        { "id": "muted_tones", "weight": 1, "label": "Muted palette", "test": "Colour is restrained and desaturated as instructed, not fully saturated or high-chroma." },
+        { "id": "concept_stage", "weight": 1, "label": "Concept-stage feel", "test": "Reads as loose and exploratory — an early design-stage sketch — rather than a finished, tightly rendered presentation drawing." }
+      ]
+    },
+    {
+      "id": "t3",
+      "folder": "test3",
+      "number": "03",
+      "title": "Swap the mood — blue hour, fog, cinematic uplift",
+      "kind": "additive-transformation",
+      "source": "eval_results/sources/test1-input.jpg",
+      "prompt": "Uplift this render into a cinematic photorealistic visualization, preserving the building massing and camera angle. Set the atmosphere to blue hour — deep blue-violet sky, low ambient light, building facades and signage glowing warmly against the cool dusk light. Add heavy, dense atmospheric fog rolling through the street and lower levels, thick enough to soften and partially obscure the base of the towers and diffuse the light from signage and windows. Interior floors should read as inhabited — visible variation in window lighting, hints of interior activity such as figures, furniture silhouettes, or desk lamps, rather than uniform flat glow. Wet pavement with reflections of the glowing facades and lights. Push contrast and mood to be highly dramatic and cinematic.",
+      "criteria": [
+        { "id": "massing", "weight": 3, "label": "Massing preserved", "test": "Building forms, proportions and relative positions match the source despite the lighting change." },
+        { "id": "camera", "weight": 3, "label": "Camera angle held", "test": "Viewpoint, framing and horizon match the source." },
+        { "id": "blue_hour_sky", "weight": 2, "label": "Blue hour sky", "test": "Sky is deep blue-violet with low ambient light — dusk, not full night and not daylight." },
+        { "id": "warm_glow", "weight": 2, "label": "Warm facade and signage glow", "test": "Facades and signage glow warmly and read as warm against the cool dusk, producing genuine colour-temperature contrast." },
+        { "id": "fog", "weight": 2, "label": "Heavy fog at street and lower levels", "test": "Dense fog rolls through the street and lower levels, thick enough to soften and partially obscure the tower bases and visibly diffuse light from signage and windows. Thin haze that obscures nothing is partial." },
+        { "id": "inhabited_interiors", "weight": 2, "label": "Interiors read as inhabited", "test": "Window lighting varies floor to floor and shows hints of occupancy — figures, furniture silhouettes or desk lamps. A uniform flat glow across all floors is a fail, as the instruction names it explicitly." },
+        { "id": "wet_reflections", "weight": 1, "label": "Wet pavement with reflections", "test": "Pavement reads as wet and carries recognisable reflections of the glowing facades and lights." },
+        { "id": "cinematic", "weight": 1, "label": "Dramatic cinematic contrast", "test": "Contrast and mood are pushed to a dramatic, cinematic result rather than a flat evening render." },
+        { "id": "signage_integrity", "weight": 1, "label": "Signage not garbled", "test": "Signage text survives the transformation as coherent lettering rather than scrambled glyphs." }
+      ]
+    },
+    {
+      "id": "t4",
+      "folder": "test4",
+      "number": "04",
+      "title": "Swap two materials, change nothing else",
+      "kind": "surgical-edit",
+      "source": "eval_results/sources/test4-input.jpg",
+      "prompt": "Keep the building geometry, camera angle, composition, and all other materials unchanged. Make two material changes: 1) Replace the gold/bronze vertical fin cladding on the right-hand podium volume with iridescent chromic perforated metal panels, maintaining the same panel/fin proportions. 2) Replace the signage wall's pink/mauve stone cladding (ground-level, left of centre) with hot-pink glossy plastic cladding, keeping the signage lettering and layout unchanged. Maintain existing daylight lighting throughout, and keep all other materials unchanged.",
+      "criteria": [
+        { "id": "geometry", "weight": 3, "label": "Geometry, camera and composition unchanged", "test": "Building geometry, camera angle and composition are identical to the source. Any reshaped volume or moved camera is a fail." },
+        { "id": "swap_fins", "weight": 3, "label": "Swap 1 — fins to iridescent chromic perforated metal", "test": "The gold/bronze vertical fin cladding on the right-hand podium volume is now iridescent chromic perforated metal, and the original panel/fin proportions and spacing are maintained." },
+        { "id": "swap_signage_wall", "weight": 3, "label": "Swap 2 — signage wall to hot-pink glossy plastic", "test": "The ground-level signage wall left of centre, pink/mauve stone in the source, is now hot-pink glossy plastic with a plausibly glossy plastic specular response." },
+        { "id": "no_collateral", "weight": 3, "label": "No collateral material change", "test": "Every other material is untouched — in particular no bleed, recolouring or retexturing of the adjacent curtain wall, podium surfaces or paving. This is the instruction's 'change nothing else' clause and is the real discriminator: judge the boundaries closely." },
+        { "id": "lettering", "weight": 2, "label": "Signage lettering and layout unchanged", "test": "The lettering and layout on the signage wall are preserved — same text, same arrangement, not re-typeset, garbled or dropped." },
+        { "id": "lighting", "weight": 1, "label": "Daylight lighting maintained", "test": "The original daylight condition and shadow direction are preserved throughout." }
+      ]
+    },
+    {
+      "id": "t5",
+      "folder": "test5",
+      "number": "05",
+      "title": "Zoom into one terrace without redesigning it",
+      "kind": "constrained-zoom",
+      "source": "eval_results/sources/test5-input-highlighted.jpg",
+      "prompt": "This is a resolution and detail upscale, not a redesign. Zoom into the highlighted rooftop terrace area exactly as it appears in the source image — do not alter the roofline, canopy shapes, terrace levels, steps, or any existing architectural geometry. Add resolution and richness only: realistic planting, paving detail, people using the space, and sculptural art pieces placed within the existing terrace geometry. The underlying architecture must be recognizably the same design as the source, just rendered at higher detail and closer proximity.",
+      "criteria": [
+        { "id": "is_crop", "weight": 3, "label": "Actually a zoom into the highlighted terrace", "test": "The output frames the specific highlighted rooftop terrace at closer proximity. Re-rendering the whole elevation at the original zoom level, or framing a different part of the building, is a fail." },
+        { "id": "geometry_held", "weight": 3, "label": "Terrace geometry unaltered", "test": "Roofline, canopy shapes, terrace levels and steps match the source's highlighted region. Any altered, added or removed architectural geometry is a fail." },
+        { "id": "same_design", "weight": 3, "label": "Recognizably the same building", "test": "The architecture is identifiably the same design as the source — same language, materials and forms. An invented or substituted building is a fail." },
+        { "id": "additive_only", "weight": 2, "label": "Additions sit within existing geometry", "test": "New content is placed within the existing terrace geometry without displacing, resizing or replacing what was already there." },
+        { "id": "content_added", "weight": 2, "label": "All four requested additions present", "test": "Realistic planting, paving detail, people using the space, and sculptural art pieces are all present. Partial if some but not all four appear." },
+        { "id": "resolution", "weight": 2, "label": "Genuine detail increase", "test": "The result carries real additional resolution and material richness at closer proximity, rather than an upscaled or softened crop of the source pixels." }
+      ]
+    }
+  ]
+}

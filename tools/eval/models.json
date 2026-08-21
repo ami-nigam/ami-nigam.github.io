@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "notes": "Model roster for the scorer. `slug` is the image filename stem under eval_results/<folder>/images/. Kept in step with the SLUG map in vizai-model-eval-framework.html — add a model in both places.",
+  "models": [
+    { "name": "gpt-image-2", "slug": "openai_gpt-image-2" },
+    { "name": "gpt-image-1.5", "slug": "openai_gpt-image-1.5" },
+    { "name": "Nano Banana 2", "slug": "google_nano-banana-2" },
+    { "name": "Nano Banana 2 Lite", "slug": "google_nano-banana-2-lite" },
+    { "name": "Nano Banana Pro", "slug": "google_nano-banana-pro" },
+    { "name": "FLUX.2 Max", "slug": "black-forest-labs_flux.2-max" },
+    { "name": "Grok Imagine Image 2.0", "slug": "x-ai_grok-imagine-image-2.0" },
+    { "name": "Seedream 5.0 Pro", "slug": "bytedance-seed_seedream-5-0-pro" },
+    { "name": "Seedream 5.0 Lite", "slug": "bytedance-seed_seedream-5-0-lite" },
+    { "name": "Qwen Image 3", "slug": "qwen_qwen-image-3" },
+    { "name": "Qwen Image 3 Pro", "slug": "qwen_qwen-image-3-pro" },
+    { "name": "MAI-Image-2.5", "slug": "microsoft_mai-image-2.5" },
+    { "name": "MAI-Image-2.5 Pro", "slug": "microsoft_mai-image-2.5-pro" }
+  ]
+}
