@@ -1,0 +1,147 @@
+{
+  "t5": {
+    "gpt-image-2": {
+      "summary": "An exact crop-and-upscale. The curved bronze soffit, the fluted white cylinders below and the terrace levels all survive; only planting, people and sculpture are added.",
+      "criteria": {
+        "is_crop": ["pass", "Frames precisely the highlighted terrace at close proximity — the curved bronze soffit and the white fluted cylinders beneath it are unmistakably the marked region."],
+        "geometry_held": ["pass", "Soffit profile, terrace levels, stepped access and glass balustrades all match the source's highlighted area."],
+        "same_design": ["pass", "Identical architectural language — bronze soffit, fluted white metal, frameless glass."],
+        "additive_only": ["pass", "Planting, figures and the sculpture sit within the existing terrace footprint; nothing is displaced or resized."],
+        "content_added": ["pass", "All four requested additions present: realistic planting, resolved paving, people using the space, and a bronze sculptural piece."],
+        "resolution": ["pass", "Genuine material richness at closer proximity — foliage, paving joints and soffit slats all newly resolved."]
+      }
+    },
+    "gpt-image-1.5": {
+      "summary": "A beautiful roof garden belonging to another building. The context is invented down to the hills on the horizon.",
+      "criteria": {
+        "is_crop": ["partial", "It is a rooftop terrace at close range, but the framing corresponds to no part of the highlighted region."],
+        "geometry_held": ["fail", "The canopy is a different curved form, the narrow ledge has become a broad garden plateau, and the terrace levels bear no relation to the source."],
+        "same_design": ["fail", "The distinctive fluted white volumes and bronze louvred box are absent, the surrounding towers are generic, and the backdrop is an invented city with hills."],
+        "additive_only": ["fail", "The terrace has been entirely reconceived rather than populated."],
+        "content_added": ["pass", "Planting, paving, people and sculptural art all present in abundance."],
+        "resolution": ["pass", "Very high detail and material resolution throughout."]
+      }
+    },
+    "Nano Banana 2": {
+      "summary": "Invented a new pavilion, a new stair and a new city around them. Handsome, and not the terrace it was asked for.",
+      "criteria": {
+        "is_crop": ["pass", "Does frame a rooftop terrace at close proximity."],
+        "geometry_held": ["fail", "The canopy is re-formed as a timber wave, and a new pavilion and stair have been introduced where the source has a simple planted ledge."],
+        "same_design": ["partial", "The bronze louvred box and green LED screen appear at the right, but the surrounding context is a different city complete with satellite dishes."],
+        "additive_only": ["fail", "New architecture — pavilion, stair and additional terrace levels — has been added rather than content placed within the existing geometry."],
+        "content_added": ["pass", "Planting, paving, people and a cube sculpture all present."],
+        "resolution": ["pass", "High detail and convincing material resolution."]
+      }
+    },
+    "Nano Banana 2 Lite": {
+      "summary": "The cheapest model in the benchmark returns a clean, exact crop — the retail frontage and green LED screen below prove it found the right part of the building.",
+      "criteria": {
+        "is_crop": ["pass", "Frames the highlighted terrace, with the white fluted cylinders, SIGNAGE frontage and green LED screen below confirming the location."],
+        "geometry_held": ["pass", "The swooping bronze soffit, terrace edge and the fluted volumes beneath all match the source's highlighted region."],
+        "same_design": ["pass", "Unmistakably the same building, down to the retail signage and screen placement."],
+        "additive_only": ["pass", "Planting, furniture and sculpture placed within the existing terrace geometry."],
+        "content_added": ["pass", "Planting, paving detail, people and two sculptural pieces all present."],
+        "resolution": ["pass", "Real detail gain — foliage, seating and shopfronts all newly resolved."]
+      }
+    },
+    "Nano Banana Pro": {
+      "summary": "Correctly located and beautifully resolved, but it built a stepped amphitheatre that the source terrace does not have.",
+      "criteria": {
+        "is_crop": ["pass", "Frames the highlighted terrace at close proximity, with the fluted white volume and SIGNAGE below confirming the location."],
+        "geometry_held": ["partial", "The bronze soffit reads correctly, but a large stepped stair and amphitheatre have been introduced and the terrace plan is far deeper than the source ledge."],
+        "same_design": ["pass", "Same architectural language throughout — fluted white metal, bronze soffit, glass balustrade."],
+        "additive_only": ["partial", "The stair and stepped seating are new architecture rather than content placed within the existing geometry."],
+        "content_added": ["pass", "Planting, paving, people and several sculptural pieces all present."],
+        "resolution": ["pass", "Excellent detail — planting, timber decking and soffit slats all fully resolved."]
+      }
+    },
+    "FLUX.2 Max": {
+      "summary": "Found the right terrace and then re-clad the whole podium in concrete and stone — a heavier building than the one in the source.",
+      "criteria": {
+        "is_crop": ["pass", "Zooms into the podium terrace region including the curved bronze soffit."],
+        "geometry_held": ["partial", "The soffit survives, but the terrace levels are restructured and new retail frontages inserted beneath."],
+        "same_design": ["partial", "The forms are related, but the white metal fins have become heavy concrete and stone, changing the building's material character substantially."],
+        "additive_only": ["fail", "Facades have been re-clad and terrace levels rebuilt rather than simply populated."],
+        "content_added": ["pass", "Planting, paving, people and a gold ring sculpture all present."],
+        "resolution": ["pass", "Exceptional detail and material richness."]
+      }
+    },
+    "Grok Imagine Image 2.0": {
+      "summary": "Went so close it stopped being a crop and started being an invention — including a large sculptural column that exists nowhere in the source.",
+      "criteria": {
+        "is_crop": ["partial", "Close to the terrace and carrying the bronze soffit, but framed so tightly it reads as an invented scene rather than a crop of the marked region."],
+        "geometry_held": ["fail", "A large organic structural fin has been invented mid-frame, the soffit swoops to a point it does not have in the source, and the terrace levels do not correspond."],
+        "same_design": ["partial", "Bronze soffit and fluted glass are in the family, but the invented structure changes the design."],
+        "additive_only": ["fail", "The invented structural element is new architecture and displaces the existing geometry."],
+        "content_added": ["pass", "Planting, paving, people and two sculptural pieces all present."],
+        "resolution": ["pass", "High detail at close proximity."]
+      }
+    },
+    "Seedream 5.0 Pro": {
+      "summary": "Did not zoom at all. It returned the whole elevation at the source scale, leaving the terrace no more developed than it started.",
+      "criteria": {
+        "is_crop": ["fail", "The output shows the entire building at essentially the source scale — there is no zoom into the highlighted terrace."],
+        "geometry_held": ["pass", "Geometry is preserved, which follows from it being effectively the same view."],
+        "same_design": ["pass", "Unambiguously the same building."],
+        "additive_only": ["partial", "Some planting is enriched, but the highlighted terrace itself is barely developed."],
+        "content_added": ["fail", "No people using the terrace, no sculptural art and no resolved paving at the marked area."],
+        "resolution": ["fail", "No detail increase at the terrace — it remains at the source's scale and resolution."]
+      }
+    },
+    "Seedream 5.0 Lite": {
+      "summary": "A correctly located zoom, but the canopy was reworked from a smooth swoop into a radial fan and the ledge became a circular plaza.",
+      "criteria": {
+        "is_crop": ["pass", "Frames a terrace at markedly closer proximity, in the right part of the building."],
+        "geometry_held": ["partial", "The bronze canopy is reshaped into a radial scalloped fan rather than the source's smooth swooping soffit, and the terrace outline is now a rounded plaza."],
+        "same_design": ["pass", "Fluted glass tower, bronze canopy and the surrounding volumes are all recognisably the same design."],
+        "additive_only": ["partial", "Content is placed within a terrace, but the terrace itself has been reshaped to accommodate it."],
+        "content_added": ["pass", "Planting, paving, people and a sculptural piece all present."],
+        "resolution": ["pass", "Genuine detail increase across planting, paving and canopy."]
+      }
+    },
+    "Qwen Image 3": {
+      "summary": "Right terrace, wrong scale of intervention — the ledge is enlarged into a landscaped plateau on a re-clad concrete base.",
+      "criteria": {
+        "is_crop": ["pass", "Zooms into the terrace with the curved soffit, with the bronze louvred box visible at the right."],
+        "geometry_held": ["partial", "The soffit is flattened into an elliptical disc and the narrow ledge becomes a broad landscaped plateau."],
+        "same_design": ["partial", "Fluted glass and bronze soffit are consistent, but the supporting podium is re-clad in heavy concrete it does not have in the source."],
+        "additive_only": ["fail", "The terrace has been substantially enlarged and its supporting volume re-clad rather than simply populated."],
+        "content_added": ["pass", "Planting, paving, people and sculptural art all present."],
+        "resolution": ["pass", "High detail and material richness."]
+      }
+    },
+    "Qwen Image 3 Pro": {
+      "summary": "A clean constrained zoom — soffit, fluted volumes and terrace levels all held, with only the requested content added.",
+      "criteria": {
+        "is_crop": ["pass", "A genuine zoom into the highlighted region; the white fluted cylinders and curved bronze soffit are exactly the marked terrace."],
+        "geometry_held": ["pass", "Soffit profile, terrace levels, setbacks and the fluted volumes below all correspond to the source."],
+        "same_design": ["pass", "Same architectural language and materials throughout."],
+        "additive_only": ["pass", "Planting, figures and sculpture placed within the existing terrace geometry without displacing it."],
+        "content_added": ["pass", "Planting, paving detail, people and two sculptural pieces all present."],
+        "resolution": ["pass", "Real resolution gain at closer proximity across planting, paving and facade."]
+      }
+    },
+    "MAI-Image-2.5": {
+      "summary": "An exact crop with the green LED screen visible at the edge to prove it — geometry held, only the requested content added.",
+      "criteria": {
+        "is_crop": ["pass", "Frames the highlighted terrace at close proximity, with the green LED screen at the right edge anchoring the location."],
+        "geometry_held": ["pass", "The swooping bronze soffit, terrace level and steps all match the source's highlighted region."],
+        "same_design": ["pass", "Bronze soffit, fluted glass and the retail screen all confirm the same building."],
+        "additive_only": ["pass", "Seating, planting and sculpture placed within the existing terrace footprint."],
+        "content_added": ["pass", "Planting, resolved paving, people using the space and three sculptural pieces."],
+        "resolution": ["pass", "Strong detail gain — soffit slats, paving joints and planting all newly resolved."]
+      }
+    },
+    "MAI-Image-2.5 Pro": {
+      "summary": "The most inhabited reading of the terrace — closest proximity of the thirteen, with the canopy and stepped seating still correct.",
+      "criteria": {
+        "is_crop": ["pass", "A close view standing on the highlighted terrace, framed by the curved bronze soffit above."],
+        "geometry_held": ["pass", "Canopy profile, terrace level, stepped seating and glass balustrade all correspond to the source's marked region."],
+        "same_design": ["pass", "Curved bronze soffit and fluted glass facade are unmistakably the same building."],
+        "additive_only": ["pass", "Planting, seating and sculpture sit within the existing terrace geometry."],
+        "content_added": ["pass", "Planting, resolved stone paving, people using the space and two sculptural pieces."],
+        "resolution": ["pass", "The highest material resolution in the task — paving grain, soffit slats and planting all fully detailed."]
+      }
+    }
+  }
+}

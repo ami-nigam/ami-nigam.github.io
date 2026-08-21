@@ -1,0 +1,147 @@
+{
+  "t4": {
+    "gpt-image-2": {
+      "summary": "A textbook surgical edit. Both swaps executed, nothing else touched — the only model to leave the rest of the building genuinely alone.",
+      "criteria": {
+        "geometry": ["pass", "Geometry, camera and composition identical to the source; every volume, terrace and setback in the same place."],
+        "swap_fins": ["pass", "The bronze louvred box reads as iridescent chromic perforated metal, with the original panel spacing and box proportions intact."],
+        "swap_signage_wall": ["pass", "The ground-level stone wall is now vivid hot-pink with a convincing glossy plastic specular."],
+        "no_collateral": ["pass", "Curtain wall, white fin volumes, terraces, planting, paving and the green LED screen are all pixel-for-pixel unchanged. No bleed at any boundary."],
+        "lettering": ["pass", "SIGNAGE lettering and layout preserved exactly on the recoloured wall."],
+        "lighting": ["pass", "Daylight condition and shadow direction unchanged."]
+      }
+    },
+    "gpt-image-1.5": {
+      "summary": "Rebuilt the podium instead of editing it. The swaps are present but the box became a flat LED-like slab and the tower is reproportioned.",
+      "criteria": {
+        "geometry": ["fail", "The tower is reproportioned, the terraces simplified, and the louvred box replaced by a flat slab in a different position."],
+        "swap_fins": ["partial", "The volume is iridescent, but it reads as a flat backlit screen rather than perforated metal, and the fin proportions are gone with the box's original shape."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic on the signage wall, correctly placed."],
+        "no_collateral": ["partial", "The bronze-gold louvred surfaces elsewhere in the podium are altered and the terrace edges rebuilt, though the curtain wall and white fins survive."],
+        "lettering": ["partial", "SIGNAGE is legible but re-typeset at a larger size with an added subtitle line."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "Nano Banana 2": {
+      "summary": "Both swaps clean and the building held; a small iridescent bleed onto the far-right signage box is all that separates it from full marks.",
+      "criteria": {
+        "geometry": ["pass", "Geometry, camera and composition all identical to the source."],
+        "swap_fins": ["pass", "Iridescent chromic perforated metal on the correct volume, with the louvred character and box proportions preserved."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic, correctly bounded to the original stone wall."],
+        "no_collateral": ["partial", "Almost clean — the curtain wall correctly picks up a pink reflection from the new wall, which is right — but the small signage box at the far right has shifted from brown to an iridescent blue it should not have."],
+        "lettering": ["pass", "SIGNAGE lettering and layout unchanged."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "Nano Banana 2 Lite": {
+      "summary": "Full marks at the second-lowest cost in the field. Both swaps executed, every other surface untouched.",
+      "criteria": {
+        "geometry": ["pass", "Geometry, camera and composition identical to the source."],
+        "swap_fins": ["pass", "The louvred box is iridescent perforated metal with panel spacing and box proportions maintained."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic, correctly bounded."],
+        "no_collateral": ["pass", "Curtain wall, white fin volumes, terraces, paving and the green LED screen all unchanged; boundaries are clean on both swaps."],
+        "lettering": ["pass", "SIGNAGE lettering and layout preserved."],
+        "lighting": ["pass", "Daylight and shadow direction unchanged."]
+      }
+    },
+    "Nano Banana Pro": {
+      "summary": "The most beautiful iridescence of the thirteen, on a correctly held building — with the same small far-right bleed as Nano Banana 2.",
+      "criteria": {
+        "geometry": ["pass", "Geometry, camera and composition identical to the source."],
+        "swap_fins": ["pass", "A convincing chromic gradient across perforated metal, with the original panel proportions intact."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic with a plausible gloss response."],
+        "no_collateral": ["partial", "Curtain wall, white fins and terraces are clean, but the small signage box at the far right has picked up an iridescent teal cast it did not have in the source."],
+        "lettering": ["pass", "SIGNAGE lettering and layout preserved."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "FLUX.2 Max": {
+      "summary": "The clearest failure of the change-nothing-else clause: iridescence spread across at least four podium volumes that were bronze and white in the source.",
+      "criteria": {
+        "geometry": ["partial", "The camera holds, but the louvred box is flattened and moved higher and further right, and the mid-podium volumes are rebuilt around it."],
+        "swap_fins": ["partial", "The target volume is iridescent, but as a saturated rainbow slab whose flattened shape has lost the original fin proportions."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic on the correct ground-level wall."],
+        "no_collateral": ["fail", "Iridescence has spread well beyond the specified volume onto the white fin volumes left of centre and at least two further mid-podium bands, none of which were bronze in the source."],
+        "lettering": ["partial", "SIGNAGE is legible but re-typeset with an added graphic swirl across the wall."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "Grok Imagine Image 2.0": {
+      "summary": "Fast and confident, and it painted three extra volumes iridescent while cropping the tower top out of frame.",
+      "criteria": {
+        "geometry": ["fail", "Clearly dollied in — the top of the main tower is cropped at the frame edge and the podium is rearranged."],
+        "swap_fins": ["pass", "The target volume is iridescent perforated metal with its louvred character retained."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic, correctly placed."],
+        "no_collateral": ["fail", "Iridescence has spread onto the white fin volume left of centre, a mid-podium band, and a further panel beside the green screen — all neutral surfaces in the source."],
+        "lettering": ["pass", "SIGNAGE lettering and layout preserved."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "Seedream 5.0 Pro": {
+      "summary": "Clean on materials elsewhere, but it reshaped the box it was asked to re-clad and tightened the frame.",
+      "criteria": {
+        "geometry": ["partial", "Frame is tighter than the source and the louvred box is flattened and widened, extending further right than it should."],
+        "swap_fins": ["partial", "Genuinely iridescent perforated metal, but applied to a reproportioned box so the original panel proportions are not maintained."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic on the correct wall."],
+        "no_collateral": ["pass", "Curtain wall, white fin volumes, terraces and paving all retain their source materials with no bleed."],
+        "lettering": ["pass", "SIGNAGE lettering and layout preserved."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "Seedream 5.0 Lite": {
+      "summary": "Materials elsewhere are untouched, but the louvred box became a bulging dot-matrix volume rather than perforated metal at the original proportions.",
+      "criteria": {
+        "geometry": ["partial", "The box has been reshaped into a rounded, bulging volume and the frame is slightly tighter than the source."],
+        "swap_fins": ["partial", "Iridescent and perforated in character, but rendered as a pixel-grid across a reshaped volume, losing the original fin proportions."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic, correctly bounded to the original wall."],
+        "no_collateral": ["pass", "Curtain wall, white fins, terraces and paving all unchanged, with clean boundaries."],
+        "lettering": ["pass", "SIGNAGE lettering and layout preserved."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "Qwen Image 3": {
+      "summary": "The weakest here: it added a second hot-pink wall the instruction never asked for, and rebuilt the target volume vertically.",
+      "criteria": {
+        "geometry": ["fail", "Dollied in with the tower cropped at the frame edge, and the louvred box rebuilt as a tall vertical-finned volume rather than the horizontal cantilever."],
+        "swap_fins": ["partial", "The volume is iridescent with vertical fins, but its proportions bear little relation to the source box."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic on the correct ground-level wall."],
+        "no_collateral": ["fail", "A second hot-pink panel has been added in the middle of the podium where the source has neutral retail frontage — the swap has been applied to a surface it was never specified for."],
+        "lettering": ["pass", "SIGNAGE lettering legible on the main wall."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "Qwen Image 3 Pro": {
+      "summary": "Materially disciplined where Qwen Image 3 was not — no stray pink — but it still flattened and relocated the box it was re-cladding.",
+      "criteria": {
+        "geometry": ["partial", "Frame is tighter than the source and the louvred box is flattened and lifted higher than its original position."],
+        "swap_fins": ["partial", "Vividly iridescent perforated metal, but on a reproportioned volume that no longer matches the source's fin proportions."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic, correctly bounded."],
+        "no_collateral": ["pass", "White fin volumes, curtain wall and terraces all retain their source materials; no pink or iridescence anywhere it should not be."],
+        "lettering": ["pass", "SIGNAGE lettering and layout preserved."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "MAI-Image-2.5": {
+      "summary": "The iridescent swap is excellent, but the pink climbed several storeys beyond the wall it was meant for and the frame cropped the podium base.",
+      "criteria": {
+        "geometry": ["fail", "Dollied in far enough to crop the base of the podium out of frame; the building sits substantially larger than in the source."],
+        "swap_fins": ["pass", "Iridescent chromic perforated metal on the correct volume with panel proportions maintained."],
+        "swap_signage_wall": ["partial", "The material is right, but it has been applied to a volume several storeys taller than the low stone signage wall specified."],
+        "no_collateral": ["partial", "The hot-pink extends up onto the volume above the original signage wall, recolouring a surface the instruction did not name."],
+        "lettering": ["pass", "SIGNAGE lettering legible and correctly placed on the wall."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    },
+    "MAI-Image-2.5 Pro": {
+      "summary": "Both swaps handled well, undercut by replacing the green LED screen with an unrelated mural — a change nobody asked for.",
+      "criteria": {
+        "geometry": ["partial", "Frame is moderately tighter than the source and the podium volumes around the LED screen are rearranged."],
+        "swap_fins": ["pass", "Iridescent chromic vertical fins on the correct volume, with the original fin rhythm and box proportions preserved."],
+        "swap_signage_wall": ["pass", "Hot-pink glossy plastic, correctly bounded to the original wall."],
+        "no_collateral": ["partial", "The green LED screen has been replaced with a multicoloured mural and further colour introduced along the mid-podium — surfaces the instruction required to stay unchanged."],
+        "lettering": ["pass", "SIGNAGE lettering and layout preserved."],
+        "lighting": ["pass", "Daylight and shadow direction preserved."]
+      }
+    }
+  }
+}

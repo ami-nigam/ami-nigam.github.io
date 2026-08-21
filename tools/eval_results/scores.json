@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-21T12:11:53+00:00",
+  "generated": "2026-08-21T12:23:48+00:00",
   "judge_model": "claude-opus-5 (in-session, vision)",
   "rubric_version": 1,
   "scores": {
@@ -1424,6 +1424,816 @@
         },
         "judged_at": "2026-08-21T12:11:53+00:00",
         "summary": "Hits almost every requirement: real blue hour, dense fog at the base, and genuinely varied interior lighting. Only the wet pavement is underdone."
+      }
+    },
+    "t4": {
+      "FLUX.2 Max": {
+        "adherence": 53.3,
+        "criteria": {
+          "geometry": {
+            "evidence": "The camera holds, but the louvred box is flattened and moved higher and further right, and the mid-podium volumes are rebuilt around it.",
+            "verdict": "partial"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE is legible but re-typeset with an added graphic swirl across the wall.",
+            "verdict": "partial"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "Iridescence has spread well beyond the specified volume onto the white fin volumes left of centre and at least two further mid-podium bands, none of which were bronze in the source.",
+            "verdict": "fail"
+          },
+          "swap_fins": {
+            "evidence": "The target volume is iridescent, but as a saturated rainbow slab whose flattened shape has lost the original fin proportions.",
+            "verdict": "partial"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic on the correct ground-level wall.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "The clearest failure of the change-nothing-else clause: iridescence spread across at least four podium volumes that were bronze and white in the source."
+      },
+      "Grok Imagine Image 2.0": {
+        "adherence": 60.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Clearly dollied in \u2014 the top of the main tower is cropped at the frame edge and the podium is rearranged.",
+            "verdict": "fail"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout preserved.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "Iridescence has spread onto the white fin volume left of centre, a mid-podium band, and a further panel beside the green screen \u2014 all neutral surfaces in the source.",
+            "verdict": "fail"
+          },
+          "swap_fins": {
+            "evidence": "The target volume is iridescent perforated metal with its louvred character retained.",
+            "verdict": "pass"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic, correctly placed.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "Fast and confident, and it painted three extra volumes iridescent while cropping the tower top out of frame."
+      },
+      "MAI-Image-2.5": {
+        "adherence": 60.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Dollied in far enough to crop the base of the podium out of frame; the building sits substantially larger than in the source.",
+            "verdict": "fail"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering legible and correctly placed on the wall.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "The hot-pink extends up onto the volume above the original signage wall, recolouring a surface the instruction did not name.",
+            "verdict": "partial"
+          },
+          "swap_fins": {
+            "evidence": "Iridescent chromic perforated metal on the correct volume with panel proportions maintained.",
+            "verdict": "pass"
+          },
+          "swap_signage_wall": {
+            "evidence": "The material is right, but it has been applied to a volume several storeys taller than the low stone signage wall specified.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "The iridescent swap is excellent, but the pink climbed several storeys beyond the wall it was meant for and the frame cropped the podium base."
+      },
+      "MAI-Image-2.5 Pro": {
+        "adherence": 80.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Frame is moderately tighter than the source and the podium volumes around the LED screen are rearranged.",
+            "verdict": "partial"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout preserved.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "The green LED screen has been replaced with a multicoloured mural and further colour introduced along the mid-podium \u2014 surfaces the instruction required to stay unchanged.",
+            "verdict": "partial"
+          },
+          "swap_fins": {
+            "evidence": "Iridescent chromic vertical fins on the correct volume, with the original fin rhythm and box proportions preserved.",
+            "verdict": "pass"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic, correctly bounded to the original wall.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "Both swaps handled well, undercut by replacing the green LED screen with an unrelated mural \u2014 a change nobody asked for."
+      },
+      "Nano Banana 2": {
+        "adherence": 90.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Geometry, camera and composition all identical to the source.",
+            "verdict": "pass"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout unchanged.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "Almost clean \u2014 the curtain wall correctly picks up a pink reflection from the new wall, which is right \u2014 but the small signage box at the far right has shifted from brown to an iridescent blue it should not have.",
+            "verdict": "partial"
+          },
+          "swap_fins": {
+            "evidence": "Iridescent chromic perforated metal on the correct volume, with the louvred character and box proportions preserved.",
+            "verdict": "pass"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic, correctly bounded to the original stone wall.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "Both swaps clean and the building held; a small iridescent bleed onto the far-right signage box is all that separates it from full marks."
+      },
+      "Nano Banana 2 Lite": {
+        "adherence": 100.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Geometry, camera and composition identical to the source.",
+            "verdict": "pass"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout preserved.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction unchanged.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "Curtain wall, white fin volumes, terraces, paving and the green LED screen all unchanged; boundaries are clean on both swaps.",
+            "verdict": "pass"
+          },
+          "swap_fins": {
+            "evidence": "The louvred box is iridescent perforated metal with panel spacing and box proportions maintained.",
+            "verdict": "pass"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic, correctly bounded.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "Full marks at the second-lowest cost in the field. Both swaps executed, every other surface untouched."
+      },
+      "Nano Banana Pro": {
+        "adherence": 90.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Geometry, camera and composition identical to the source.",
+            "verdict": "pass"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout preserved.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "Curtain wall, white fins and terraces are clean, but the small signage box at the far right has picked up an iridescent teal cast it did not have in the source.",
+            "verdict": "partial"
+          },
+          "swap_fins": {
+            "evidence": "A convincing chromic gradient across perforated metal, with the original panel proportions intact.",
+            "verdict": "pass"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic with a plausible gloss response.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "The most beautiful iridescence of the thirteen, on a correctly held building \u2014 with the same small far-right bleed as Nano Banana 2."
+      },
+      "Qwen Image 3": {
+        "adherence": 50.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Dollied in with the tower cropped at the frame edge, and the louvred box rebuilt as a tall vertical-finned volume rather than the horizontal cantilever.",
+            "verdict": "fail"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering legible on the main wall.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "A second hot-pink panel has been added in the middle of the podium where the source has neutral retail frontage \u2014 the swap has been applied to a surface it was never specified for.",
+            "verdict": "fail"
+          },
+          "swap_fins": {
+            "evidence": "The volume is iridescent with vertical fins, but its proportions bear little relation to the source box.",
+            "verdict": "partial"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic on the correct ground-level wall.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "The weakest here: it added a second hot-pink wall the instruction never asked for, and rebuilt the target volume vertically."
+      },
+      "Qwen Image 3 Pro": {
+        "adherence": 80.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Frame is tighter than the source and the louvred box is flattened and lifted higher than its original position.",
+            "verdict": "partial"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout preserved.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "White fin volumes, curtain wall and terraces all retain their source materials; no pink or iridescence anywhere it should not be.",
+            "verdict": "pass"
+          },
+          "swap_fins": {
+            "evidence": "Vividly iridescent perforated metal, but on a reproportioned volume that no longer matches the source's fin proportions.",
+            "verdict": "partial"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic, correctly bounded.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "Materially disciplined where Qwen Image 3 was not \u2014 no stray pink \u2014 but it still flattened and relocated the box it was re-cladding."
+      },
+      "Seedream 5.0 Lite": {
+        "adherence": 80.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "The box has been reshaped into a rounded, bulging volume and the frame is slightly tighter than the source.",
+            "verdict": "partial"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout preserved.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "Curtain wall, white fins, terraces and paving all unchanged, with clean boundaries.",
+            "verdict": "pass"
+          },
+          "swap_fins": {
+            "evidence": "Iridescent and perforated in character, but rendered as a pixel-grid across a reshaped volume, losing the original fin proportions.",
+            "verdict": "partial"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic, correctly bounded to the original wall.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "Materials elsewhere are untouched, but the louvred box became a bulging dot-matrix volume rather than perforated metal at the original proportions."
+      },
+      "Seedream 5.0 Pro": {
+        "adherence": 80.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Frame is tighter than the source and the louvred box is flattened and widened, extending further right than it should.",
+            "verdict": "partial"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout preserved.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "Curtain wall, white fin volumes, terraces and paving all retain their source materials with no bleed.",
+            "verdict": "pass"
+          },
+          "swap_fins": {
+            "evidence": "Genuinely iridescent perforated metal, but applied to a reproportioned box so the original panel proportions are not maintained.",
+            "verdict": "partial"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic on the correct wall.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "Clean on materials elsewhere, but it reshaped the box it was asked to re-clad and tightened the frame."
+      },
+      "gpt-image-1.5": {
+        "adherence": 53.3,
+        "criteria": {
+          "geometry": {
+            "evidence": "The tower is reproportioned, the terraces simplified, and the louvred box replaced by a flat slab in a different position.",
+            "verdict": "fail"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE is legible but re-typeset at a larger size with an added subtitle line.",
+            "verdict": "partial"
+          },
+          "lighting": {
+            "evidence": "Daylight and shadow direction preserved.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "The bronze-gold louvred surfaces elsewhere in the podium are altered and the terrace edges rebuilt, though the curtain wall and white fins survive.",
+            "verdict": "partial"
+          },
+          "swap_fins": {
+            "evidence": "The volume is iridescent, but it reads as a flat backlit screen rather than perforated metal, and the fin proportions are gone with the box's original shape.",
+            "verdict": "partial"
+          },
+          "swap_signage_wall": {
+            "evidence": "Hot-pink glossy plastic on the signage wall, correctly placed.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "Rebuilt the podium instead of editing it. The swaps are present but the box became a flat LED-like slab and the tower is reproportioned."
+      },
+      "gpt-image-2": {
+        "adherence": 100.0,
+        "criteria": {
+          "geometry": {
+            "evidence": "Geometry, camera and composition identical to the source; every volume, terrace and setback in the same place.",
+            "verdict": "pass"
+          },
+          "lettering": {
+            "evidence": "SIGNAGE lettering and layout preserved exactly on the recoloured wall.",
+            "verdict": "pass"
+          },
+          "lighting": {
+            "evidence": "Daylight condition and shadow direction unchanged.",
+            "verdict": "pass"
+          },
+          "no_collateral": {
+            "evidence": "Curtain wall, white fin volumes, terraces, planting, paving and the green LED screen are all pixel-for-pixel unchanged. No bleed at any boundary.",
+            "verdict": "pass"
+          },
+          "swap_fins": {
+            "evidence": "The bronze louvred box reads as iridescent chromic perforated metal, with the original panel spacing and box proportions intact.",
+            "verdict": "pass"
+          },
+          "swap_signage_wall": {
+            "evidence": "The ground-level stone wall is now vivid hot-pink with a convincing glossy plastic specular.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:17:03+00:00",
+        "summary": "A textbook surgical edit. Both swaps executed, nothing else touched \u2014 the only model to leave the rest of the building genuinely alone."
+      }
+    },
+    "t5": {
+      "FLUX.2 Max": {
+        "adherence": 66.7,
+        "criteria": {
+          "additive_only": {
+            "evidence": "Facades have been re-clad and terrace levels rebuilt rather than simply populated.",
+            "verdict": "fail"
+          },
+          "content_added": {
+            "evidence": "Planting, paving, people and a gold ring sculpture all present.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "The soffit survives, but the terrace levels are restructured and new retail frontages inserted beneath.",
+            "verdict": "partial"
+          },
+          "is_crop": {
+            "evidence": "Zooms into the podium terrace region including the curved bronze soffit.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "Exceptional detail and material richness.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "The forms are related, but the white metal fins have become heavy concrete and stone, changing the building's material character substantially.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "Found the right terrace and then re-clad the whole podium in concrete and stone \u2014 a heavier building than the one in the source."
+      },
+      "Grok Imagine Image 2.0": {
+        "adherence": 46.7,
+        "criteria": {
+          "additive_only": {
+            "evidence": "The invented structural element is new architecture and displaces the existing geometry.",
+            "verdict": "fail"
+          },
+          "content_added": {
+            "evidence": "Planting, paving, people and two sculptural pieces all present.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "A large organic structural fin has been invented mid-frame, the soffit swoops to a point it does not have in the source, and the terrace levels do not correspond.",
+            "verdict": "fail"
+          },
+          "is_crop": {
+            "evidence": "Close to the terrace and carrying the bronze soffit, but framed so tightly it reads as an invented scene rather than a crop of the marked region.",
+            "verdict": "partial"
+          },
+          "resolution": {
+            "evidence": "High detail at close proximity.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Bronze soffit and fluted glass are in the family, but the invented structure changes the design.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "Went so close it stopped being a crop and started being an invention \u2014 including a large sculptural column that exists nowhere in the source."
+      },
+      "MAI-Image-2.5": {
+        "adherence": 100.0,
+        "criteria": {
+          "additive_only": {
+            "evidence": "Seating, planting and sculpture placed within the existing terrace footprint.",
+            "verdict": "pass"
+          },
+          "content_added": {
+            "evidence": "Planting, resolved paving, people using the space and three sculptural pieces.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "The swooping bronze soffit, terrace level and steps all match the source's highlighted region.",
+            "verdict": "pass"
+          },
+          "is_crop": {
+            "evidence": "Frames the highlighted terrace at close proximity, with the green LED screen at the right edge anchoring the location.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "Strong detail gain \u2014 soffit slats, paving joints and planting all newly resolved.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Bronze soffit, fluted glass and the retail screen all confirm the same building.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "An exact crop with the green LED screen visible at the edge to prove it \u2014 geometry held, only the requested content added."
+      },
+      "MAI-Image-2.5 Pro": {
+        "adherence": 100.0,
+        "criteria": {
+          "additive_only": {
+            "evidence": "Planting, seating and sculpture sit within the existing terrace geometry.",
+            "verdict": "pass"
+          },
+          "content_added": {
+            "evidence": "Planting, resolved stone paving, people using the space and two sculptural pieces.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "Canopy profile, terrace level, stepped seating and glass balustrade all correspond to the source's marked region.",
+            "verdict": "pass"
+          },
+          "is_crop": {
+            "evidence": "A close view standing on the highlighted terrace, framed by the curved bronze soffit above.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "The highest material resolution in the task \u2014 paving grain, soffit slats and planting all fully detailed.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Curved bronze soffit and fluted glass facade are unmistakably the same building.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "The most inhabited reading of the terrace \u2014 closest proximity of the thirteen, with the canopy and stepped seating still correct."
+      },
+      "Nano Banana 2": {
+        "adherence": 56.7,
+        "criteria": {
+          "additive_only": {
+            "evidence": "New architecture \u2014 pavilion, stair and additional terrace levels \u2014 has been added rather than content placed within the existing geometry.",
+            "verdict": "fail"
+          },
+          "content_added": {
+            "evidence": "Planting, paving, people and a cube sculpture all present.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "The canopy is re-formed as a timber wave, and a new pavilion and stair have been introduced where the source has a simple planted ledge.",
+            "verdict": "fail"
+          },
+          "is_crop": {
+            "evidence": "Does frame a rooftop terrace at close proximity.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "High detail and convincing material resolution.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "The bronze louvred box and green LED screen appear at the right, but the surrounding context is a different city complete with satellite dishes.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "Invented a new pavilion, a new stair and a new city around them. Handsome, and not the terrace it was asked for."
+      },
+      "Nano Banana 2 Lite": {
+        "adherence": 100.0,
+        "criteria": {
+          "additive_only": {
+            "evidence": "Planting, furniture and sculpture placed within the existing terrace geometry.",
+            "verdict": "pass"
+          },
+          "content_added": {
+            "evidence": "Planting, paving detail, people and two sculptural pieces all present.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "The swooping bronze soffit, terrace edge and the fluted volumes beneath all match the source's highlighted region.",
+            "verdict": "pass"
+          },
+          "is_crop": {
+            "evidence": "Frames the highlighted terrace, with the white fluted cylinders, SIGNAGE frontage and green LED screen below confirming the location.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "Real detail gain \u2014 foliage, seating and shopfronts all newly resolved.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Unmistakably the same building, down to the retail signage and screen placement.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "The cheapest model in the benchmark returns a clean, exact crop \u2014 the retail frontage and green LED screen below prove it found the right part of the building."
+      },
+      "Nano Banana Pro": {
+        "adherence": 83.3,
+        "criteria": {
+          "additive_only": {
+            "evidence": "The stair and stepped seating are new architecture rather than content placed within the existing geometry.",
+            "verdict": "partial"
+          },
+          "content_added": {
+            "evidence": "Planting, paving, people and several sculptural pieces all present.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "The bronze soffit reads correctly, but a large stepped stair and amphitheatre have been introduced and the terrace plan is far deeper than the source ledge.",
+            "verdict": "partial"
+          },
+          "is_crop": {
+            "evidence": "Frames the highlighted terrace at close proximity, with the fluted white volume and SIGNAGE below confirming the location.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "Excellent detail \u2014 planting, timber decking and soffit slats all fully resolved.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Same architectural language throughout \u2014 fluted white metal, bronze soffit, glass balustrade.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "Correctly located and beautifully resolved, but it built a stepped amphitheatre that the source terrace does not have."
+      },
+      "Qwen Image 3": {
+        "adherence": 66.7,
+        "criteria": {
+          "additive_only": {
+            "evidence": "The terrace has been substantially enlarged and its supporting volume re-clad rather than simply populated.",
+            "verdict": "fail"
+          },
+          "content_added": {
+            "evidence": "Planting, paving, people and sculptural art all present.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "The soffit is flattened into an elliptical disc and the narrow ledge becomes a broad landscaped plateau.",
+            "verdict": "partial"
+          },
+          "is_crop": {
+            "evidence": "Zooms into the terrace with the curved soffit, with the bronze louvred box visible at the right.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "High detail and material richness.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Fluted glass and bronze soffit are consistent, but the supporting podium is re-clad in heavy concrete it does not have in the source.",
+            "verdict": "partial"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "Right terrace, wrong scale of intervention \u2014 the ledge is enlarged into a landscaped plateau on a re-clad concrete base."
+      },
+      "Qwen Image 3 Pro": {
+        "adherence": 100.0,
+        "criteria": {
+          "additive_only": {
+            "evidence": "Planting, figures and sculpture placed within the existing terrace geometry without displacing it.",
+            "verdict": "pass"
+          },
+          "content_added": {
+            "evidence": "Planting, paving detail, people and two sculptural pieces all present.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "Soffit profile, terrace levels, setbacks and the fluted volumes below all correspond to the source.",
+            "verdict": "pass"
+          },
+          "is_crop": {
+            "evidence": "A genuine zoom into the highlighted region; the white fluted cylinders and curved bronze soffit are exactly the marked terrace.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "Real resolution gain at closer proximity across planting, paving and facade.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Same architectural language and materials throughout.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "A clean constrained zoom \u2014 soffit, fluted volumes and terrace levels all held, with only the requested content added."
+      },
+      "Seedream 5.0 Lite": {
+        "adherence": 83.3,
+        "criteria": {
+          "additive_only": {
+            "evidence": "Content is placed within a terrace, but the terrace itself has been reshaped to accommodate it.",
+            "verdict": "partial"
+          },
+          "content_added": {
+            "evidence": "Planting, paving, people and a sculptural piece all present.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "The bronze canopy is reshaped into a radial scalloped fan rather than the source's smooth swooping soffit, and the terrace outline is now a rounded plaza.",
+            "verdict": "partial"
+          },
+          "is_crop": {
+            "evidence": "Frames a terrace at markedly closer proximity, in the right part of the building.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "Genuine detail increase across planting, paving and canopy.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Fluted glass tower, bronze canopy and the surrounding volumes are all recognisably the same design.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "A correctly located zoom, but the canopy was reworked from a smooth swoop into a radial fan and the ledge became a circular plaza."
+      },
+      "Seedream 5.0 Pro": {
+        "adherence": 46.7,
+        "criteria": {
+          "additive_only": {
+            "evidence": "Some planting is enriched, but the highlighted terrace itself is barely developed.",
+            "verdict": "partial"
+          },
+          "content_added": {
+            "evidence": "No people using the terrace, no sculptural art and no resolved paving at the marked area.",
+            "verdict": "fail"
+          },
+          "geometry_held": {
+            "evidence": "Geometry is preserved, which follows from it being effectively the same view.",
+            "verdict": "pass"
+          },
+          "is_crop": {
+            "evidence": "The output shows the entire building at essentially the source scale \u2014 there is no zoom into the highlighted terrace.",
+            "verdict": "fail"
+          },
+          "resolution": {
+            "evidence": "No detail increase at the terrace \u2014 it remains at the source's scale and resolution.",
+            "verdict": "fail"
+          },
+          "same_design": {
+            "evidence": "Unambiguously the same building.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "Did not zoom at all. It returned the whole elevation at the source scale, leaving the terrace no more developed than it started."
+      },
+      "gpt-image-1.5": {
+        "adherence": 36.7,
+        "criteria": {
+          "additive_only": {
+            "evidence": "The terrace has been entirely reconceived rather than populated.",
+            "verdict": "fail"
+          },
+          "content_added": {
+            "evidence": "Planting, paving, people and sculptural art all present in abundance.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "The canopy is a different curved form, the narrow ledge has become a broad garden plateau, and the terrace levels bear no relation to the source.",
+            "verdict": "fail"
+          },
+          "is_crop": {
+            "evidence": "It is a rooftop terrace at close range, but the framing corresponds to no part of the highlighted region.",
+            "verdict": "partial"
+          },
+          "resolution": {
+            "evidence": "Very high detail and material resolution throughout.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "The distinctive fluted white volumes and bronze louvred box are absent, the surrounding towers are generic, and the backdrop is an invented city with hills.",
+            "verdict": "fail"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "A beautiful roof garden belonging to another building. The context is invented down to the hills on the horizon."
+      },
+      "gpt-image-2": {
+        "adherence": 100.0,
+        "criteria": {
+          "additive_only": {
+            "evidence": "Planting, figures and the sculpture sit within the existing terrace footprint; nothing is displaced or resized.",
+            "verdict": "pass"
+          },
+          "content_added": {
+            "evidence": "All four requested additions present: realistic planting, resolved paving, people using the space, and a bronze sculptural piece.",
+            "verdict": "pass"
+          },
+          "geometry_held": {
+            "evidence": "Soffit profile, terrace levels, stepped access and glass balustrades all match the source's highlighted area.",
+            "verdict": "pass"
+          },
+          "is_crop": {
+            "evidence": "Frames precisely the highlighted terrace at close proximity \u2014 the curved bronze soffit and the white fluted cylinders beneath it are unmistakably the marked region.",
+            "verdict": "pass"
+          },
+          "resolution": {
+            "evidence": "Genuine material richness at closer proximity \u2014 foliage, paving joints and soffit slats all newly resolved.",
+            "verdict": "pass"
+          },
+          "same_design": {
+            "evidence": "Identical architectural language \u2014 bronze soffit, fluted white metal, frameless glass.",
+            "verdict": "pass"
+          }
+        },
+        "judged_at": "2026-08-21T12:23:48+00:00",
+        "summary": "An exact crop-and-upscale. The curved bronze soffit, the fluted white cylinders below and the terrace levels all survive; only planting, people and sculpture are added."
       }
     }
   },
