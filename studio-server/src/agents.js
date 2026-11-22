@@ -195,7 +195,7 @@ Return JSON only: {"notes":"4 to 8 sentences: what is working, where the points 
     ...(await imageParts(review, 384)),
   ];
   log('curator', `${label}.request`, { round, prompt: user[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { images: review.map(r => r.task_id) } });
-  const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.12, maxTokens: 1400 });
+  const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.12, maxTokens: 3000 });
   const d = parseJsonReply(r.text);
   const known = new Set(imgs.map(i => i.task_id));
   state.shortlist = (d.shortlist || []).filter(id => known.has(id)).slice(0, 16);
@@ -292,11 +292,11 @@ async function artistResearch(a, round, bv) {
   log(a.id, 'artist.research.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { web: true } });
   let r;
   try {
-    r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.08, maxTokens: 1200, plugins: [{ id: 'web', max_results: 5 }] });
+    r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.08, maxTokens: 2500, plugins: [{ id: 'web', max_results: 5 }] });
   } catch (e) {
     if (e instanceof StopError) throw e;
     log(a.id, 'artist.research.web_error', { round, data: { message: `web search failed, using model knowledge: ${e.message}` } });
-    r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.05, maxTokens: 1200 });
+    r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.05, maxTokens: 2500 });
   }
   const d = parseJsonReply(r.text);
   const sources = (r.annotations || []).filter(x => x.type === 'url_citation').map(x => ({ title: x.url_citation?.title || '', url: x.url_citation?.url || '' })).slice(0, 8);
@@ -317,7 +317,7 @@ async function artistArc(a, round, bv, research) {
   const n = studio.arc_spreads || 6;
   const user = `Brief:\n${currentBrief()}\n\nYour point: "${state.thesis?.[a.id]?.text || ''}"\nYour research:\n${(research?.findings || []).map(f => '- ' + f).join('\n')}\nAgainst you: ${research?.counter || ''}\n\nPlan a narrative: a series of ${n} two-page zine spreads that together build your argument, from opening to conclusion. Each beat is one spread. Make it a real sequence: set up, develop, turn, land.\nReturn JSON only: {"series_title":"2 to 6 words","beats":["one line per spread: what it shows and what it argues"]}`;
   log(a.id, 'artist.arc.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
-  const r = await chat({ model: runtime.sonnetModel, system: artistSystem(a), messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.04, maxTokens: 800 });
+  const r = await chat({ model: runtime.sonnetModel, system: artistSystem(a), messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.04, maxTokens: 2000 });
   const d = parseJsonReply(r.text);
   const clean = t => (a.persona === 'ami' || a.persona === 'p2') ? noDashes(t) : String(t || '');
   state.arc[a.id] = { brief_version: bv, round, series_title: clean(d.series_title), beats: (d.beats || []).map(clean).slice(0, 10) };
@@ -360,7 +360,7 @@ export async function artistWake(a, round, lim) {
   const text = `Brief:\n${currentBrief()}\n\n${fmt}\n\n${thesisLine}\n${researchLine}${arcLine}${direction ? `\nDirection from the Curator: ${direction}\n` : ''}${takeaway ? `\nAfter the debate you said you would: ${takeaway}\n` : ''}\nThis is wake ${round}. You may make ${n} spread${n > 1 ? 's' : ''} this wake. Each spread should advance your point; together they should read as a sequence.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"thesis":"your one-sentence point","arc":["optional: revised full list of beats"],"review":"one sentence on your previous spreads","keep":["task ids you select from your own images"],"intent":"one sentence: what this spread argues and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
   const content = [{ type: 'text', text }, ...(await imageParts(shown, 512))];
   log(a.id, 'artist.plan.request', { round, prompt: text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { shown: shown.map(s => s.task_id) } });
-  const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content }], agent: a.id, round, estimate: 0.06, maxTokens: 1200 });
+  const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content }], agent: a.id, round, estimate: 0.06, maxTokens: 2500 });
   const d = parseJsonReply(r.text);
   const known = new Set(mine.map(m => m.task_id));
   state.favourites = state.favourites || {};
