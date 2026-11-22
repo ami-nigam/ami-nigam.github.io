@@ -121,7 +121,7 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .thesis{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;line-height:1.35;margin:.1rem 0 .45rem}
 .research{font-size:11px;margin-top:.45rem;color:var(--text-secondary)}
 .research summary{cursor:pointer}
-.research ul{padding-left:1rem;margin:.3rem 0}
+.research ul,.research ol{padding-left:1rem;margin:.3rem 0}
 .research a{text-decoration:underline;word-break:break-all}
 .direction{font-size:11px;border-left:2px solid var(--accent);padding-left:.45rem;margin:.45rem 0 0;color:var(--text-secondary)}
 .canvas .empty{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:var(--text-secondary);text-align:center;padding:.5rem}
@@ -226,6 +226,9 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       <p id="limits" class="small"></p>
       <div id="incidents"></div>
       <div id="checkOut"></div>
+      <h2 style="margin-top:2rem">Restart</h2>
+      <p class="small muted">Archives all images, the log and state on the server (nothing is deleted) and starts the experiment from scratch, paused. Spend so far still counts toward the ceiling.</p>
+      <button id="restartBtn" class="danger" style="margin-top:.5rem">Restart experiment</button>
     </section>
 
     <section class="view hidden" id="v-debate">
@@ -250,7 +253,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
 
     <section class="view hidden" id="v-compare">
       <div class="filters"><select id="roundFilter"></select></div>
-      <p class="small muted" style="margin:.5rem 0">All five artists, same round. Morning rounds: A1 to A3 were identical controls.</p>
+      <p class="small muted" style="margin:.5rem 0">All artists, same round.</p>
       <div id="compare"></div>
     </section>
 
@@ -352,6 +355,11 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     render();
   };
   $('#runBtn').onclick = async () => { try { await json('/api/run-round', { method: 'POST' }); setTimeout(refresh, 1500); } catch (e) { alert(e.message); } };
+  $('#restartBtn').onclick = async () => {
+    const c = prompt('Type RESTART to archive everything and start the experiment again.');
+    if (c !== 'RESTART') return;
+    try { const r = await json('/api/admin/reset', { method: 'POST', body: JSON.stringify({ confirm: 'RESTART' }) }); alert('Restarted. Archived to ' + r.archive + '. Press Resume, then Run round now.'); location.reload(); } catch (e) { alert(e.message); }
+  };
   $('#reviewBtn').onclick = async () => { try { await json('/api/run-checkpoint', { method: 'POST' }); setTimeout(refresh, 1500); } catch (e) { alert(e.message); } };
   $('#checkBtn').onclick = async () => {
     $('#checkBtn').disabled = true; $('#checkOut').innerHTML = '<p class="small muted">Running connection check (about a minute)…</p>';
@@ -416,6 +424,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   const ACTIVE = ['thinking', 'painting', 'writing', 'reviewing', 'fixing'];
   const ARTIST_MAP = {
     'artist.research.request': ['thinking', 'Researching its side'], 'artist.research': ['thinking', 'Research done'], 'artist.research.web_error': ['thinking', 'Researching (offline)'],
+    'artist.arc.request': ['thinking', 'Planning its series'], 'artist.arc': ['thinking', 'Series planned'], 'artist.arc.revised': ['painting', 'Revised its series'],
     'artist.plan.request': ['thinking', 'Looking at past work'], 'artist.plan': ['painting', 'Writing a prompt'],
     'image.request': ['painting', 'Generating'], 'image.result': ['painting', 'Image done'], 'api.retry': ['painting', 'Retrying API'],
     'artist.reflection.request': ['thinking', 'Reflecting'], 'artist.reflection': ['asleep', 'Resting'],
@@ -509,7 +518,8 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       html += `
       <div class="room st-${s2.st} ${ACTIVE.includes(s2.st) ? 'active' : ''} ${watched ? 'watched' : ''} ${s2.st === 'error' || openInc.some(i => i.agent === a.id) ? 'err' : ''}" id="n-${a.id}">
         <div class="room-h"><b>${esc(a.name)}</b><span class="role">${esc(a.id)} · ${esc(a.personality)}<br>${a.group === 'persona' ? 'Ami voice: ' + esc(a.persona.replace(/^Ami voice:\s*/, '')) : esc(a.persona)}</span></div>
-        ${st.thesis?.[a.id] ? `<div class="thesis">“${esc(st.thesis[a.id].text)}”</div>` : '<div class="thesis muted">No point chosen yet.</div>'}
+        ${st.thesis?.[a.id] ? `<div class="thesis">“${esc(st.thesis[a.id].text)}”</div>` : '<div class="thesis muted">Researching before choosing a point.</div>'}
+        ${st.arc?.[a.id] ? `<div class="small"><b>${esc(st.arc[a.id].series_title)}</b> <span class="muted">· spread ${Math.min(mine.filter(i => i.brief_version === st.arc[a.id].brief_version).length, st.arc[a.id].beats.length)} of ${st.arc[a.id].beats.length}</span></div>` : ''}
         <div class="pill"><span class="dot"></span>${esc(s2.label)}</div>
         <div class="canvas ${genReq ? 'gen' : ''}" ${latest ? `data-open="${esc(latest.task_id)}" style="cursor:zoom-in"` : ''}>
           ${latest ? `<img data-src="/api/image/${esc(latest.task_id)}?thumb=1" alt="" class="${isNew ? 'new' : ''}">` : '<div class="empty">Blank canvas</div>'}
@@ -518,7 +528,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
         ${prev.length ? `<div class="strip">${prev.map(i => `<img data-src="/api/image/${esc(i.task_id)}?thumb=1" data-open="${esc(i.task_id)}" alt="" class="${kept.has(i.task_id) ? 'kept' : ''}">`).join('')}</div>` : ''}
         <div class="bubble">${bubble}</div>
         ${st.directions?.[a.id] ? `<div class="direction">Curator: ${esc(st.directions[a.id])}</div>` : ''}
-        ${st.research?.[a.id] ? `<details class="research"><summary>Research</summary><ul>${st.research[a.id].findings.map(f => `<li>${esc(f)}</li>`).join('')}</ul><p><b>Against:</b> ${esc(st.research[a.id].counter)}</p>${(st.research[a.id].sources || []).map(x => `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title || x.url)}</a>`).join('<br>')}</details>` : ''}
+        ${st.research?.[a.id] ? `<details class="research"><summary>Research</summary><ul>${st.research[a.id].findings.map(f => `<li>${esc(f)}</li>`).join('')}</ul><p><b>Against:</b> ${esc(st.research[a.id].counter)}</p>${st.arc?.[a.id] ? `<p><b>Series:</b></p><ol>${st.arc[a.id].beats.map(b => `<li>${esc(b)}</li>`).join('')}</ol>` : ''}${(st.research[a.id].sources || []).map(x => `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title || x.url)}</a>`).join('<br>')}</details>` : ''}
         <div class="room-f"><span>${mine.length} drafts</span><span>${money(spentA)}</span></div>
       </div>`;
     }
@@ -585,6 +595,9 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       case 'debate.turn': return `“${(e.response || '').slice(0, 140)}${(e.response || '').length > 140 ? '…' : ''}”`;
       case 'debate.takeaway': return `After the debate: “${e.response}”`;
       case 'debate.end': return 'The debate closes. Back to separate rooms.';
+      case 'artist.arc': return `Plans its series: ${d.message || ''}`;
+      case 'artist.arc.revised': return `Rewrote the rest of its series.`;
+      case 'experiment.restart': return 'Experiment restarted from scratch.';
       case 'artist.research': return `Researched its side (${(d.findings || []).length} findings, ${(d.sources || []).length} sources).`;
       case 'artist.thesis': return `Commits to a point: “${e.response}”`;
       case 'checkpoint.result': return `Reviewed the floor. Shortlist now ${(d.shortlist || []).length}.`;

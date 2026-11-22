@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { env, studio, runtime, CEILING } from './config.js';
-import { state, saveState, log, events, allImages, IMG_DIR, THUMB_DIR, FINAL_DIR, ledgerEntries } from './store.js';
+import { state, saveState, log, events, allImages, IMG_DIR, THUMB_DIR, FINAL_DIR, ledgerEntries, archiveAndReset } from './store.js';
 import { hasKey, getKey, spend, abortAll, resolveModels, chat, generateImage, lastKey } from './openrouter.js';
 import { startScheduler, runRound, runFinal, runCheckpoint, runDebate, nextWake, isBusy } from './scheduler.js';
 import { debatePlan } from './debate.js';
@@ -82,7 +82,7 @@ function status() {
       last_event: [...events()].reverse().find(e => e.agent === a.id)?.type || null,
     })),
     incidents: state.incidents || [], notices: state.notices || [],
-    thesis: state.thesis || {}, research: state.research || {}, directions: state.directions || null, brief_version: state.briefVersion || 1,
+    thesis: state.thesis || {}, research: state.research || {}, arc: state.arc || {}, directions: state.directions || null, brief_version: state.briefVersion || 1,
     debate: { status: state.debate?.status || null, turns: (state.debate?.turns || []).length, total: debatePlan().length, at: studio.schedule.debate_at || null, next: debatePlan()[(state.debate?.turns || []).length]?.speaker || null },
     final_status: state.final?.status || null, stance: studio.stance, stance_status: studio.stance_status,
   };
@@ -183,6 +183,16 @@ const server = http.createServer(async (req, res) => {
       if (state.debate?.status === 'done') return send(res, 409, { error: 'debate already held' });
       state.debateFired = state.debateFired || 'manual'; saveState();
       runDebate(); return send(res, 202, { started: true });
+    }
+    if (p === '/api/admin/reset' && req.method === 'POST') {
+      const { confirm } = await readBody(req);
+      if (confirm !== 'RESTART') return send(res, 400, { error: 'confirm must be RESTART' });
+      state.paused = true; saveState(); abortAll('restart');
+      for (let i = 0; i < 30 && isBusy(); i++) await new Promise(r => setTimeout(r, 1000));
+      if (isBusy()) return send(res, 409, { error: `${isBusy()} still running; try again in a minute` });
+      const out = archiveAndReset();
+      log('system', 'experiment.restart', { data: { message: `experiment restarted; previous run archived to ${out.archive}` } });
+      return send(res, 200, { ok: true, ...out });
     }
     if (p === '/api/debate' && req.method === 'GET') return send(res, 200, { debate: state.debate || null, plan: debatePlan() });
     if (p === '/api/admin/check' && req.method === 'POST') {

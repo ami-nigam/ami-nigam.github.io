@@ -66,3 +66,20 @@ export const state = readJson(STATE, {});
 export function saveState() { writeJson(STATE, state); }
 export const runtime = readJson(RUNTIME, {});
 export function saveRuntime() { writeJson(RUNTIME, runtime); }
+
+// Restart the experiment: move images, log and state into an archive folder (nothing deleted).
+// Keeps the cost ledger and the key baseline so the $20 ceiling still counts all spend.
+export function archiveAndReset() {
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const arch = path.join(DATA_DIR, 'archive', stamp);
+  fs.mkdirSync(arch, { recursive: true });
+  for (const f of [LOG, IMAGES, STATE]) if (fs.existsSync(f)) fs.renameSync(f, path.join(arch, path.basename(f)));
+  for (const d of [IMG_DIR, THUMB_DIR, FINAL_DIR]) { if (fs.existsSync(d)) fs.renameSync(d, path.join(arch, path.basename(d))); fs.mkdirSync(d, { recursive: true }); }
+  logCache.length = 0; images.length = 0;
+  const prevArchives = state.archives || [];
+  const keep = { keyBaselineUsage: state.keyBaselineUsage, ceilingHit: state.ceilingHit, ceilingReason: state.ceilingReason, schedule: state.schedule, lastSlot: state.lastSlot, lastCheck: state.lastCheck };
+  for (const k of Object.keys(state)) delete state[k];
+  Object.assign(state, keep, { paused: true, round: 0, archives: [...prevArchives, stamp] });
+  writeJson(STATE, state);
+  return { archive: path.relative(DATA_DIR, arch) };
+}

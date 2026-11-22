@@ -185,7 +185,7 @@ export async function curatorCheckpoint(round, label = 'checkpoint') {
   const review = recent.slice(-runtime.curatorReviewImages);
   const s = spend();
   const reflections = events().filter(e => e.type === 'artist.reflection').slice(-15).map(e => `${e.agent} r${e.round}: ${e.response}`).join('\n');
-  const system = `You are the Curator. You see all artists' work; they cannot see each other. Each artist has a point of view: ${studio.artists.map(x => `${x.id} ${persona(x).name || ''} = ${persona(x).label}, ${persona(x).personality || ''}`).join('; ')}. ${studio.artists.filter(x => x.group === 'persona').map(x => x.id).join(' and ')} carries Ami's voice. (In the first rounds of the day A1 to A3 were identical controls.) You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
+  const system = `You are the Curator. You see all artists' work; they cannot see each other. Each artist has a point of view: ${studio.artists.map(x => `${x.id} ${persona(x).name || ''} = ${persona(x).label}, ${persona(x).personality || ''}`).join('; ')}. ${studio.artists.filter(x => x.group === 'persona').map(x => x.id).join(' and ')} carries Ami's voice.  You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
   const user = [
     { type: 'text', text: `Brief:\n${currentBrief()}\n\nSpend: $${s.spent} of $${CEILING}. Current shortlist: ${JSON.stringify(state.shortlist || [])}.\nRecent artist reflections:\n${reflections}\n\nEach artist argues one point (thesis) across zine spreads. Theses: ${JSON.stringify(state.thesis || {})}.
 Current directions: ${JSON.stringify(state.directions || {})}.
@@ -269,7 +269,7 @@ export async function curatorWriteText(round) {
   const user = `Write about 1,500 words for ${studio.publication}, working title "${studio.title}". Markdown, with a title and a few section headings.
 Stance (${studio.stance_status}): "${studio.stance}"
 Core position: ${studio.ami.position}
-What happened: AI artists worked from one brief through one day, waking every 30 minutes. In the morning A1, A2 and A3 were identical (same model, system prompt and brief) and could not see each other's work. From midday the studio was cut to ${studio.artists.length} artists; each was given a bias, researched its side and argued one point across zine spreads: ${studio.artists.map(x => `${persona(x).name || x.id} (${x.id}, ${persona(x).label}): ${state.thesis?.[x.id]?.text || ''}`).join('; ')}. ${studio.artists.filter(x => x.group === 'persona').map(x => persona(x).name || x.id).join(' and ')} carried my voice. The Curator directed each artist at checkpoints. ${totalImages} drafts were made; the Curator chose ${picks.length}.
+What happened: AI artists worked from one brief through one day, waking every 30 minutes. There were ${studio.artists.length} artists, each given a bias. First they researched their side and committed to one point; then each built a series of zine spreads as a narrative arc. They could not see each other's work except once, in a debate: ${studio.artists.map(x => `${persona(x).name || x.id} (${x.id}, ${persona(x).label}): ${state.thesis?.[x.id]?.text || ''}`).join('; ')}. ${studio.artists.filter(x => x.group === 'persona').map(x => persona(x).name || x.id).join(' and ')} carried my voice. The Curator directed each artist at checkpoints. ${totalImages} drafts were made; the Curator chose ${picks.length}.
 Brief:\n${currentBrief()}
 Curator notes through the day:\n${notes}\nMidway through the day the artists met once, in a debate (the only time they saw each other). Their takeaways: ${JSON.stringify(state.debate?.takeaways || {})}\nCurator's closing words: ${(state.debate?.turns || []).filter(t => t.speaker === 'curator').slice(-1)[0]?.text || '(no debate held)'}
 Artist reflections (sample):\n${reflections}
@@ -310,6 +310,22 @@ async function artistResearch(a, round, bv) {
   return state.research[a.id];
 }
 
+// ---------- Narrative arc (after research, once per brief version) ----------
+async function artistArc(a, round, bv, research) {
+  state.arc = state.arc || {};
+  if (state.arc[a.id]?.brief_version === bv) return state.arc[a.id];
+  const n = studio.arc_spreads || 6;
+  const user = `Brief:\n${currentBrief()}\n\nYour point: "${state.thesis?.[a.id]?.text || ''}"\nYour research:\n${(research?.findings || []).map(f => '- ' + f).join('\n')}\nAgainst you: ${research?.counter || ''}\n\nPlan a narrative: a series of ${n} two-page zine spreads that together build your argument, from opening to conclusion. Each beat is one spread. Make it a real sequence: set up, develop, turn, land.\nReturn JSON only: {"series_title":"2 to 6 words","beats":["one line per spread: what it shows and what it argues"]}`;
+  log(a.id, 'artist.arc.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
+  const r = await chat({ model: runtime.sonnetModel, system: artistSystem(a), messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.04, maxTokens: 800 });
+  const d = parseJsonReply(r.text);
+  const clean = t => (a.persona === 'ami' || a.persona === 'p2') ? noDashes(t) : String(t || '');
+  state.arc[a.id] = { brief_version: bv, round, series_title: clean(d.series_title), beats: (d.beats || []).map(clean).slice(0, 10) };
+  saveState();
+  log(a.id, 'artist.arc', { round, response: r.text, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost, data: { message: `"${state.arc[a.id].series_title}", ${state.arc[a.id].beats.length} spreads`, arc: state.arc[a.id] } });
+  return state.arc[a.id];
+}
+
 // ---------- Artist wake ----------
 export async function artistWake(a, round, lim) {
   const mine = allImages().filter(i => i.artist === a.id && i.kind === 'draft');
@@ -326,6 +342,8 @@ export async function artistWake(a, round, lim) {
   const takeaway = state.debate?.status === 'done' ? (state.debate.takeaways?.[a.id] || '') : '';
   let research = null;
   if (persona(a).bias || persona(a).point) research = await artistResearch(a, round, bv);
+  const arc = await artistArc(a, round, bv, research);
+  const beatNo = cur.length + 1;
   const history = events().filter(e => e.agent === a.id && ['artist.plan', 'artist.reflection'].includes(e.type) && (e.data?.brief_version || 1) === bv).slice(-12)
     .map(e => e.type === 'artist.plan' ? `r${e.round} plan: ${e.data?.intent || ''}` : `r${e.round} reflection: ${e.response}`).join('\n');
   const favs = new Set(state.favourites?.[a.id] || []);
@@ -338,7 +356,8 @@ export async function artistWake(a, round, lim) {
     : thesis ? `Your point to argue across every spread today: "${thesis}". Restate it in your own words as "thesis".`
     : `You have not chosen your point yet. From the brief, decide ONE strong point you will argue across every spread today, in one sentence, and return it as "thesis".`;
   const researchLine = research ? `\nYour research:\n${research.findings.map(f => '- ' + f).join('\n')}\nStrongest point against you: ${research.counter}\nUse your research: name real references on the spread where they help.\n` : '';
-  const text = `Brief:\n${currentBrief()}\n\n${fmt}\n\n${thesisLine}\n${researchLine}${direction ? `\nDirection from the Curator: ${direction}\n` : ''}${takeaway ? `\nAfter the debate you said you would: ${takeaway}\n` : ''}\nThis is wake ${round}. You may make ${n} spread${n > 1 ? 's' : ''} this wake. Each spread should advance your point; together they should read as a sequence.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"thesis":"your one-sentence point","review":"one sentence on your previous spreads","keep":["task ids you select from your own images"],"intent":"one sentence: what this spread argues and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
+  const arcLine = `\nYour series: "${arc.series_title}"\n${arc.beats.map((b, i) => `${i + 1}. ${b}${i + 1 < beatNo ? ' (made)' : i + 1 === beatNo ? '  <- next' : ''}`).join('\n')}\nMake the next beat${n > 1 ? 's in order' : ''}. If what you have made so far changes the story, you may revise the remaining beats: return them as "arc" (full list).\n`;
+  const text = `Brief:\n${currentBrief()}\n\n${fmt}\n\n${thesisLine}\n${researchLine}${arcLine}${direction ? `\nDirection from the Curator: ${direction}\n` : ''}${takeaway ? `\nAfter the debate you said you would: ${takeaway}\n` : ''}\nThis is wake ${round}. You may make ${n} spread${n > 1 ? 's' : ''} this wake. Each spread should advance your point; together they should read as a sequence.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"thesis":"your one-sentence point","arc":["optional: revised full list of beats"],"review":"one sentence on your previous spreads","keep":["task ids you select from your own images"],"intent":"one sentence: what this spread argues and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
   const content = [{ type: 'text', text }, ...(await imageParts(shown, 512))];
   log(a.id, 'artist.plan.request', { round, prompt: text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { shown: shown.map(s => s.task_id) } });
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content }], agent: a.id, round, estimate: 0.06, maxTokens: 1200 });
@@ -346,6 +365,11 @@ export async function artistWake(a, round, lim) {
   const known = new Set(mine.map(m => m.task_id));
   state.favourites = state.favourites || {};
   state.favourites[a.id] = [...new Set([...(state.favourites[a.id] || []), ...(d.keep || []).filter(k => known.has(k))])].slice(-8);
+  if (Array.isArray(d.arc) && d.arc.length >= cur.length + 1) {
+    const clean = t => (a.persona === 'ami' || a.persona === 'p2') ? noDashes(t) : String(t || '');
+    state.arc[a.id] = { ...state.arc[a.id], beats: d.arc.map(clean).slice(0, 10), revised: round };
+    log(a.id, 'artist.arc.revised', { round, data: { message: `revised arc: ${state.arc[a.id].beats.length} spreads`, arc: state.arc[a.id] } });
+  }
   if (!state.thesis[a.id] && d.thesis) {
     state.thesis[a.id] = { text: (a.persona === 'ami' || a.persona === 'p2') ? noDashes(d.thesis) : String(d.thesis), round, brief_version: bv };
     log(a.id, 'artist.thesis', { round, response: state.thesis[a.id].text, data: { message: state.thesis[a.id].text } });
@@ -362,7 +386,7 @@ export async function artistWake(a, round, lim) {
     log(a.id, 'image.request', { round, prompt: img.prompt, model: runtime.imageModel, endpoint: '/images', task_id: taskId, data: { title: img.title, quality } });
     const g = await generateImage({ prompt: img.prompt, quality, agent: a.id, round });
     const file = await saveImage(g.buf, taskId);
-    const rec = { task_id: taskId, kind: 'draft', artist: a.id, group: a.group, persona: a.persona, round, brief_version: bv, title: img.title, slug, prompt: img.prompt, quality, model: runtime.imageModel, endpoint: '/images', request: g.request, response_meta: g.response_meta, seed: g.seed, cost: g.cost, cost_estimated: g.costEstimated, ts: new Date().toISOString(), file: path.basename(file), openrouter_id: g.id };
+    const rec = { task_id: taskId, kind: 'draft', artist: a.id, group: a.group, persona: a.persona, round, brief_version: bv, beat: beatNo + made.length, title: img.title, slug, prompt: img.prompt, quality, model: runtime.imageModel, endpoint: '/images', request: g.request, response_meta: g.response_meta, seed: g.seed, cost: g.cost, cost_estimated: g.costEstimated, ts: new Date().toISOString(), file: path.basename(file), openrouter_id: g.id };
     addImage(rec); made.push(rec);
     log(a.id, 'image.result', { round, prompt: img.prompt, model: runtime.imageModel, endpoint: '/images', task_id: taskId, cost: g.cost, file: rec.file, data: { title: img.title, request: g.request, seed: g.seed, cost_estimated: g.costEstimated } });
   }
