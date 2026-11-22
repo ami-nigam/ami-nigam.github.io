@@ -28,8 +28,6 @@ export function stats() {
     finals: imgs.filter(i => i.kind === 'final').length,
     rounds: state.round || 0,
     calls: ledgerEntries().length,
-    spend: round4(spend().spent),
-    ceiling: CEILING,
     debate_turns: (state.debate?.turns || []).length,
     hours: first ? round4((Date.now() - new Date(first.ts)) / 3600000) : 0,
     artists: studio.artists.length,
@@ -61,7 +59,7 @@ Final essay ${state.final?.text ? 'exists (use essay spreads for sections of it)
 
 Templates you may use:\n${Object.entries(TEMPLATES).map(([k, v]) => `- ${k}: ${v}`).join('\n')}
 
-Rules: exactly ${n} spreads, numbered in reading order. Start with opener, end with close. Give every artist one "artist" spread and use "series" where it shows a narrative. If the debate has not happened, still reserve a debate spread and an after spread with placeholder copy. Modern, confident, very little text per spread. Headlines short and sharp. Plain words, no hype, never em-dashes. Do not invent facts, quotes or numbers: quotes must come from the debate transcript above.
+Rules: exactly ${n} spreads, numbered in reading order. Start with opener, end with close. Give every artist one "artist" spread and use "series" where it shows a narrative. If the debate has not happened, still reserve a debate spread and an after spread with placeholder copy. Never mention money, cost, budget or spend anywhere in the zine. Modern, confident, very little text per spread. Headlines short and sharp. Plain words, no hype, never em-dashes. Do not invent facts, quotes or numbers: quotes must come from the debate transcript above.
 Return JSON only: {"spreads":[{"n":1,"template":"opener","title":"...","body":"...","artist":"A1","image":"task id","caption":"...","quote":{"speaker":"...","text":"..."},"quotes":[{"speaker":"...","text":"..."}]}],"note":"one sentence on the zine's arc"}`;
   log('curator', 'zine.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.15, maxTokens: 5000 });

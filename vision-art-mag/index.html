@@ -823,7 +823,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       }).join('')}</div>${folio}</section>`;
     }
     if (t === 'numbers') {
-      const st = Z.stats; const cells = [[st.spreads, 'spreads made'], [st.artists, 'artists'], [st.rounds, 'rounds'], [st.debate_turns, 'debate turns'], [st.calls, 'model calls'], ['$' + Number(st.spend).toFixed(2), 'spent of $' + st.ceiling]];
+      const st = Z.stats; const cells = [[st.spreads, 'spreads made'], [st.artists, 'artists'], [st.rounds, 'rounds'], [st.debate_turns, 'debate turns'], [st.calls, 'model calls'], [Math.round(st.hours) || '–', 'hours']];
       return `<section class="zs z-numbers"><div class="pg l"><div class="mono">The day in numbers</div><h2>${esc(sp.title || 'The day in numbers')}</h2>${sp.caption ? `<p class="body">${esc(sp.caption)}</p>` : ''}</div><div class="pg r"><div class="znums">${cells.map(([v, l]) => `<div><b>${esc(v)}</b><span class="mono">${esc(l)}</span></div>`).join('')}</div></div>${folio}</section>`;
     }
     if (t === 'essay') return `<section class="zs z-essay"><div class="pg l"><div class="mono">Essay</div><h2>${esc(sp.title)}</h2></div><div class="pg r"><div class="zcols">${md(sp.body || '').split(/\n{2,}/).map(p => `<p>${p}</p>`).join('')}</div></div>${folio}</section>`;
