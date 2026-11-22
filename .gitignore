@@ -1,0 +1,6 @@
+# studio-server: never commit secrets, data or deps
+.env
+.env.*
+node_modules/
+studio-server/data/
+*.jsonl
