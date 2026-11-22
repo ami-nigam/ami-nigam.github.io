@@ -11,6 +11,7 @@ export const TEMPLATES = {
   opener: 'Title spread: STOCHASTIC BY DESIGN, the question, the cast of artists. Fields: title, body (the question or a short intro).',
   setup: 'The studio: how the experiment worked (one brief, separate rooms, research, series, one debate, the Curator, the Engineer) beside a floor plan of the studio. Fields: title, body (60 to 120 words).',
   cast: 'The four artists side by side: what each thinks, how it makes the argument, its main research pointers. Fields: title, caption (optional one line).',
+  argument: 'One artist\'s argument across FOUR of its spreads. Fields: artist, body (40 to 70 words: how the series builds the argument), images (exactly 4 task ids of that artist, in the order that makes the argument), captions (4 lines, one per image: what that spread says within the argument).',
   artist: 'One artist\'s strongest spread, full bleed. Fields: artist, image (task id), caption: ONE sentence on what this spread says within that artist\'s argument (use its beat_text and intent).',
   series: 'Contact sheet of one artist\'s whole series in order, showing the narrative. Fields: artist, title, caption.',
   debate: 'The debate: one big pull quote plus 4 to 6 short excerpts. Fields: title, quote {speaker, text}, quotes [{speaker, text}].',
@@ -73,8 +74,8 @@ Final essay ${state.final?.text ? 'exists (use essay spreads for sections of it)
 
 Templates you may use:\n${Object.entries(TEMPLATES).map(([k, v]) => `- ${k}: ${v}`).join('\n')}
 
-Rules: exactly ${n} spreads, numbered in reading order. Start with opener, then setup, then cast. End with close. Give every artist one "artist" spread and use "series" where it shows a narrative. If the debate has not happened, still reserve a debate spread and an after spread with placeholder copy. Make it unmistakable that the artists are AI agents created for this experiment (language models given a name, a temperament and a bias), not human artists. Never mention money, cost, budget or spend anywhere in the zine. Modern, confident, very little text per spread. Headlines short and sharp. Plain words, no hype, never em-dashes. Do not invent facts, quotes or numbers: quotes must come from the debate transcript above.
-Return JSON only: {"spreads":[{"n":1,"template":"opener","title":"...","body":"...","artist":"A1","image":"task id","caption":"...","quote":{"speaker":"...","text":"..."},"quotes":[{"speaker":"...","text":"..."}]}],"note":"one sentence on the zine's arc"}`;
+Rules: exactly ${n} spreads, numbered in reading order. Start with opener, then setup, then cast. End with close. Give every artist one "argument" spread (not "artist") and use "series" where it shows a narrative. If the debate has not happened, still reserve a debate spread and an after spread with placeholder copy. Make it unmistakable that the artists are AI agents created for this experiment (language models given a name, a temperament and a bias), not human artists. Never mention money, cost, budget or spend anywhere in the zine. Modern, confident, very little text per spread. Headlines short and sharp. Plain words, no hype, never em-dashes. Do not invent facts, quotes or numbers: quotes must come from the debate transcript above.
+Return JSON only: {"spreads":[{"n":1,"template":"opener","title":"...","body":"...","artist":"A1","image":"task id","images":["4 task ids"],"captions":["4 lines"],"caption":"...","quote":{"speaker":"...","text":"..."},"quotes":[{"speaker":"...","text":"..."}]}],"note":"one sentence on the zine's arc"}`;
   log('curator', 'zine.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.15, maxTokens: 5000 });
   const d = parseJsonReply(r.text);
@@ -88,6 +89,8 @@ Return JSON only: {"spreads":[{"n":1,"template":"opener","title":"...","body":".
     title: clean(sp.title || ''), body: clean(sp.body || ''), caption: clean(sp.caption || ''),
     artist: artistIds.has(sp.artist) ? sp.artist : null,
     image: ids.has(sp.image) ? sp.image : null,
+    images: (sp.images || []).filter(x => ids.has(x) && (!artistIds.has(sp.artist) || images.find(i => i.id === x)?.artist === sp.artist)).slice(0, 4),
+    captions: (sp.captions || []).slice(0, 4).map(c => clean(String(c || ''))),
     quote: sp.quote?.text ? { speaker: String(sp.quote.speaker || ''), text: clean(sp.quote.text) } : null,
     quotes: (sp.quotes || []).filter(q => q?.text).slice(0, 6).map(q => ({ speaker: String(q.speaker || ''), text: clean(q.text) })),
   }));

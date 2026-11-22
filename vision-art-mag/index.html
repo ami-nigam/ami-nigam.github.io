@@ -244,6 +244,15 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .zsetupsteps{list-style:none;display:flex;flex-direction:column;gap:.7cqw;margin-top:auto}
 .zsetupsteps li{font-size:1.2cqw;line-height:1.3;border-top:.15cqw solid #0b0b0b;padding-top:.5cqw;display:grid;grid-template-columns:3cqw 1fr}
 .zsetupsteps b{font-family:'Archivo Black';font-weight:400;color:#c0186c}
+.zargbig{font-weight:800;font-size:2cqw;line-height:1.15;letter-spacing:-.01em;border-left:.5cqw solid var(--c);padding-left:1.2cqw}
+.zarglist{list-style:none;display:flex;flex-direction:column;gap:.8cqw;margin-top:auto}
+.zarglist li{display:grid;grid-template-columns:3cqw 1fr;font-size:1.15cqw;line-height:1.3;border-top:.15cqw solid #0b0b0b;padding-top:.5cqw}
+.zarglist b{font-family:'Archivo Black';font-weight:400;color:var(--c)}
+.zgrid4{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw 1.2cqw;margin:auto 0}
+.zgrid4 figure{margin:0;min-width:0}
+.zgrid4 img,.zgrid4 .zph{width:100%;aspect-ratio:1.414;object-fit:cover;display:block}
+.zgrid4 figcaption{font-size:.8cqw!important;margin-top:.4cqw;line-height:1.3;display:flex;gap:.6cqw}
+.zgrid4 figcaption b{color:var(--c)}
 .zstance{font-family:'Playfair Display',serif;font-style:italic;font-size:1.7cqw;line-height:1.35;border-left:.3cqw solid #c0186c;padding-left:1.2cqw}
 @media print{
   @page{size:A3 landscape;margin:0}
@@ -805,7 +814,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   function zImg(id, finals, cls = '') { if (!id) return `<div class="zph ${cls}"><span>spread pending</span></div>`; const use = finals[id] || id; return `<img class="${cls}" data-src="/api/image/${esc(use)}" alt="">`; }
   function defaultZine(Z) {
     const sp = [{ template: 'opener', title: Z.title, body: Z.question }, { template: 'setup', title: 'One brief. Four rooms.', body: 'Four AI artists, created for this experiment, got the same question and a different bias. Each researched its side, planned a series and made it, one spread every half hour. They met once, in a debate. A Curator watched everything and made nothing.' }, { template: 'cast', title: 'The four AI artists' }];
-    for (const c of Z.cast) sp.push({ template: 'artist', artist: c.id, image: null, caption: '' });
+    for (const c of Z.cast) sp.push({ template: 'argument', artist: c.id, images: [], captions: [] });
     sp.push({ template: 'debate', title: 'The only time they met' }, { template: 'after', title: 'What changed' }, { template: 'close', title: 'Is it creative?', body: Z.stance });
     return { spreads: sp.slice(0, 10).map((s, i) => ({ n: i + 1, ...s })), version: 0 };
   }
@@ -835,6 +844,16 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
         ${c.research?.length ? `<div class="k">Research</div><ul>${c.research.slice(0, 3).map(f => `<li>${esc(f)}</li>`).join('')}</ul>` : ''}
         ${c.counter ? `<div class="k">Against</div><p>${esc(c.counter)}</p>` : ''}
       </div>`).join('')}</div>${folio}</section>`;
+    }
+    if (t === 'argument') {
+      const c = A(sp.artist) || cast[0]; const mine = imgs.filter(i => i.artist === c?.id);
+      let ids = (sp.images || []).filter(x => mine.some(m => m.task_id === x));
+      if (ids.length < 4) { const pool = mine.map(m => m.task_id).filter(x => !ids.includes(x)); const need = 4 - ids.length; const step = pool.length / need; for (let k = 0; k < need && pool.length; k++) ids.push(pool[Math.min(pool.length - 1, Math.floor(k * step + (need === pool.length ? 0 : step / 2)))]); ids = [...new Set(ids)]; }
+      const caps = ids.map((x, k) => sp.captions?.[k] || (Z.notes || {})[x]?.intent || (Z.notes || {})[x]?.beat_text || '');
+      return `<section class="zs z-argument" style="--c:${ZC[c?.id] || '#111'}"><div class="pg l"><div class="mono">AI artist · ${esc(c?.label)}</div><h2 style="color:var(--c)">${esc(c?.name)}</h2>
+        <p class="zargbig">${esc(c?.argument)}</p>${sp.body ? `<p class="body">${esc(sp.body)}</p>` : ''}
+        <ol class="zarglist">${caps.map((x, k) => `<li><b>${pad(k + 1)}</b>${esc(x)}</li>`).join('')}</ol></div>
+        <div class="pg r"><div class="zgrid4">${Array.from({ length: 4 }).map((_, k) => `<figure>${zImg(ids[k], finals)}<figcaption class="mono"><b>${pad(k + 1)}</b>${ids[k] ? esc((S.images.find(i => i.task_id === ids[k])?.title) || '') : ''}</figcaption></figure>`).join('')}</div></div>${folio}</section>`;
     }
     if (t === 'artist') {
       const c = A(sp.artist) || cast[0]; const mine = imgs.filter(i => i.artist === c?.id);
