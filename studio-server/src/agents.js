@@ -65,6 +65,7 @@ function amiVoiceBlock() {
 function artistSystem(a) {
   const p = persona(a);
   if (a.persona === 'control') return p.system;
+  if (p.bias) return `You are an image-making agent with a strong point of view. ${p.bias}\n\nYou make two-page zine spreads that argue your side. You are not neutral and you do not hedge.`;
   return [
     `You are an image-making agent carrying Ami Nigam's editorial voice. The work is published under his name.`,
     `Your emphasis: ${p.emphasis}`,
@@ -178,13 +179,13 @@ export async function curatorCheckpoint(round, label = 'checkpoint') {
   const review = recent.slice(-runtime.curatorReviewImages);
   const s = spend();
   const reflections = events().filter(e => e.type === 'artist.reflection').slice(-15).map(e => `${e.agent} r${e.round}: ${e.response}`).join('\n');
-  const system = `You are the Curator. You see all artists' work; they cannot see each other. A1, A2 and A3 are an identical control group (same model, prompt and brief); P1 and P2 carry Ami's voice. You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
+  const system = `You are the Curator. You see all artists' work; they cannot see each other. Each artist has a point of view: ${studio.artists.map(x => `${x.id} = ${persona(x).label}`).join('; ')}. P1 and P2 carry Ami's voice. (In the first rounds of the day A1 to A3 were identical controls.) You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
   const user = [
     { type: 'text', text: `Brief:\n${currentBrief()}\n\nSpend: $${s.spent} of $${CEILING}. Current shortlist: ${JSON.stringify(state.shortlist || [])}.\nRecent artist reflections:\n${reflections}\n\nEach artist argues one point (thesis) across zine spreads. Theses: ${JSON.stringify(state.thesis || {})}.
 Current directions: ${JSON.stringify(state.directions || {})}.
 Review the spreads below, then direct the artists. You may push them in the same direction or in different directions.
-Rules for directions: "controls" is ONE note sent identically to A1, A2 and A3; it must not describe or hint at any artist's images. "P1" and "P2" may be specific to that artist's own work, never mention other artists' work. One to three sentences each, plain words, no em-dashes.
-Return JSON only: {"notes":"4 to 8 sentences: what is working, how the control artists diverge, what P1 and P2 add, whether the argument reads","shortlist":["task ids worth considering for the final 8 to 10, max 16, keep good earlier picks"],"directions":{"mode":"same or different","controls":"...","P1":"...","P2":"..."},"stance_unclear":"optional"}` },
+Rules for directions: one note per artist about its own work and argument. Never describe or mention another artist's work. You may push them in the same direction or apart (e.g. sharpen the disagreement). One to three sentences each, plain words, no em-dashes.
+Return JSON only: {"notes":"4 to 8 sentences: what is working, where the five points of view clash or agree, whether each argument reads","shortlist":["task ids worth considering for the final 8 to 10, max 16, keep good earlier picks"],"directions":{"mode":"same or different","A1":"...","A2":"...","A3":"...","P1":"...","P2":"..."},"stance_unclear":"optional"}` },
     ...(await imageParts(review, 384)),
   ];
   log('curator', `${label}.request`, { round, prompt: user[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { images: review.map(r => r.task_id) } });
@@ -195,8 +196,9 @@ Return JSON only: {"notes":"4 to 8 sentences: what is working, how the control a
   state.curatorNotes = [...(state.curatorNotes || []), { ts: new Date().toISOString(), round, label, notes: noDashes(d.notes), stance_unclear: d.stance_unclear || null, directions: d.directions || null }];
   if (d.directions && label === 'checkpoint') {
     const dir = d.directions; const ts = new Date().toISOString();
-    state.directions = { mode: dir.mode || null, round, ts, A1: noDashes(dir.controls || ''), A2: noDashes(dir.controls || ''), A3: noDashes(dir.controls || ''), P1: noDashes(dir.P1 || ''), P2: noDashes(dir.P2 || '') };
-    log('curator', 'direction', { round, response: JSON.stringify(state.directions), data: { message: `${dir.mode || ''} direction. Controls: "${dir.controls || ''}"`, directions: state.directions } });
+    state.directions = { mode: dir.mode || null, round, ts };
+    for (const x of studio.artists) state.directions[x.id] = noDashes(dir[x.id] || dir.controls || '');
+    log('curator', 'direction', { round, response: JSON.stringify(state.directions), data: { message: `${dir.mode || ''} directions sent to ${studio.artists.length} artists`, directions: state.directions } });
   }
   saveState();
   log('curator', `${label}.result`, { round, response: r.text, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost, data: { shortlist: state.shortlist } });
@@ -216,7 +218,7 @@ export async function curatorFinal(round) {
     const candidates = [...pool, ...extra].slice(0, 30);
     const system = `You are the Curator making the final selection for ${studio.publication}, "${studio.title}". Stance (${studio.stance_status}): "${studio.stance}".\n\n${amiVoiceBlock()}`;
     const user = [
-      { type: 'text', text: `Select ${L.finals_count >= 10 ? '8 to 10' : '8'} zine spreads for print, the ones whose argument reads most clearly, from the candidates below. Include at least one round where the three control artists can be compared if possible. Return JSON only: {"picks":[{"task_id":"...","title":"short descriptive title, 2 to 5 words","caption":"one or two plain sentences in Ami's voice, no em-dashes"}],"rationale":"3 sentences"}` },
+      { type: 'text', text: `Select ${L.finals_count >= 10 ? '8 to 10' : '8'} zine spreads for print, the ones whose argument reads most clearly, from the candidates below. Include each artist's strongest argument where possible, so the five points of view can be compared. Return JSON only: {"picks":[{"task_id":"...","title":"short descriptive title, 2 to 5 words","caption":"one or two plain sentences in Ami's voice, no em-dashes"}],"rationale":"3 sentences"}` },
       ...(await imageParts(candidates, 384)),
     ];
     log('curator', 'final.select.request', { round, prompt: user[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { candidates: candidates.map(c => c.task_id) } });
@@ -261,7 +263,7 @@ export async function curatorWriteText(round) {
   const user = `Write about 1,500 words for ${studio.publication}, working title "${studio.title}". Markdown, with a title and a few section headings.
 Stance (${studio.stance_status}): "${studio.stance}"
 Core position: ${studio.ami.position}
-What happened: five AI artists worked from one brief through one day, waking every 30 minutes. A1, A2 and A3 were identical (same model, system prompt and brief) and could not see each other's work, so any divergence came from sampling, not influence. P1 and P2 carried my voice. ${totalImages} drafts were made; the Curator chose ${picks.length}.
+What happened: five AI artists worked from one brief through one day, waking every 30 minutes. In the morning A1, A2 and A3 were identical (same model, system prompt and brief) and could not see each other's work. From midday each artist was given a bias, researched its side and argued one point across zine spreads: ${studio.artists.map(x => `${x.id} (${persona(x).label}): ${state.thesis?.[x.id]?.text || ''}`).join('; ')}. P1 and P2 carried my voice. The Curator directed each artist at checkpoints. ${totalImages} drafts were made; the Curator chose ${picks.length}.
 Brief:\n${currentBrief()}
 Curator notes through the day:\n${notes}
 Artist reflections (sample):\n${reflections}
@@ -271,6 +273,35 @@ Rules: plain words, short sentences, grounded in what actually happened above. N
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.25, maxTokens: 3500 });
   state.final = state.final || {}; state.final.text = noDashes(r.text.trim()); saveState();
   log('curator', 'text.result', { round, response: state.final.text, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost, data: { words: state.final.text.split(/\s+/).length } });
+}
+
+// ---------- Artist research (once per brief version) ----------
+async function artistResearch(a, round, bv) {
+  state.research = state.research || {};
+  if (state.research[a.id]?.brief_version === bv) return state.research[a.id];
+  const p = persona(a);
+  const system = artistSystem(a);
+  const fixed = p.point ? `Your side is already set: "${p.point}". Research to support and sharpen it.` : 'Research to find your side, then commit to it.';
+  const user = `Before making anything, research this question from your point of view:\n"${studio.ami.position}"\n\nBrief you will work from:\n${currentBrief()}\n\n${fixed}\nFind 3 to 5 concrete references that support your side (artists, works, studies, events, numbers) and 1 that challenges it. Be accurate; do not invent sources.\nReturn JSON only: {"findings":["one line each, with who/what/when"],"counter":"the strongest point against you, one line","thesis":"ONE sentence: the strong point you will argue in every spread today"}`;
+  log(a.id, 'artist.research.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { web: true } });
+  let r;
+  try {
+    r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.08, maxTokens: 1200, plugins: [{ id: 'web', max_results: 5 }] });
+  } catch (e) {
+    if (e instanceof StopError) throw e;
+    log(a.id, 'artist.research.web_error', { round, data: { message: `web search failed, using model knowledge: ${e.message}` } });
+    r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: a.id, round, estimate: 0.05, maxTokens: 1200 });
+  }
+  const d = parseJsonReply(r.text);
+  const sources = (r.annotations || []).filter(x => x.type === 'url_citation').map(x => ({ title: x.url_citation?.title || '', url: x.url_citation?.url || '' })).slice(0, 8);
+  const clean = t => (a.persona === 'ami' || a.persona === 'p2') ? noDashes(t) : String(t || '');
+  state.research[a.id] = { brief_version: bv, round, findings: (d.findings || []).map(clean).slice(0, 6), counter: clean(d.counter), thesis: clean(d.thesis), sources };
+  state.thesis = state.thesis || {};
+  if (d.thesis) state.thesis[a.id] = { text: clean(d.thesis), round, brief_version: bv };
+  saveState();
+  log(a.id, 'artist.research', { round, response: r.text, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost, data: { message: state.research[a.id].thesis, findings: state.research[a.id].findings, counter: state.research[a.id].counter, sources } });
+  if (d.thesis) log(a.id, 'artist.thesis', { round, response: state.thesis[a.id].text, data: { message: state.thesis[a.id].text } });
+  return state.research[a.id];
 }
 
 // ---------- Artist wake ----------
@@ -286,6 +317,8 @@ export async function artistWake(a, round, lim) {
   if (state.thesis[a.id] && state.thesis[a.id].brief_version !== bv) delete state.thesis[a.id];
   const thesis = persona(a).point || '';
   const direction = state.directions?.[a.id] || '';
+  let research = null;
+  if (persona(a).bias || persona(a).point) research = await artistResearch(a, round, bv);
   const history = events().filter(e => e.agent === a.id && ['artist.plan', 'artist.reflection'].includes(e.type) && (e.data?.brief_version || 1) === bv).slice(-12)
     .map(e => e.type === 'artist.plan' ? `r${e.round} plan: ${e.data?.intent || ''}` : `r${e.round} reflection: ${e.response}`).join('\n');
   const favs = new Set(state.favourites?.[a.id] || []);
@@ -297,7 +330,8 @@ export async function artistWake(a, round, lim) {
     ? `Your point (you chose it, keep arguing it): "${state.thesis[a.id].text}"`
     : thesis ? `Your point to argue across every spread today: "${thesis}". Restate it in your own words as "thesis".`
     : `You have not chosen your point yet. From the brief, decide ONE strong point you will argue across every spread today, in one sentence, and return it as "thesis".`;
-  const text = `Brief:\n${currentBrief()}\n\n${fmt}\n\n${thesisLine}\n${direction ? `\nDirection from the Curator: ${direction}\n` : ''}\nThis is wake ${round}. You may make ${n} spread${n > 1 ? 's' : ''} this wake. Each spread should advance your point; together they should read as a sequence.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"thesis":"your one-sentence point","review":"one sentence on your previous spreads","keep":["task ids you select from your own images"],"intent":"one sentence: what this spread argues and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
+  const researchLine = research ? `\nYour research:\n${research.findings.map(f => '- ' + f).join('\n')}\nStrongest point against you: ${research.counter}\nUse your research: name real references on the spread where they help.\n` : '';
+  const text = `Brief:\n${currentBrief()}\n\n${fmt}\n\n${thesisLine}\n${researchLine}${direction ? `\nDirection from the Curator: ${direction}\n` : ''}\nThis is wake ${round}. You may make ${n} spread${n > 1 ? 's' : ''} this wake. Each spread should advance your point; together they should read as a sequence.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"thesis":"your one-sentence point","review":"one sentence on your previous spreads","keep":["task ids you select from your own images"],"intent":"one sentence: what this spread argues and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
   const content = [{ type: 'text', text }, ...(await imageParts(shown, 512))];
   log(a.id, 'artist.plan.request', { round, prompt: text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { shown: shown.map(s => s.task_id) } });
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content }], agent: a.id, round, estimate: 0.06, maxTokens: 1200 });
@@ -306,7 +340,7 @@ export async function artistWake(a, round, lim) {
   state.favourites = state.favourites || {};
   state.favourites[a.id] = [...new Set([...(state.favourites[a.id] || []), ...(d.keep || []).filter(k => known.has(k))])].slice(-8);
   if (!state.thesis[a.id] && d.thesis) {
-    state.thesis[a.id] = { text: a.persona === 'control' ? String(d.thesis) : noDashes(d.thesis), round, brief_version: bv };
+    state.thesis[a.id] = { text: (a.persona === 'ami' || a.persona === 'p2') ? noDashes(d.thesis) : String(d.thesis), round, brief_version: bv };
     log(a.id, 'artist.thesis', { round, response: state.thesis[a.id].text, data: { message: state.thesis[a.id].text } });
   }
   saveState();
@@ -330,7 +364,7 @@ export async function artistWake(a, round, lim) {
     const rc = [{ type: 'text', text: `You just made these spreads. Write one line of reflection (max 25 words): does the spread make your point, and is the text legible? Plain text only.` }, ...(await imageParts(made, 512))];
     log(a.id, 'artist.reflection.request', { round, prompt: rc[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions' });
     const rr = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: rc }], agent: a.id, round, estimate: 0.03, maxTokens: 120 });
-    const line = (a.persona === 'control' ? rr.text : noDashes(rr.text)).trim().split('\n')[0];
+    const line = ((a.persona === 'ami' || a.persona === 'p2') ? noDashes(rr.text) : rr.text).trim().split('\n')[0];
     log(a.id, 'artist.reflection', { round, response: line, model: rr.model, endpoint: '/chat/completions', task_id: rr.id, cost: rr.cost, data: { brief_version: bv } });
   }
 }

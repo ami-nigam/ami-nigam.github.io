@@ -115,16 +115,18 @@ async function call(path, body, { estimate, timeoutMs, agent, round, kind }) {
 }
 
 // ---- Chat ----
-export async function chat({ model, system, messages, maxTokens, agent, round, estimate = 0.08, temperature }) {
+export async function chat({ model, system, messages, maxTokens, agent, round, estimate = 0.08, temperature, plugins }) {
   const body = {
     model, max_tokens: maxTokens || runtime.chatMaxTokens,
     messages: [{ role: 'system', content: system }, ...messages],
   };
   if (temperature != null) body.temperature = temperature;
+  if (plugins) body.plugins = plugins;
   const { json, cost } = await call('/chat/completions', body, { estimate, timeoutMs: runtime.chatTimeoutMs, agent, round, kind: 'chat' });
   const content = json.choices?.[0]?.message?.content;
   const text = Array.isArray(content) ? content.map(c => c.text || '').join('') : (content || '');
-  return { text, cost: round4(cost), id: json.id, model: json.model || model, usage: json.usage };
+  const annotations = json.choices?.[0]?.message?.annotations || [];
+  return { text, cost: round4(cost), id: json.id, model: json.model || model, usage: json.usage, annotations };
 }
 
 // ---- Images ----

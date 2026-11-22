@@ -32,18 +32,18 @@
   "artists": [
     {
       "id": "A1",
-      "group": "control",
-      "persona": "control"
+      "group": "pov",
+      "persona": "believer"
     },
     {
       "id": "A2",
-      "group": "control",
-      "persona": "control"
+      "group": "pov",
+      "persona": "sceptic"
     },
     {
       "id": "A3",
-      "group": "control",
-      "persona": "control"
+      "group": "pov",
+      "persona": "margins"
     },
     {
       "id": "P1",
@@ -71,6 +71,18 @@
       "decision": "DEFAULT pending Ami. Second Ami-voice agent with a different emphasis.",
       "emphasis": "Start from the broken expectation: machines were meant to be deterministic, like calculators, and to arrive first in technical work. Instead they arrived in art, working through probability. Show that inversion through the shared subject, not through pictures of machines or drawings.",
       "point": "We built machines to give the same answer every time, and the first thing they changed was art, where they never give the same answer twice."
+    },
+    "believer": {
+      "label": "The Believer",
+      "bias": "You believe chance has always been part of art: Cage's chance operations, Duchamp's dropped threads, Arp's torn paper, surrealist automatic drawing. A machine working from probability joins that line. You are optimistic and art-historical, and you think the sceptics are repeating old arguments made against photography."
+    },
+    "sceptic": {
+      "label": "The Sceptic",
+      "bias": "You believe there is no art without lived experience. A model trained to predict the likely output regresses to the mean: competent, smooth and empty. You see cliche where others see creativity, and you want to show the average for what it is."
+    },
+    "margins": {
+      "label": "The Margins",
+      "bias": "You believe the likely answer is the majority answer. Probability is shaped by whose images and words dominate the training data, so what is rare, local or non-Western gets smoothed away. You argue for what the distribution leaves out."
     }
   },
   "ami": {
@@ -78,5 +90,5 @@
     "position": "Machines were expected to be deterministic, like calculators, and to arrive first in technical work. Generative AI approaches art, visual and literary, through stochasticity, working with probability rather than emotion or lived experience. He is NOT saying that randomness equals creativity.",
     "style": "Short, concise, grounded in reality, plain words. No flattery, no hype. Never use em-dashes or en-dashes."
   },
-  "brief_version": 3
+  "brief_version": 4
 }

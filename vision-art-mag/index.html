@@ -119,6 +119,10 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .canvas{position:relative;border-radius:6px;overflow:hidden;background:var(--border-faint);aspect-ratio:1.414}
 .canvas img{width:100%;height:100%;object-fit:contain;display:block}
 .thesis{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;line-height:1.35;margin:.1rem 0 .45rem}
+.research{font-size:11px;margin-top:.45rem;color:var(--text-secondary)}
+.research summary{cursor:pointer}
+.research ul{padding-left:1rem;margin:.3rem 0}
+.research a{text-decoration:underline;word-break:break-all}
 .direction{font-size:11px;border-left:2px solid var(--accent);padding-left:.45rem;margin:.45rem 0 0;color:var(--text-secondary)}
 .canvas .empty{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:var(--text-secondary);text-align:center;padding:.5rem}
 .canvas.gen::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.35) 50%,transparent 80%);background-size:250% 100%;animation:shimmer 1.4s linear infinite}
@@ -228,7 +232,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
 
     <section class="view hidden" id="v-compare">
       <div class="filters"><select id="roundFilter"></select></div>
-      <p class="small muted" style="margin:.5rem 0">Control group A1, A2, A3: same model, system prompt and brief. No shared context.</p>
+      <p class="small muted" style="margin:.5rem 0">All five artists, same round. Morning rounds: A1 to A3 were identical controls.</p>
       <div id="compare"></div>
     </section>
 
@@ -391,6 +395,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   // ===== Studio floor =====
   const ACTIVE = ['thinking', 'painting', 'writing', 'reviewing', 'fixing'];
   const ARTIST_MAP = {
+    'artist.research.request': ['thinking', 'Researching its side'], 'artist.research': ['thinking', 'Research done'], 'artist.research.web_error': ['thinking', 'Researching (offline)'],
     'artist.plan.request': ['thinking', 'Looking at past work'], 'artist.plan': ['painting', 'Writing a prompt'],
     'image.request': ['painting', 'Generating'], 'image.result': ['painting', 'Image done'], 'api.retry': ['painting', 'Retrying API'],
     'artist.reflection.request': ['thinking', 'Reflecting'], 'artist.reflection': ['asleep', 'Resting'],
@@ -475,7 +480,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       const spentA = mine.reduce((t, i) => t + (Number(i.cost) || 0), 0);
       html += `
       <div class="room st-${s2.st} ${ACTIVE.includes(s2.st) ? 'active' : ''} ${watched ? 'watched' : ''} ${s2.st === 'error' || openInc.some(i => i.agent === a.id) ? 'err' : ''}" id="n-${a.id}">
-        <div class="room-h"><b>${esc(a.id)}</b><span class="role">${a.group === 'control' ? 'Control' : 'Ami voice'}<br>${esc(a.group === 'control' ? 'identical setup' : a.persona.replace(/^Ami voice:\s*/, ''))}</span></div>
+        <div class="room-h"><b>${esc(a.id)}</b><span class="role">${a.group === 'persona' ? 'Ami voice' : 'Point of view'}<br>${esc(a.persona.replace(/^Ami voice:\s*/, ''))}</span></div>
         ${st.thesis?.[a.id] ? `<div class="thesis">“${esc(st.thesis[a.id].text)}”</div>` : '<div class="thesis muted">No point chosen yet.</div>'}
         <div class="pill"><span class="dot"></span>${esc(s2.label)}</div>
         <div class="canvas ${genReq ? 'gen' : ''}" ${latest ? `data-open="${esc(latest.task_id)}" style="cursor:zoom-in"` : ''}>
@@ -485,6 +490,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
         ${prev.length ? `<div class="strip">${prev.map(i => `<img data-src="/api/image/${esc(i.task_id)}?thumb=1" data-open="${esc(i.task_id)}" alt="" class="${kept.has(i.task_id) ? 'kept' : ''}">`).join('')}</div>` : ''}
         <div class="bubble">${bubble}</div>
         ${st.directions?.[a.id] ? `<div class="direction">Curator: ${esc(st.directions[a.id])}</div>` : ''}
+        ${st.research?.[a.id] ? `<details class="research"><summary>Research</summary><ul>${st.research[a.id].findings.map(f => `<li>${esc(f)}</li>`).join('')}</ul><p><b>Against:</b> ${esc(st.research[a.id].counter)}</p>${(st.research[a.id].sources || []).map(x => `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title || x.url)}</a>`).join('<br>')}</details>` : ''}
         <div class="room-f"><span>${mine.length} drafts</span><span>${money(spentA)}</span></div>
       </div>`;
     }
@@ -543,6 +549,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       case 'brief.result': return 'Pinned a new brief on the wall.';
       case 'budget.set': return `Set ${d.limits?.images_per_wake} image(s) per artist. ${d.message || ''}`;
       case 'direction': return d.message || 'Sent directions.';
+      case 'artist.research': return `Researched its side (${(d.findings || []).length} findings, ${(d.sources || []).length} sources).`;
       case 'artist.thesis': return `Commits to a point: “${e.response}”`;
       case 'checkpoint.result': return `Reviewed the floor. Shortlist now ${(d.shortlist || []).length}.`;
       case 'artist.plan': return `“${d.intent || ''}”`;
@@ -623,19 +630,20 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
 
   function renderCompare() {
     const sel = $('#roundFilter');
-    const rounds = [...new Set(S.images.filter(i => i.group === 'control').map(i => i.round))].sort((x, y) => y - x);
+    const drafts = S.images.filter(i => i.kind === 'draft');
+    const rounds = [...new Set(drafts.map(i => i.round))].sort((x, y) => y - x);
     const cur = sel.value;
     sel.innerHTML = rounds.map(r => `<option value="${r}">Round ${r}</option>`).join('');
     if (cur && rounds.includes(+cur)) sel.value = cur;
     const r = +sel.value;
-    const cols = ['A1', 'A2', 'A3'].map(a => {
-      const im = S.images.filter(i => i.artist === a && i.round === r && i.kind === 'draft');
-      const plan = S.events.find(e => e.agent === a && e.round === r && e.type === 'artist.plan');
-      const refl = S.events.find(e => e.agent === a && e.round === r && e.type === 'artist.reflection');
-      return `<div class="col"><h3>${a}</h3>${im.map(i => `<div class="card" data-open="${esc(i.task_id)}" style="margin-bottom:.4rem;cursor:zoom-in">${thumb(i.task_id)}<div class="cap"><b>${esc(i.title)}</b></div></div>`).join('') || '<p class="small muted">none</p>'}
+    const cols = (S.status?.agents || []).map(a => {
+      const im = drafts.filter(i => i.artist === a.id && i.round === r);
+      const plan = S.events.find(e => e.agent === a.id && e.round === r && e.type === 'artist.plan');
+      const refl = S.events.find(e => e.agent === a.id && e.round === r && e.type === 'artist.reflection');
+      return `<div class="col"><h3>${esc(a.id)} · ${esc(a.persona)}</h3>${plan?.data?.thesis ? `<div class="thesis">“${esc(plan.data.thesis)}”</div>` : ''}${im.map(i => `<div class="card" data-open="${esc(i.task_id)}" style="margin-bottom:.4rem;cursor:zoom-in">${thumb(i.task_id)}<div class="cap"><b>${esc(i.title)}</b></div></div>`).join('') || '<p class="small muted">none</p>'}
         <p class="small muted">${esc(plan?.data?.intent || '')}</p><p class="small">${esc(refl?.response || '')}</p></div>`;
     }).join('');
-    $('#compare').innerHTML = rounds.length ? `<div class="cmp">${cols}</div>` : '<p class="muted small">No control rounds yet.</p>';
+    $('#compare').innerHTML = rounds.length ? `<div class="grid">${cols}</div>` : '<p class="muted small">No rounds yet.</p>';
     hydrate($('#compare'));
   }
 

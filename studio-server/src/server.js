@@ -81,7 +81,7 @@ function status() {
       last_event: [...events()].reverse().find(e => e.agent === a.id)?.type || null,
     })),
     incidents: state.incidents || [], notices: state.notices || [],
-    thesis: state.thesis || {}, directions: state.directions || null, brief_version: state.briefVersion || 1,
+    thesis: state.thesis || {}, research: state.research || {}, directions: state.directions || null, brief_version: state.briefVersion || 1,
     final_status: state.final?.status || null, stance: studio.stance, stance_status: studio.stance_status,
   };
 }
