@@ -304,10 +304,11 @@ async function artistResearch(a, round, bv) {
   const clean = t => (a.persona === 'ami' || a.persona === 'p2') ? noDashes(t) : String(t || '');
   state.research[a.id] = { brief_version: bv, round, findings: (d.findings || []).map(clean).slice(0, 6), counter: clean(d.counter), thesis: clean(d.thesis), sources };
   state.thesis = state.thesis || {};
-  if (d.thesis) state.thesis[a.id] = { text: clean(d.thesis), round, brief_version: bv };
+  if (p.point) state.thesis[a.id] = { text: p.point, sharpened: clean(d.thesis), round, brief_version: bv };
+  else if (d.thesis) state.thesis[a.id] = { text: clean(d.thesis), round, brief_version: bv };
   saveState();
   log(a.id, 'artist.research', { round, response: r.text, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost, data: { message: state.research[a.id].thesis, findings: state.research[a.id].findings, counter: state.research[a.id].counter, sources } });
-  if (d.thesis) log(a.id, 'artist.thesis', { round, response: state.thesis[a.id].text, data: { message: state.thesis[a.id].text } });
+  if (state.thesis[a.id]?.round === round) log(a.id, 'artist.thesis', { round, response: state.thesis[a.id].text, data: { message: state.thesis[a.id].text } });
   return state.research[a.id];
 }
 
