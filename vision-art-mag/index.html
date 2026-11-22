@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Studio — Ami Nigam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary-bg:#ffffff;--primary-text:#0d0d0d;--text-secondary:#555555;--text-tertiary:#575757;
+  --border-tertiary:rgba(0,0,0,0.19);--border-faint:rgba(0,0,0,0.07);--card-bg:rgba(0,0,0,0.025);
+  --accent:#c0186c;--ok:#15803d;--warn:#b45309;--bad:#b91c1c;--banner-bg:#fde8e8;
+}
+[data-theme="dark"]{
+  --primary-bg:#0d0d0d;--primary-text:#f0ede8;--text-secondary:#a0a0a0;--text-tertiary:#838383;
+  --border-tertiary:rgba(255,255,255,0.16);--border-faint:rgba(255,255,255,0.07);--card-bg:rgba(255,255,255,0.03);
+  --accent:#e0559d;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--banner-bg:#3b0d0d;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--primary-bg);color:var(--primary-text);font-family:'DM Sans',system-ui,sans-serif;font-weight:300;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:1px solid var(--border-tertiary);border-radius:999px;padding:.45rem .9rem;cursor:pointer;font-weight:400;font-size:13px;min-height:36px}
+button:hover{border-color:var(--primary-text)}
+button.primary{background:var(--primary-text);color:var(--primary-bg);border-color:var(--primary-text)}
+button.danger{border-color:var(--bad);color:var(--bad)}
+button:disabled{opacity:.4;cursor:default}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input,select{font:inherit;color:inherit;background:var(--primary-bg);border:1px solid var(--border-tertiary);border-radius:6px;padding:.55rem .7rem;width:100%;min-height:40px}
+.wrap{max-width:800px;margin:0 auto;padding:0 16px}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 0}
+.nav-name{font-size:16px;text-transform:uppercase;letter-spacing:.12em;font-weight:700;text-decoration:none}
+.theme-toggle{border:none;padding:.3rem;min-height:auto;font-size:18px;line-height:1}
+.spectral{height:2px;background:linear-gradient(90deg,#c0186c,#7c3aed,#2563eb,#0891b2,#c0186c);background-size:200% 100%;animation:sp 8s linear infinite}
+@keyframes sp{to{background-position:200% 0}}
+@media (prefers-reduced-motion:reduce){.spectral{animation:none}}
+h1{font-family:'Playfair Display',serif;font-weight:700;font-size:30px;line-height:1.15;margin:1.5rem 0 .25rem}
+h1 em{font-weight:400;font-style:italic;display:block}
+.kicker{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--text-secondary);margin-top:1.5rem}
+h2{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--text-secondary);font-weight:500;margin-bottom:.75rem}
+.muted{color:var(--text-secondary)}
+.small{font-size:12px}
+.hidden{display:none!important}
+.banner{background:var(--banner-bg);color:var(--bad);padding:.75rem 1rem;border-radius:6px;margin:1rem 0;font-weight:400}
+.login{max-width:360px;margin:2rem 0;display:grid;gap:.75rem}
+.controls{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+.tabs{display:flex;gap:.25rem;overflow-x:auto;border-bottom:1px solid var(--border-tertiary);margin:1rem 0;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs button{border:none;border-radius:0;border-bottom:2px solid transparent;padding:.6rem .7rem;white-space:nowrap;color:var(--text-secondary)}
+.tabs button.on{border-bottom-color:var(--primary-text);color:var(--primary-text)}
+section.view{padding-bottom:3rem}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin:1rem 0}
+@media(min-width:640px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{border:1px solid var(--border-faint);border-radius:8px;padding:.75rem;background:var(--card-bg)}
+.stat b{display:block;font-family:'Playfair Display',serif;font-size:22px;font-weight:400}
+.stat span{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--text-secondary)}
+.meter{height:6px;border-radius:3px;background:var(--border-faint);overflow:hidden;margin-top:.4rem}
+.meter i{display:block;height:100%;background:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:.45rem .3rem;border-bottom:1px solid var(--border-faint);text-align:left;vertical-align:top}
+th{font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-secondary)}
+.ev{padding:.55rem 0;border-bottom:1px solid var(--border-faint);font-size:13px}
+.ev .meta{font-size:11px;color:var(--text-secondary);display:flex;gap:.5rem;flex-wrap:wrap}
+.ev .agent{font-weight:500;color:var(--primary-text)}
+.ev .type.err{color:var(--bad)}
+.ev .body{margin-top:.2rem;word-break:break-word;white-space:pre-wrap}
+.ev details summary{cursor:pointer;color:var(--text-secondary);font-size:12px}
+.ev pre{white-space:pre-wrap;word-break:break-word;font-size:11px;background:var(--card-bg);padding:.5rem;border-radius:4px;max-height:300px;overflow:auto}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem}
+@media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{border:1px solid var(--border-faint);border-radius:6px;overflow:hidden;background:var(--card-bg)}
+.card img,.ph{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:var(--border-faint)}
+.card .cap{padding:.45rem .55rem;font-size:12px;line-height:1.4}
+.card .cap b{font-weight:500}
+.tag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--border-tertiary);border-radius:999px;padding:0 .4rem;margin-right:.25rem}
+.tag.short{border-color:var(--accent);color:var(--accent)}
+.round-h{font-size:12px;color:var(--text-secondary);margin:1.25rem 0 .5rem;text-transform:uppercase;letter-spacing:.1em}
+.cmp{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
+.cmp .col h3{font-size:12px;font-weight:500;margin-bottom:.3rem}
+.filters{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.filters select{width:auto}
+.note{border-left:2px solid var(--accent);padding:.25rem 0 .25rem .75rem;margin:.75rem 0}
+.prose{white-space:pre-wrap}
+dialog{border:none;background:var(--primary-bg);color:var(--primary-text);max-width:min(96vw,900px);max-height:94vh;padding:0;border-radius:8px}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog img{max-width:100%;max-height:70vh;display:block;margin:0 auto}
+dialog .dinfo{padding:.75rem 1rem;font-size:13px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border-tertiary)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav class="nav">
+    <a class="nav-name" href="/">Ami Nigam</a>
+    <button class="theme-toggle" id="themeBtn" aria-label="Toggle theme">◐</button>
+  </nav>
+</div>
+<div class="spectral"></div>
+<main class="wrap">
+  <p class="kicker">Vision Art Magazine Vol 7 · Art &amp; Technology</p>
+  <h1>Stochastic<em>by Design</em></h1>
+  <p class="muted">Studio viewer. Private.</p>
+
+  <form id="loginForm" class="login hidden" autocomplete="on">
+    <label class="small muted" for="apiUrl">Studio URL</label>
+    <input id="apiUrl" type="url" placeholder="https://your-app.up.railway.app" required>
+    <label class="small muted" for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" required>
+    <button class="primary" type="submit">Log in</button>
+    <p id="loginErr" class="bad small"></p>
+  </form>
+
+  <div id="app" class="hidden">
+    <div id="banners"></div>
+    <div class="controls">
+      <button id="pauseBtn" class="danger">Pause all</button>
+      <button id="runBtn">Run round now</button>
+      <button id="checkBtn">Connection check</button>
+      <button id="exportBtn">Export zip</button>
+      <button id="logoutBtn">Log out</button>
+    </div>
+    <p class="small muted" id="statusLine"></p>
+    <div class="tabs" role="tablist">
+      <button data-tab="overview" class="on">Overview</button>
+      <button data-tab="timeline">Timeline</button>
+      <button data-tab="gallery">Gallery</button>
+      <button data-tab="compare">Compare</button>
+      <button data-tab="curator">Curator</button>
+      <button data-tab="costs">Costs</button>
+    </div>
+
+    <section class="view" id="v-overview">
+      <div class="stats" id="stats"></div>
+      <h2>Agents</h2>
+      <table id="agentsTbl"></table>
+      <h2 style="margin-top:1.5rem">Limits set by Curator</h2>
+      <p id="limits" class="small"></p>
+      <div id="incidents"></div>
+      <div id="checkOut"></div>
+    </section>
+
+    <section class="view hidden" id="v-timeline">
+      <div class="filters">
+        <select id="agentFilter"><option value="">All agents</option></select>
+        <label class="small muted"><input type="checkbox" id="hideReq" checked style="width:auto;min-height:auto"> hide requests</label>
+      </div>
+      <div id="timeline"></div>
+    </section>
+
+    <section class="view hidden" id="v-gallery">
+      <div class="filters"><select id="artistFilter"></select></div>
+      <div id="gallery"></div>
+    </section>
+
+    <section class="view hidden" id="v-compare">
+      <div class="filters"><select id="roundFilter"></select></div>
+      <p class="small muted" style="margin:.5rem 0">Control group A1, A2, A3: same model, system prompt and brief. No shared context.</p>
+      <div id="compare"></div>
+    </section>
+
+    <section class="view hidden" id="v-curator">
+      <h2>Brief</h2><p id="brief" class="prose small"></p>
+      <h2 style="margin-top:1.5rem">Shortlist</h2><div id="shortlist" class="grid"></div>
+      <h2 style="margin-top:1.5rem">Final</h2><div id="final"></div>
+      <h2 style="margin-top:1.5rem">Notes</h2><div id="notes"></div>
+    </section>
+
+    <section class="view hidden" id="v-costs">
+      <div id="costs"></div>
+    </section>
+  </div>
+</main>
+<dialog id="lightbox"><img id="lbImg" alt=""><div class="dinfo" id="lbInfo"></div><div style="padding:0 1rem 1rem"><button id="lbClose">Close</button></div></dialog>
+<div class="wrap"><footer>&copy; Ami Nigam</footer></div>
+
+<script>
+(function () {
+  // Default backend URL. Replace after the Railway domain is generated; can be overridden at login.
+  const DEFAULT_API = '';
+  const $ = s => document.querySelector(s);
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+    del(k) { try { localStorage.removeItem(k); } catch {} },
+  };
+  const ss = {
+    get(k) { try { return sessionStorage.getItem(k); } catch { return null; } },
+    set(k, v) { try { sessionStorage.setItem(k, v); } catch {} },
+    del(k) { try { sessionStorage.removeItem(k); } catch {} },
+  };
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = n => n == null ? '–' : '$' + Number(n).toFixed(2);
+  const time = iso => new Date(iso).toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+  // Theme
+  if (store.get('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  $('#themeBtn').onclick = () => {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    if (dark) { document.documentElement.removeAttribute('data-theme'); store.set('theme', 'light'); }
+    else { document.documentElement.setAttribute('data-theme', 'dark'); store.set('theme', 'dark'); }
+  };
+
+  let API = store.get('studioApi') || DEFAULT_API;
+  let TOKEN = ss.get('studioToken');
+  let S = { status: null, events: [], images: [], favourites: {}, shortlist: [], curator: null, lastSeq: 0 };
+  let tab = 'overview';
+
+  async function api(path, opts = {}) {
+    const r = await fetch(API + path, { ...opts, headers: { ...(opts.headers || {}), Authorization: 'Bearer ' + TOKEN, ...(opts.body ? { 'Content-Type': 'application/json' } : {}) } });
+    if (r.status === 401) { logout(); throw new Error('session expired'); }
+    return r;
+  }
+  const json = async (path, opts) => { const r = await api(path, opts); const j = await r.json(); if (!r.ok) throw new Error(j.error || r.status); return j; };
+
+  // Authenticated images via blob URLs (images are never public).
+  const blobCache = new Map();
+  async function loadImg(el) {
+    const key = el.dataset.src;
+    if (blobCache.has(key)) { el.src = blobCache.get(key); return; }
+    try { const r = await api(key); if (!r.ok) return; const u = URL.createObjectURL(await r.blob()); blobCache.set(key, u); el.src = u; } catch {}
+  }
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { io.unobserve(e.target); loadImg(e.target); } }), { rootMargin: '200px' }) : null;
+  function hydrate(root) { root.querySelectorAll('img[data-src]').forEach(el => io ? io.observe(el) : loadImg(el)); }
+  const thumb = id => `<img data-src="/api/image/${esc(id)}?thumb=1" alt="" class="ph" loading="lazy">`;
+
+  // Login
+  function showLogin() { $('#loginForm').classList.remove('hidden'); $('#app').classList.add('hidden'); $('#apiUrl').value = API; }
+  function logout() { TOKEN = null; ss.del('studioToken'); showLogin(); }
+  $('#logoutBtn').onclick = logout;
+  $('#loginForm').onsubmit = async e => {
+    e.preventDefault(); $('#loginErr').textContent = '';
+    API = $('#apiUrl').value.replace(/\/+$/, '');
+    if (!/^(https:\/\/|http:\/\/(127\.0\.0\.1|localhost)[:/])/.test(API + "/")) { $('#loginErr').textContent = 'Studio URL must be https.'; return; }
+    try {
+      const r = await fetch(API + '/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: $('#pw').value }) });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || 'login failed');
+      TOKEN = j.token; ss.set('studioToken', TOKEN); store.set('studioApi', API); $('#pw').value = '';
+      start();
+    } catch (err) { $('#loginErr').textContent = err.message === 'Failed to fetch' ? 'Cannot reach studio (URL or CORS).' : err.message; }
+  };
+
+  // Tabs
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+    tab = b.dataset.tab;
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+    document.querySelectorAll('section.view').forEach(v => v.classList.toggle('hidden', v.id !== 'v-' + tab));
+    render();
+  });
+
+  // Controls
+  $('#pauseBtn').onclick = async () => {
+    const paused = S.status?.paused;
+    S.status = await json(paused ? '/api/resume' : '/api/pause', { method: 'POST' });
+    render();
+  };
+  $('#runBtn').onclick = async () => { try { await json('/api/run-round', { method: 'POST' }); setTimeout(refresh, 1500); } catch (e) { alert(e.message); } };
+  $('#checkBtn').onclick = async () => {
+    $('#checkBtn').disabled = true; $('#checkOut').innerHTML = '<p class="small muted">Running connection check (about a minute)…</p>';
+    try { const r = await json('/api/admin/check', { method: 'POST' }); renderCheck(r); } catch (e) { $('#checkOut').innerHTML = `<p class="bad small">${esc(e.message)}</p>`; }
+    $('#checkBtn').disabled = false;
+  };
+  $('#exportBtn').onclick = async () => {
+    $('#exportBtn').disabled = true;
+    try {
+      const r = await api('/api/export.zip'); const b = await r.blob();
+      const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'stochastic-by-design.zip'; a.click();
+    } catch (e) { alert(e.message); }
+    $('#exportBtn').disabled = false;
+  };
+
+  function renderCheck(r) {
+    $('#checkOut').innerHTML = `<h2 style="margin-top:1.5rem">Connection check ${esc(time(r.started))}</h2>` + r.steps.map(s => {
+      const { name, ok, ...rest } = s;
+      return `<div class="ev"><div class="meta"><span class="${ok ? 'ok' : 'bad'}">${ok ? 'OK' : 'FAIL'}</span><span class="agent">${esc(name)}</span>${rest.cost != null ? `<span>${money(rest.cost)}</span>` : ''}</div><pre>${esc(JSON.stringify(rest, null, 2))}</pre></div>`;
+    }).join('');
+  }
+
+  // Data
+  async function refresh() {
+    try {
+      const [st, ev, im, cu] = await Promise.all([
+        json('/api/status'), json('/api/events?since=' + S.lastSeq + '&limit=1000'), json('/api/images'), json('/api/curator'),
+      ]);
+      S.status = st; S.images = im.images; S.favourites = im.favourites; S.shortlist = im.shortlist; S.curator = cu;
+      if (ev.events.length) { S.events = S.events.concat(ev.events).slice(-3000); S.lastSeq = ev.events[ev.events.length - 1].seq; }
+      if (tab === 'costs') S.costs = await json('/api/costs');
+      render();
+    } catch (e) { $('#statusLine').textContent = 'Refresh failed: ' + e.message; }
+  }
+
+  function render() {
+    const st = S.status; if (!st) return;
+    // Banners
+    const b = [];
+    if (st.ceiling_hit) b.push(`Spend ceiling reached. All agents stopped. ${esc(st.ceiling_reason || '')}`);
+    if (st.paused && !st.ceiling_hit) b.push('Paused. No agent will run until you resume.');
+    if (!st.key_configured) b.push('OPENROUTER_API_KEY is not set on Railway.');
+    (st.notices || []).slice(-3).forEach(n => b.push('Engineer: ' + esc(n.message)));
+    $('#banners').innerHTML = b.map(x => `<div class="banner">${x}</div>`).join('');
+    $('#pauseBtn').textContent = st.paused ? 'Resume all' : 'Pause all';
+    $('#pauseBtn').className = st.paused ? 'primary' : 'danger';
+    $('#runBtn').disabled = !!st.busy || st.paused || st.ceiling_hit;
+    $('#statusLine').textContent = `Round ${st.round} · ${st.busy ? 'running: ' + st.busy : 'idle'} · next wake ${st.next_wake_uk || 'none'} UK · final ${st.schedule.final} · updated ${time(st.now)}`;
+
+    if (tab === 'overview') renderOverview(st);
+    if (tab === 'timeline') renderTimeline();
+    if (tab === 'gallery') renderGallery();
+    if (tab === 'compare') renderCompare();
+    if (tab === 'curator') renderCurator();
+    if (tab === 'costs') renderCosts();
+  }
+
+  function renderOverview(st) {
+    const sp = st.spend; const pct = Math.min(100, (sp.spent / st.ceiling) * 100);
+    const drafts = S.images.filter(i => i.kind === 'draft').length;
+    $('#stats').innerHTML = `
+      <div class="stat"><span>Spent</span><b>${money(sp.spent)}</b><div class="meter"><i style="width:${pct}%"></i></div><span>of ${money(st.ceiling)}</span></div>
+      <div class="stat"><span>Key remaining</span><b>${money(sp.key_limit_remaining)}</b><span>limit ${money(sp.key_limit)}</span></div>
+      <div class="stat"><span>Drafts</span><b>${drafts}</b><span>${S.images.filter(i => i.kind === 'final').length} finals</span></div>
+      <div class="stat"><span>Next wake</span><b>${esc(st.next_wake_uk || '–')}</b><span>UK time</span></div>`;
+    $('#agentsTbl').innerHTML = `<tr><th>Agent</th><th>Role</th><th>Drafts</th><th>Last</th></tr>` +
+      st.agents.map(a => `<tr><td>${esc(a.id)}</td><td>${esc(a.persona)}</td><td>${a.drafts}</td><td class="small muted">${esc(a.last_event || '–')}</td></tr>`).join('') +
+      `<tr><td>Curator</td><td>Brief, budget, selection, text</td><td>–</td><td class="small muted">${esc(st.final_status || '')}</td></tr>
+       <tr><td>Engineer</td><td>Fixes on error</td><td>–</td><td class="small muted">${(st.incidents || []).length} incidents</td></tr>`;
+    const L = st.limits || {};
+    $('#limits').innerHTML = `${L.images_per_wake} image(s) per artist per wake · cap ${L.draft_cap_per_artist} drafts each · finals at ${esc(L.final_quality)}${L.skip_round ? ' · <span class="warn">skipping round</span>' : ''}<br><span class="muted">${esc(st.limits_reason || '')}</span><br><span class="muted">Models: ${esc(st.models.image)} · ${esc(st.models.sonnet)} · ${esc(st.models.opus)} · drafts ${esc(st.models.draft_quality)}</span><br><span class="muted">Stance (${esc(st.stance_status)}): ${esc(st.stance)}</span>`;
+    const inc = st.incidents || [];
+    $('#incidents').innerHTML = inc.length ? `<h2 style="margin-top:1.5rem">Incidents</h2>` + inc.slice(-8).reverse().map(i => `<div class="ev"><div class="meta"><span class="${i.status === 'fixed' ? 'ok' : i.status === 'failed' ? 'bad' : 'warn'}">${esc(i.status)}</span><span class="agent">${esc(i.agent)}</span><span>r${i.round}</span><span>${time(i.ts)}</span></div><div class="body">${esc(i.error)}</div>${i.attempts.map(a => `<div class="small muted">attempt ${a.attempt}: ${esc(a.fix?.diagnosis || 'no fix')} ${esc(JSON.stringify(a.fix?.applied || {}))}</div>`).join('')}</div>`).join('') : '';
+    if (!$('#checkOut').innerHTML && S.curator?.last_check) renderCheck(S.curator.last_check);
+  }
+
+  function renderTimeline() {
+    const sel = $('#agentFilter');
+    const agents = ['system', 'curator', 'engineer', ...(S.status?.agents || []).map(a => a.id)];
+    if (sel.options.length <= 1) agents.forEach(a => sel.add(new Option(a, a)));
+    const f = sel.value, hide = $('#hideReq').checked;
+    const ev = S.events.filter(e => (!f || e.agent === f) && (!hide || !/\.request$/.test(e.type))).slice(-250).reverse();
+    $('#timeline').innerHTML = ev.map(e => {
+      const msg = e.data?.message || e.response || (e.type === 'image.request' ? e.prompt : '') || '';
+      const detail = { prompt: e.prompt, response: e.response, model: e.model, endpoint: e.endpoint, task_id: e.task_id, file: e.file, data: e.data };
+      return `<div class="ev"><div class="meta"><span>${time(e.ts)}</span><span class="agent">${esc(e.agent)}</span><span class="type ${/error|failed|ceiling/.test(e.type) ? 'err' : ''}">${esc(e.type)}</span>${e.round != null ? `<span>r${e.round}</span>` : ''}${e.cost != null ? `<span>${money(e.cost)}</span>` : ''}</div>
+        ${msg ? `<div class="body">${esc(String(msg).slice(0, 400))}</div>` : ''}
+        ${e.file ? thumbLink(e.task_id) : ''}
+        <details><summary>details</summary><pre>${esc(JSON.stringify(detail, null, 2))}</pre></details></div>`;
+    }).join('') || '<p class="muted small">No events yet.</p>';
+    hydrate($('#timeline'));
+  }
+  const thumbLink = id => `<div style="max-width:140px;margin-top:.35rem;cursor:zoom-in" data-open="${esc(id)}">${thumb(id)}</div>`;
+
+  function card(i) {
+    const short = S.shortlist.includes(i.task_id), fav = (S.favourites[i.artist] || []).includes(i.task_id);
+    return `<div class="card" data-open="${esc(i.task_id)}" style="cursor:zoom-in">${thumb(i.task_id)}<div class="cap"><b>${esc(i.title)}</b><br><span class="muted">${esc(i.artist)} · r${i.round} · ${money(i.cost)}</span><br>${short ? '<span class="tag short">shortlist</span>' : ''}${fav ? '<span class="tag">kept</span>' : ''}${i.kind === 'final' ? '<span class="tag short">final</span>' : ''}</div></div>`;
+  }
+
+  function renderGallery() {
+    const sel = $('#artistFilter');
+    if (!sel.options.length) (S.status?.agents || []).forEach(a => sel.add(new Option(`${a.id}: ${a.persona}`, a.id)));
+    const a = sel.value || 'A1';
+    const imgs = S.images.filter(i => i.artist === a && i.kind === 'draft');
+    const rounds = [...new Set(imgs.map(i => i.round))].sort((x, y) => y - x);
+    $('#gallery').innerHTML = rounds.map(r => `<div class="round-h">Round ${r}</div><div class="grid">${imgs.filter(i => i.round === r).map(card).join('')}</div>`).join('') || '<p class="muted small">No images yet.</p>';
+    hydrate($('#gallery'));
+  }
+
+  function renderCompare() {
+    const sel = $('#roundFilter');
+    const rounds = [...new Set(S.images.filter(i => i.group === 'control').map(i => i.round))].sort((x, y) => y - x);
+    const cur = sel.value;
+    sel.innerHTML = rounds.map(r => `<option value="${r}">Round ${r}</option>`).join('');
+    if (cur && rounds.includes(+cur)) sel.value = cur;
+    const r = +sel.value;
+    const cols = ['A1', 'A2', 'A3'].map(a => {
+      const im = S.images.filter(i => i.artist === a && i.round === r && i.kind === 'draft');
+      const plan = S.events.find(e => e.agent === a && e.round === r && e.type === 'artist.plan');
+      const refl = S.events.find(e => e.agent === a && e.round === r && e.type === 'artist.reflection');
+      return `<div class="col"><h3>${a}</h3>${im.map(i => `<div class="card" data-open="${esc(i.task_id)}" style="margin-bottom:.4rem;cursor:zoom-in">${thumb(i.task_id)}<div class="cap"><b>${esc(i.title)}</b></div></div>`).join('') || '<p class="small muted">none</p>'}
+        <p class="small muted">${esc(plan?.data?.intent || '')}</p><p class="small">${esc(refl?.response || '')}</p></div>`;
+    }).join('');
+    $('#compare').innerHTML = rounds.length ? `<div class="cmp">${cols}</div>` : '<p class="muted small">No control rounds yet.</p>';
+    hydrate($('#compare'));
+  }
+
+  function renderCurator() {
+    const c = S.curator || {};
+    $('#brief').textContent = c.brief || 'Not written yet. The Curator writes it at the first round.';
+    const sl = (c.shortlist || []).map(id => S.images.find(i => i.task_id === id)).filter(Boolean);
+    $('#shortlist').innerHTML = sl.map(card).join('') || '<p class="muted small">Empty.</p>';
+    const f = c.final;
+    if (f?.picks?.length) {
+      $('#final').innerHTML = `<p class="small muted">Status: ${esc(f.status)}. ${esc(f.rationale || '')}</p><div class="grid">${f.picks.map(p => {
+        const fid = f.renders?.[p.task_id] || p.task_id;
+        return `<div class="card" data-open="${esc(fid)}" style="cursor:zoom-in">${thumb(fid)}<div class="cap"><b>${esc(p.title)}</b><br>${esc(p.caption)}${f.renders?.[p.task_id] ? '<br><span class="tag short">re-rendered</span>' : ''}</div></div>`;
+      }).join('')}</div>${f.text ? `<h2 style="margin-top:1.5rem">Text (${f.text.split(/\s+/).length} words)</h2><div class="prose small">${esc(f.text)}</div>` : ''}`;
+    } else $('#final').innerHTML = `<p class="small muted">Runs at ${esc(S.status?.schedule?.final || '22:00')} UK. ${esc(f?.status || '')} ${esc(f?.error || '')}</p><button id="finalBtn">Run final now</button>`;
+    const fb = $('#finalBtn'); if (fb) fb.onclick = async () => { if (confirm('Run final selection now? This re-renders picks at final quality.')) { await json('/api/run-final', { method: 'POST' }); setTimeout(refresh, 2000); } };
+    $('#notes').innerHTML = (c.notes || []).slice().reverse().map(n => `<div class="note"><div class="small muted">${esc(n.label)} · round ${n.round} · ${time(n.ts)}</div><div class="small">${esc(n.notes)}</div>${n.stance_unclear ? `<div class="small warn">Stance unclear: ${esc(n.stance_unclear)}</div>` : ''}</div>`).join('') || '<p class="muted small">No checkpoints yet.</p>';
+    hydrate($('#v-curator'));
+  }
+
+  function renderCosts() {
+    const c = S.costs; if (!c) { $('#costs').innerHTML = '<p class="muted small">Loading…</p>'; json('/api/costs').then(x => { S.costs = x; renderCosts(); }); return; }
+    const rows = Object.entries(c.by_agent_kind).sort((a, b) => b[1] - a[1]);
+    $('#costs').innerHTML = `<div class="stats">
+      <div class="stat"><span>Studio spend</span><b>${money(c.spend.spent)}</b><span>ledger ${money(c.spend.ledger)} · key Δ ${money(c.spend.key_delta)}</span></div>
+      <div class="stat"><span>Ceiling left</span><b>${money(c.spend.remaining)}</b><span>of ${money(c.spend.ceiling)}</span></div>
+      <div class="stat"><span>Key usage</span><b>${money(c.key?.usage)}</b><span>all time</span></div>
+      <div class="stat"><span>Key remaining</span><b>${money(c.key?.limit_remaining)}</b><span>limit ${money(c.key?.limit)}</span></div></div>
+      <table><tr><th>Agent · kind</th><th>Cost</th></tr>${rows.map(([k, v]) => `<tr><td>${esc(k.replace('|', ' · '))}</td><td>${money(v)}</td></tr>`).join('')}</table>
+      <h2 style="margin-top:1.5rem">Recent calls</h2><table><tr><th>Time</th><th>Agent</th><th>Kind</th><th>Cost</th></tr>${c.entries.slice().reverse().slice(0, 60).map(e => `<tr><td>${time(e.ts)}</td><td>${esc(e.agent)}</td><td>${esc(e.kind)}${e.estimated ? ' (est.)' : ''}</td><td>${'$' + Number(e.cost).toFixed(4)}</td></tr>`).join('')}</table>`;
+  }
+
+  // Lightbox
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-open]'); if (!t) return;
+    const id = t.dataset.open; const i = S.images.find(x => x.task_id === id);
+    const img = $('#lbImg'); img.removeAttribute('src'); img.dataset.src = `/api/image/${id}`; loadImg(img);
+    $('#lbInfo').innerHTML = i ? `<b>${esc(i.title)}</b> · ${esc(i.artist)} · round ${i.round} · ${esc(i.quality)} · ${money(i.cost)}<br><span class="small muted">${esc(i.task_id)} · ${esc(i.model)}</span><p class="small" style="margin-top:.5rem">${esc(i.prompt)}</p>` : esc(id);
+    $('#lightbox').showModal();
+  });
+  $('#lbClose').onclick = () => $('#lightbox').close();
+  $('#agentFilter').onchange = renderTimeline; $('#hideReq').onchange = renderTimeline;
+  $('#artistFilter').onchange = renderGallery; $('#roundFilter').onchange = renderCompare;
+
+  let timer = null;
+  function start() {
+    $('#loginForm').classList.add('hidden'); $('#app').classList.remove('hidden');
+    refresh(); clearInterval(timer); timer = setInterval(refresh, 30000);
+  }
+  if (TOKEN && API) start(); else showLogin();
+})();
+</script>
+</body>
+</html>
