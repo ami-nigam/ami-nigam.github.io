@@ -87,6 +87,68 @@ dialog::backdrop{background:rgba(0,0,0,.7)}
 dialog img{max-width:100%;max-height:70vh;display:block;margin:0 auto}
 dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+/* ===== Studio floor ===== */
+.floor{position:relative;display:grid;grid-template-columns:repeat(2,1fr);gap:.75rem;margin:1rem 0}
+@media(min-width:640px){.floor{grid-template-columns:repeat(3,1fr)}}
+.floor .span-all{grid-column:1/-1}
+.floor .span-2{grid-column:span 2}
+.floor .span-m2{grid-column:span 2}
+@media(min-width:640px){.floor .span-m2{grid-column:auto}}
+.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3;overflow:visible}
+.wires path{fill:none;stroke-width:1.5;stroke-dasharray:5 6;animation:flow 1.2s linear infinite;opacity:.75}
+.wires path.eye{stroke:var(--accent)}
+.wires path.fix{stroke:var(--warn);stroke-width:2}
+.wires path.brief{stroke:var(--text-secondary);opacity:.45}
+@keyframes flow{to{stroke-dashoffset:-22}}
+.room{position:relative;border:1px solid var(--border-tertiary);border-radius:10px;padding:.6rem;background:var(--card-bg);transition:border-color .4s,box-shadow .4s;min-width:0}
+.room.active{border-color:var(--primary-text);box-shadow:0 0 0 3px var(--border-faint)}
+.room.watched{border-color:var(--accent)}
+.room.err{border-color:var(--bad)}
+.room-h{display:flex;justify-content:space-between;align-items:baseline;gap:.4rem;margin-bottom:.4rem}
+.room-h b{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;line-height:1}
+.room-h .role{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-secondary);text-align:right;line-height:1.3}
+.pill{display:inline-flex;align-items:center;gap:.35rem;font-size:11px;color:var(--text-secondary);margin-bottom:.45rem}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--text-tertiary);flex:none}
+.st-asleep .dot{background:var(--border-tertiary)}
+.st-thinking .dot,.st-writing .dot,.st-reviewing .dot{background:var(--accent);animation:pulse 1.1s ease-in-out infinite}
+.st-painting .dot{background:#2563eb;animation:pulse .7s ease-in-out infinite}
+.st-fixing .dot{background:var(--warn);animation:pulse .7s ease-in-out infinite}
+.st-error .dot{background:var(--bad)}
+.st-idle .dot{background:var(--ok)}
+@keyframes pulse{50%{transform:scale(1.6);opacity:.5}}
+.canvas{position:relative;border-radius:6px;overflow:hidden;background:var(--border-faint);aspect-ratio:4/5}
+.canvas img{width:100%;height:100%;object-fit:cover;display:block}
+.canvas .empty{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:var(--text-secondary);text-align:center;padding:.5rem}
+.canvas.gen::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.35) 50%,transparent 80%);background-size:250% 100%;animation:shimmer 1.4s linear infinite}
+[data-theme="dark"] .canvas.gen::after{background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.12) 50%,transparent 80%);background-size:250% 100%}
+@keyframes shimmer{from{background-position:150% 0}to{background-position:-100% 0}}
+.canvas.gen .gen-label{position:absolute;left:.4rem;bottom:.4rem;font-size:10px;background:var(--primary-bg);padding:.1rem .4rem;border-radius:999px;z-index:2}
+.canvas img.new{animation:arrive 1.2s ease-out}
+@keyframes arrive{from{opacity:0;filter:blur(12px);transform:scale(1.04)}to{opacity:1;filter:none;transform:none}}
+.strip{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:4px}
+.strip img,.strip .ph{aspect-ratio:1;object-fit:cover;width:100%;border-radius:3px;cursor:zoom-in}
+.strip .kept{outline:2px solid var(--accent);outline-offset:-2px}
+.bubble{position:relative;margin-top:.55rem;background:var(--primary-bg);border:1px solid var(--border-faint);border-radius:8px;padding:.4rem .55rem;font-size:12px;line-height:1.45;min-height:2.2em}
+.bubble::before{content:'';position:absolute;top:-6px;left:14px;width:10px;height:10px;background:var(--primary-bg);border-left:1px solid var(--border-faint);border-top:1px solid var(--border-faint);transform:rotate(45deg)}
+.bubble .who{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-secondary);display:block}
+.typing span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--text-secondary);margin-right:3px;animation:typing 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes typing{50%{transform:translateY(-3px);opacity:.4}}
+.room-f{display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-top:.45rem}
+.board{border:1px dashed var(--border-tertiary);border-radius:10px;padding:.7rem .8rem;background:var(--primary-bg)}
+.board .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-secondary)}
+.board p{font-size:13px;margin-top:.3rem}
+.board p.clamp{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.mini{display:flex;gap:3px;flex-wrap:wrap;margin-top:.4rem}
+.mini img,.mini .ph{width:34px;height:42px;object-fit:cover;border-radius:3px}
+.wall-note{font-size:11px;color:var(--text-secondary);text-align:center}
+.ticker{border-top:1px solid var(--border-tertiary);margin-top:.5rem}
+.tick{display:flex;gap:.6rem;padding:.45rem 0;border-bottom:1px solid var(--border-faint);font-size:13px;animation:slide .5s ease-out}
+.tick .t{font-size:11px;color:var(--text-secondary);flex:none;width:3.2rem;padding-top:.1rem}
+.tick .a{font-weight:500;flex:none}
+@keyframes slide{from{opacity:0;transform:translateY(-4px)}}
+.countdown{font-family:'Playfair Display',serif;font-size:22px}
+@media (prefers-reduced-motion:reduce){.wires path,.dot,.canvas.gen::after,.canvas img.new,.typing span,.tick{animation:none!important}}
 footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border-tertiary)}
 </style>
 </head>
@@ -123,7 +185,8 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     </div>
     <p class="small muted" id="statusLine"></p>
     <div class="tabs" role="tablist">
-      <button data-tab="overview" class="on">Overview</button>
+      <button data-tab="studio" class="on">Studio</button>
+      <button data-tab="overview">Overview</button>
       <button data-tab="timeline">Timeline</button>
       <button data-tab="gallery">Gallery</button>
       <button data-tab="compare">Compare</button>
@@ -131,7 +194,13 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       <button data-tab="costs">Costs</button>
     </div>
 
-    <section class="view" id="v-overview">
+    <section class="view" id="v-studio">
+      <div class="floor" id="floor"></div>
+      <h2 style="margin-top:1.5rem">On the floor</h2>
+      <div class="ticker" id="ticker"></div>
+    </section>
+
+    <section class="view hidden" id="v-overview">
       <div class="stats" id="stats"></div>
       <h2>Agents</h2>
       <table id="agentsTbl"></table>
@@ -205,7 +274,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   let API = store.get('studioApi') || DEFAULT_API;
   let TOKEN = ss.get('studioToken');
   let S = { status: null, events: [], images: [], favourites: {}, shortlist: [], curator: null, lastSeq: 0 };
-  let tab = 'overview';
+  let tab = 'studio';
 
   async function api(path, opts = {}) {
     const r = await fetch(API + path, { ...opts, headers: { ...(opts.headers || {}), Authorization: 'Bearer ' + TOKEN, ...(opts.body ? { 'Content-Type': 'application/json' } : {}) } });
@@ -305,12 +374,189 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     $('#runBtn').disabled = !!st.busy || st.paused || st.ceiling_hit;
     $('#statusLine').textContent = `Round ${st.round} · ${st.busy ? 'running: ' + st.busy : 'idle'} · next wake ${st.next_wake_uk || 'none'} UK · final ${st.schedule.final} · updated ${time(st.now)}`;
 
+    if (tab === 'studio') renderStudio();
     if (tab === 'overview') renderOverview(st);
     if (tab === 'timeline') renderTimeline();
     if (tab === 'gallery') renderGallery();
     if (tab === 'compare') renderCompare();
     if (tab === 'curator') renderCurator();
     if (tab === 'costs') renderCosts();
+  }
+
+  // ===== Studio floor =====
+  const ACTIVE = ['thinking', 'painting', 'writing', 'reviewing', 'fixing'];
+  const ARTIST_MAP = {
+    'artist.plan.request': ['thinking', 'Looking at past work'], 'artist.plan': ['painting', 'Writing a prompt'],
+    'image.request': ['painting', 'Generating'], 'image.result': ['painting', 'Image done'], 'api.retry': ['painting', 'Retrying API'],
+    'artist.reflection.request': ['thinking', 'Reflecting'], 'artist.reflection': ['asleep', 'Resting'],
+    'artist.skip': ['asleep', 'Sitting out (cap)'], 'artist.error': ['error', 'Error'],
+  };
+  const CURATOR_MAP = {
+    'brief.request': ['writing', 'Writing the brief'], 'brief.result': ['idle', 'Brief pinned'],
+    'budget.request': ['thinking', 'Reading the budget'], 'budget.set': ['idle', 'Watching'], 'budget.result': ['thinking', 'Setting limits'],
+    'checkpoint.request': ['reviewing', 'Reviewing everyone'], 'checkpoint.result': ['idle', 'Notes written'],
+    'final.select.request': ['reviewing', 'Choosing the finals'], 'final.select.result': ['idle', 'Picks made'],
+    'final.render.request': ['painting', 'Re-rendering a final'], 'final.render.result': ['painting', 'Final rendered'],
+    'text.request': ['writing', 'Writing the text'], 'text.result': ['idle', 'Text drafted'], 'final.done': ['idle', 'Final done'],
+  };
+  const ENG_MAP = {
+    'incident.open': ['fixing', 'Called in'], 'fix.request': ['fixing', 'Diagnosing'], 'fix.applied': ['fixing', 'Fix applied, retrying'],
+    'retry.failed': ['fixing', 'Retry failed'], 'incident.fixed': ['idle', 'Fixed'], 'incident.failed': ['error', 'Gave up, needs Ami'], 'fix.error': ['fixing', 'Fix call failed'],
+  };
+  function agentState(id, map) {
+    const evs = S.events.filter(e => e.agent === id && map[e.type] || (e.agent === id && /error$/.test(e.type)));
+    const last = evs[evs.length - 1];
+    if (!last) return { st: id === 'engineer' ? 'idle' : 'asleep', label: id === 'engineer' ? 'On call' : 'Asleep', last: null };
+    let [st, label] = map[last.type] || ['error', 'Error'];
+    if (ACTIVE.includes(st) && !S.status.busy) { st = id === 'engineer' || id === 'curator' ? 'idle' : 'asleep'; label = id === 'curator' ? 'Watching' : id === 'engineer' ? 'On call' : 'Resting'; }
+    if (S.status.paused && ACTIVE.includes(st) === false && st !== 'error') label = label + ' · paused';
+    return { st, label, last };
+  }
+  const seen = new Set(); let firstPaint = true; let briefOpen = false;
+
+  function renderStudio() {
+    const st = S.status; const floor = $('#floor');
+    const drafts = S.images.filter(i => i.kind === 'draft');
+    const cur = agentState('curator', CURATOR_MAP), eng = agentState('engineer', ENG_MAP);
+    const openInc = (st.incidents || []).filter(i => i.status === 'open');
+    const brief = S.curator?.brief || 'No brief yet. The Curator pins it at the first round.';
+    const lastNote = (S.curator?.notes || []).slice(-1)[0];
+    let reviewing = [];
+    if (cur.st === 'reviewing' && cur.last?.data) reviewing = cur.last.data.images || cur.last.data.candidates || [];
+
+    const curBubble = cur.st === 'reviewing' || cur.st === 'thinking' || cur.st === 'writing'
+      ? `<span class="typing"><span></span><span></span><span></span></span>`
+      : esc(st.limits_reason || lastNote?.notes || 'Waiting for the first round.');
+    const engBubble = openInc.length ? esc(`${openInc[0].agent}: ${openInc[0].error}`) : eng.last?.type === 'fix.applied' ? esc(eng.last.data?.message || '') : 'Nothing broken.';
+
+    let html = `
+      <div class="board span-all" id="n-brief"><div class="lbl">Pinned brief · same for every artist</div>
+        <p class="${briefOpen ? '' : 'clamp'}" id="briefText">${esc(brief)}</p>
+        <div class="room-f"><span>Next wake <span class="countdown" id="countdown">–</span></span><span>Round ${st.round}${st.busy ? ' · ' + esc(st.busy) + ' running' : ''}</span></div></div>
+      <div class="room span-2 st-${cur.st} ${ACTIVE.includes(cur.st) ? 'active' : ''}" id="n-curator">
+        <div class="room-h"><b>Curator</b><span class="role">Sees everything<br>makes no images</span></div>
+        <div class="pill"><span class="dot"></span>${esc(cur.label)}</div>
+        <div class="small muted">${st.limits.images_per_wake} img/wake · cap ${st.limits.draft_cap_per_artist} · finals ${esc(st.limits.final_quality)} · shortlist ${(S.shortlist || []).length}</div>
+        ${reviewing.length ? `<div class="mini">${reviewing.slice(0, 16).map(id => `<span data-open="${esc(id)}">${thumb(id)}</span>`).join('')}</div>` : ''}
+        <div class="bubble"><span class="who">Curator</span>${curBubble}</div>
+      </div>
+      <div class="room span-m2 st-${eng.st} ${ACTIVE.includes(eng.st) ? 'active' : ''} ${eng.st === 'error' ? 'err' : ''}" id="n-engineer">
+        <div class="room-h"><b>Engineer</b><span class="role">Fixes on error<br>3 tries max</span></div>
+        <div class="pill"><span class="dot"></span>${esc(eng.label)}</div>
+        <div class="bubble"><span class="who">Engineer</span>${engBubble}</div>
+        <div class="room-f"><span>${(st.incidents || []).filter(i => i.status === 'fixed').length} fixed</span><span>${(st.incidents || []).filter(i => i.status === 'failed').length} failed</span></div>
+      </div>`;
+
+    for (const a of st.agents) {
+      const s2 = agentState(a.id, ARTIST_MAP);
+      const mine = drafts.filter(i => i.artist === a.id);
+      const latest = mine[mine.length - 1];
+      const prev = mine.slice(-5, -1).reverse();
+      const kept = new Set(S.favourites[a.id] || []);
+      const myEv = S.events.filter(e => e.agent === a.id);
+      const plan = [...myEv].reverse().find(e => e.type === 'artist.plan');
+      const refl = [...myEv].reverse().find(e => e.type === 'artist.reflection');
+      const genReq = s2.st === 'painting' && s2.last?.type === 'image.request' ? s2.last : null;
+      let bubble;
+      if (s2.st === 'thinking') bubble = `<span class="typing"><span></span><span></span><span></span></span>`;
+      else if (genReq) bubble = `<span class="who">Prompt</span>${esc(String(genReq.prompt || '').slice(0, 160))}…`;
+      else if (refl && (!plan || refl.seq > plan.seq)) bubble = `<span class="who">Reflection · r${refl.round}</span>${esc(refl.response)}`;
+      else if (plan) bubble = `<span class="who">Intent · r${plan.round}</span>${esc(plan.data?.intent || '')}`;
+      else bubble = '<span class="muted">Not woken yet.</span>';
+      const isNew = latest && !seen.has(latest.task_id) && !firstPaint;
+      if (latest) seen.add(latest.task_id);
+      const watched = cur.st === 'reviewing';
+      const spentA = mine.reduce((t, i) => t + (Number(i.cost) || 0), 0);
+      html += `
+      <div class="room st-${s2.st} ${ACTIVE.includes(s2.st) ? 'active' : ''} ${watched ? 'watched' : ''} ${s2.st === 'error' || openInc.some(i => i.agent === a.id) ? 'err' : ''}" id="n-${a.id}">
+        <div class="room-h"><b>${esc(a.id)}</b><span class="role">${a.group === 'control' ? 'Control' : 'Ami voice'}<br>${esc(a.group === 'control' ? 'identical setup' : a.persona.replace(/^Ami voice:\s*/, ''))}</span></div>
+        <div class="pill"><span class="dot"></span>${esc(s2.label)}</div>
+        <div class="canvas ${genReq ? 'gen' : ''}" ${latest ? `data-open="${esc(latest.task_id)}" style="cursor:zoom-in"` : ''}>
+          ${latest ? `<img data-src="/api/image/${esc(latest.task_id)}?thumb=1" alt="" class="${isNew ? 'new' : ''}">` : '<div class="empty">Blank canvas</div>'}
+          ${genReq ? `<span class="gen-label">painting “${esc(genReq.data?.title || '')}”</span>` : ''}
+        </div>
+        ${prev.length ? `<div class="strip">${prev.map(i => `<img data-src="/api/image/${esc(i.task_id)}?thumb=1" data-open="${esc(i.task_id)}" alt="" class="${kept.has(i.task_id) ? 'kept' : ''}">`).join('')}</div>` : ''}
+        <div class="bubble">${bubble}</div>
+        <div class="room-f"><span>${mine.length} drafts</span><span>${money(spentA)}</span></div>
+      </div>`;
+    }
+    html += `<div class="wall-note span-all">Artists work in separate rooms and never see each other. Pink outline on a thumbnail = kept by the artist.</div>
+      <svg class="wires" id="wires" aria-hidden="true"></svg>`;
+    floor.innerHTML = html;
+    firstPaint = false;
+    $('#briefText').onclick = () => { briefOpen = !briefOpen; $('#briefText').classList.toggle('clamp', !briefOpen); drawWires(); };
+    hydrate(floor);
+
+    // Wires: who is interacting with whom right now.
+    S.wires = [];
+    const artistIds = st.agents.map(a => a.id);
+    if (cur.st === 'reviewing') artistIds.forEach(id => S.wires.push(['n-curator', 'n-' + id, 'eye']));
+    if (cur.st === 'thinking' || cur.st === 'writing') artistIds.forEach(id => S.wires.push(['n-curator', 'n-' + id, 'brief']));
+    st.agents.forEach(a => { const x = agentState(a.id, ARTIST_MAP); if (x.st === 'thinking' && x.last?.type === 'artist.plan.request') S.wires.push(['n-brief', 'n-' + a.id, 'brief']); });
+    openInc.forEach(i => S.wires.push(['n-engineer', 'n-' + i.agent, 'fix']));
+    if (eng.st === 'fixing' && eng.last?.data?.agent) S.wires.push(['n-engineer', 'n-' + eng.last.data.agent, 'fix']);
+    drawWires();
+    tickCountdown();
+    renderTicker();
+  }
+
+  function drawWires() {
+    const svg = $('#wires'); if (!svg) return;
+    const box = $('#floor').getBoundingClientRect();
+    svg.innerHTML = (S.wires || []).map(([from, to, cls]) => {
+      const a = document.getElementById(from), b = document.getElementById(to);
+      if (!a || !b) return '';
+      const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      const x1 = ra.left + ra.width / 2 - box.left, y1 = ra.bottom - box.top - 4;
+      const x2 = rb.left + rb.width / 2 - box.left, y2 = rb.top - box.top + 4;
+      const my = (y1 + y2) / 2;
+      return `<path class="${cls}" d="M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}"/>`;
+    }).join('');
+  }
+  window.addEventListener('resize', () => { if (tab === 'studio') drawWires(); });
+
+  function tickCountdown() {
+    const el = $('#countdown'); if (!el || !S.status) return;
+    const nw = S.status.next_wake_uk; if (!nw) { el.textContent = 'none'; return; }
+    const now = new Date(); const p = Object.fromEntries(new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).formatToParts(now).map(x => [x.type, x.value]));
+    const [h, m] = nw.split(':').map(Number);
+    let diff = (h * 3600 + m * 60) - (+p.hour * 3600 + +p.minute * 60 + +p.second);
+    if (diff <= 0) { el.textContent = S.status.paused ? nw + ' (paused)' : 'now'; return; }
+    el.textContent = `${nw}, in ${Math.floor(diff / 60)}:${String(diff % 60).padStart(2, '0')}`;
+  }
+  setInterval(() => { if (tab === 'studio') tickCountdown(); }, 1000);
+
+  function narrate(e) {
+    const d = e.data || {};
+    switch (e.type) {
+      case 'round.start': return `Round ${e.round}: everyone wakes.`;
+      case 'round.end': return `Round ${e.round} done.`;
+      case 'round.skip': case 'round.skipped': return `Round skipped. ${d.message || ''}`;
+      case 'brief.result': return 'Pinned a new brief on the wall.';
+      case 'budget.set': return `Set ${d.limits?.images_per_wake} image(s) per artist. ${d.message || ''}`;
+      case 'checkpoint.result': return `Reviewed the floor. Shortlist now ${(d.shortlist || []).length}.`;
+      case 'artist.plan': return `“${d.intent || ''}”`;
+      case 'image.result': return `Finished “${d.title || ''}” (${money(e.cost)}).`;
+      case 'artist.reflection': return `Reflects: “${e.response}”`;
+      case 'artist.error': return `Hit an error: ${d.message || ''}`;
+      case 'incident.open': return `Called in for ${d.agent}: ${d.message || ''}`;
+      case 'fix.applied': return `Fix: ${d.message || ''} ${Object.keys(d.applied || {}).length ? JSON.stringify(d.applied) : ''}`;
+      case 'incident.fixed': return 'Fixed. Back to work.';
+      case 'incident.failed': return `Gave up: ${d.message || ''}`;
+      case 'final.select.result': return `Chose ${(d.picks || []).length} finals.`;
+      case 'final.render.result': return 'Re-rendered a final at full quality.';
+      case 'text.result': return `Drafted the text (${d.words || '?'} words).`;
+      case 'paused': return 'Ami paused the studio.';
+      case 'resumed': return 'Ami resumed the studio.';
+      case 'ceiling.reached': return `Spend ceiling reached. ${d.message || ''}`;
+      case 'api.retry': return d.message || 'Retrying.';
+      default: return null;
+    }
+  }
+  function renderTicker() {
+    const items = [];
+    for (let i = S.events.length - 1; i >= 0 && items.length < 14; i--) { const e = S.events[i]; const t = narrate(e); if (t) items.push([e, t]); }
+    $('#ticker').innerHTML = items.map(([e, t]) => `<div class="tick"><span class="t">${time(e.ts).slice(0, 5)}</span><span class="a">${esc(e.agent === 'system' ? 'Studio' : e.agent[0].toUpperCase() + e.agent.slice(1))}</span><span>${esc(t)}</span></div>`).join('') || '<p class="muted small">Quiet so far.</p>';
   }
 
   function renderOverview(st) {
@@ -427,7 +673,9 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   let timer = null;
   function start() {
     $('#loginForm').classList.add('hidden'); $('#app').classList.remove('hidden');
-    refresh(); clearInterval(timer); timer = setInterval(refresh, 30000);
+    clearTimeout(timer);
+    const loop = async () => { await refresh(); const fast = S.status && (S.status.busy || (S.events.length && Date.now() - new Date(S.events[S.events.length - 1].ts) < 60000)); timer = setTimeout(loop, fast ? 5000 : 30000); };
+    loop();
   }
   if (TOKEN && API) start(); else showLogin();
 })();
