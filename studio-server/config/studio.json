@@ -1,8 +1,8 @@
 {
   "publication": "Vision Art Magazine Vol 7, chapter Art & Technology",
   "title": "Stochastic by Design",
-  "stance": "Generative AI makes art from chance, not feeling, and the human act left is choosing.",
-  "stance_status": "DRAFT, awaiting Ami's confirmation",
+  "stance": "We expected machines to calculate, and to arrive first in technical work. They arrived in art instead, working from probability, not feeling or lived experience. That is a method, not creativity.",
+  "stance_status": "confirmed by Ami",
   "brief_override": "",
   "schedule": {
     "date": "",
@@ -10,7 +10,12 @@
     "last_artist_wake": "21:30",
     "final": "22:00",
     "interval_min": 30,
-    "checkpoints": ["14:00", "16:00", "18:00", "20:00"],
+    "checkpoints": [
+      "14:00",
+      "16:00",
+      "18:00",
+      "20:00"
+    ],
     "grace_min": 10
   },
   "limits_default": {
@@ -19,13 +24,37 @@
     "final_quality": "high",
     "finals_count": 10
   },
-  "budget_split": { "drafts": 6, "finals": 2.5, "claude": 11 },
+  "budget_split": {
+    "drafts": 6,
+    "finals": 2.5,
+    "claude": 11
+  },
   "artists": [
-    { "id": "A1", "group": "control", "persona": "control" },
-    { "id": "A2", "group": "control", "persona": "control" },
-    { "id": "A3", "group": "control", "persona": "control" },
-    { "id": "P1", "group": "persona", "persona": "ami" },
-    { "id": "P2", "group": "persona", "persona": "p2" }
+    {
+      "id": "A1",
+      "group": "control",
+      "persona": "control"
+    },
+    {
+      "id": "A2",
+      "group": "control",
+      "persona": "control"
+    },
+    {
+      "id": "A3",
+      "group": "control",
+      "persona": "control"
+    },
+    {
+      "id": "P1",
+      "group": "persona",
+      "persona": "ami"
+    },
+    {
+      "id": "P2",
+      "group": "persona",
+      "persona": "p2"
+    }
   ],
   "personas": {
     "control": {
