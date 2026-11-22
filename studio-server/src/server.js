@@ -7,7 +7,7 @@ import { env, studio, runtime, CEILING } from './config.js';
 import { state, saveState, log, events, allImages, IMG_DIR, THUMB_DIR, FINAL_DIR, ledgerEntries, archiveAndReset } from './store.js';
 import { hasKey, getKey, spend, abortAll, resolveModels, chat, generateImage, lastKey } from './openrouter.js';
 import { startScheduler, runRound, runFinal, runCheckpoint, runDebate, runZine, nextWake, isBusy } from './scheduler.js';
-import { stats as zineStats } from './zine.js';
+import { stats as zineStats, spreadNotes } from './zine.js';
 import { debatePlan } from './debate.js';
 import { currentBrief, limits } from './agents.js';
 import { streamZip, exportManifest, creditsCsv, textMd } from './export.js';
@@ -198,7 +198,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/zine' && req.method === 'GET') {
       const cast = studio.artists.map(a => { const pp = studio.personas[a.persona]; return { id: a.id, name: pp.name || a.id, label: pp.label, personality: pp.personality || '', argument: state.thesis?.[a.id]?.text || pp.point || '', series: state.arc?.[a.id]?.series_title || '', beats: state.arc?.[a.id]?.beats || [], takeaway: state.debate?.takeaways?.[a.id] || null, research: state.research?.[a.id]?.findings || [], counter: state.research?.[a.id]?.counter || '' }; });
       const finals = Object.fromEntries(Object.entries(state.final?.renders || {}));
-      return send(res, 200, { zine: state.zine || null, cast, finals, stats: zineStats(), question: studio.question, stance: studio.stance, schedule: { start: state.schedule?.start || studio.schedule.start, last: studio.schedule.last_artist_wake, final: studio.schedule.final, interval: studio.schedule.interval_min }, title: studio.title, publication: studio.publication, brief_version: state.briefVersion || 1, debate_at: studio.schedule.debate_at, debate_done: state.debate?.status === 'done', debate_ended: state.debate?.ended || null });
+      return send(res, 200, { zine: state.zine || null, cast, finals, stats: zineStats(), notes: spreadNotes(), question: studio.question, stance: studio.stance, schedule: { start: state.schedule?.start || studio.schedule.start, last: studio.schedule.last_artist_wake, final: studio.schedule.final, interval: studio.schedule.interval_min }, title: studio.title, publication: studio.publication, brief_version: state.briefVersion || 1, debate_at: studio.schedule.debate_at, debate_done: state.debate?.status === 'done', debate_ended: state.debate?.ended || null });
     }
     if (p === '/api/run-zine' && req.method === 'POST') {
       if (isBusy()) return send(res, 409, { error: `${isBusy()} running, try when it finishes` });

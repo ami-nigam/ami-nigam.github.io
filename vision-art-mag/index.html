@@ -175,11 +175,11 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 @media(min-width:640px){.plabel{font-size:12px}.pbubble{font-size:12px}.pbubble.speak{font-size:13px}}
 /* ===== Zine (always paper, prints at A3 landscape) ===== */
 #zine{display:flex;flex-direction:column;gap:1.25rem;margin-top:1rem}
-.zs{position:relative;container-type:inline-size;width:100%;aspect-ratio:1.414;grid-template-rows:minmax(0,1fr);background:#f1efe8;color:#0b0b0b;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;font-family:'Inter Tight',sans-serif;border:1px solid var(--border-tertiary);border-radius:4px}
+.zs{position:relative;container-type:inline-size;width:100%;aspect-ratio:1.414;grid-template-rows:minmax(0,1fr);background:#ffffff;color:#0b0b0b;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;font-family:'Inter Tight',sans-serif;border:1px solid var(--border-tertiary);border-radius:4px}
 .zs::after{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(0,0,0,.1);pointer-events:none}
 .zs .pg{position:relative;padding:4.2cqw 3.6cqw 4.5cqw;min-width:0;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:1.6cqw}
 .zs .mega,.zs h2,.zs .zpull,.zs .zq{overflow-wrap:normal;word-break:normal;hyphens:manual}
-.zs .ink{background:#0b0b0b;color:#f1efe8}
+.zs .ink{background:#0b0b0b;color:#ffffff}
 .zs h1,.zs h2,.zs h3{color:inherit;margin:0;letter-spacing:inherit}
 .zs .mono{font-family:'JetBrains Mono',monospace;font-size:1.05cqw;letter-spacing:.08em;text-transform:uppercase;line-height:1.4}
 .zs .mega{font-family:'Archivo Black',sans-serif;font-size:8.6cqw;line-height:.84;letter-spacing:-.035em;text-transform:uppercase;font-weight:400;margin-top:auto}
@@ -201,12 +201,14 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .zsteps b{display:block;font-family:'Archivo Black';font-weight:400;font-size:4.2cqw;line-height:1;color:#c0186c}
 .z-artist{display:block;background:#0b0b0b}
 .zbleed{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.zph{display:grid;place-items:center;background:repeating-linear-gradient(45deg,#e4e1d7 0 1cqw,#ebe8df 1cqw 2cqw);color:#77736a;width:100%;aspect-ratio:1.414}
+.zph{display:grid;place-items:center;background:repeating-linear-gradient(45deg,#ececec 0 1cqw,#f5f5f5 1cqw 2cqw);color:#777;width:100%;aspect-ratio:1.414}
 .zph span{font-family:'JetBrains Mono',monospace;font-size:1cqw;text-transform:uppercase;letter-spacing:.1em}
 .zph.zbleed{aspect-ratio:auto}
-.ztag{position:absolute;left:2.5cqw;bottom:3.6cqw;max-width:34cqw;background:var(--c);color:#fff;padding:1.4cqw 1.6cqw;z-index:2}
+.ztag{position:absolute;left:2.5cqw;bottom:3.6cqw;max-width:34cqw;max-height:calc(100% - 7cqw);overflow:hidden;background:var(--c);color:#fff;padding:1.4cqw 1.6cqw;z-index:2}
 .ztag b{display:block;font-family:'Archivo Black';font-weight:400;font-size:3.4cqw;line-height:.95;text-transform:uppercase;margin:.4cqw 0 .6cqw}
 .ztag p{font-size:1.25cqw;line-height:1.35}
+.ztag .zk{font-family:'JetBrains Mono',monospace;font-size:.8cqw;text-transform:uppercase;letter-spacing:.08em;opacity:.75;margin-top:.7cqw}
+.ztag p.zarg{font-weight:800}
 .zgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.2cqw;margin:auto 0}
 .zgrid figure{margin:0}.zgrid img,.zgrid .zph{width:100%;aspect-ratio:1.414;object-fit:cover;display:block}
 .zgrid figcaption{font-size:.75cqw!important;margin-top:.4cqw;line-height:1.3}
@@ -226,10 +228,11 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .zcols p{margin-bottom:1cqw}
 .z-cast{display:block}
 .zcastgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4cqw;padding:4cqw 3.6cqw 4.5cqw;height:100%;min-height:0;overflow:hidden}
-.zcastgrid h2{grid-column:1/-1;margin-bottom:-.6cqw}
+.zcastgrid h2{grid-column:1/-1;margin-bottom:-1.4cqw}
+.zcastintro{grid-column:1/-1;font-size:1.35cqw;line-height:1.35;font-weight:600;max-width:70cqw}
 .zcol{display:flex;flex-direction:column;gap:.9cqw;min-width:0;min-height:0;overflow:hidden;border-top:.5cqw solid var(--c);padding-top:1cqw}
 .zcol b.n{font-family:'Archivo Black';font-weight:400;font-size:3cqw;line-height:.95;text-transform:uppercase}
-.zcol .k{font-family:'JetBrains Mono',monospace;font-size:.8cqw;text-transform:uppercase;letter-spacing:.08em;color:#6b675e;margin-top:.4cqw}
+.zcol .k{font-family:'JetBrains Mono',monospace;font-size:.8cqw;text-transform:uppercase;letter-spacing:.08em;color:#666;margin-top:.4cqw}
 .zcol p{font-size:1.05cqw;line-height:1.38}
 .zcol p.arg{font-weight:800;font-size:1.3cqw;line-height:1.2}
 .zcol ul{list-style:none;display:flex;flex-direction:column;gap:.45cqw}
@@ -237,7 +240,7 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .zcol li::before{content:'';position:absolute;left:0;top:.5cqw;width:.45cqw;height:.45cqw;background:var(--c)}
 .zplanwrap{position:relative;margin:auto 0;border:.15cqw solid #0b0b0b}
 .zplanwrap img{display:block;width:100%;image-rendering:pixelated;image-rendering:crisp-edges}
-.zplab{position:absolute;font-family:'JetBrains Mono',monospace;font-size:.75cqw;text-transform:uppercase;letter-spacing:.06em;background:#f1efe8;padding:.1cqw .4cqw;white-space:nowrap}
+.zplab{position:absolute;font-family:'JetBrains Mono',monospace;font-size:.75cqw;text-transform:uppercase;letter-spacing:.06em;background:#ffffff;padding:.1cqw .4cqw;white-space:nowrap}
 .zsetupsteps{list-style:none;display:flex;flex-direction:column;gap:.7cqw;margin-top:auto}
 .zsetupsteps li{font-size:1.2cqw;line-height:1.3;border-top:.15cqw solid #0b0b0b;padding-top:.5cqw;display:grid;grid-template-columns:3cqw 1fr}
 .zsetupsteps b{font-family:'Archivo Black';font-weight:400;color:#c0186c}
@@ -801,8 +804,8 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   const pad = n => String(n).padStart(2, '0');
   function zImg(id, finals, cls = '') { if (!id) return `<div class="zph ${cls}"><span>spread pending</span></div>`; const use = finals[id] || id; return `<img class="${cls}" data-src="/api/image/${esc(use)}" alt="">`; }
   function defaultZine(Z) {
-    const sp = [{ template: 'opener', title: Z.title, body: Z.question }, { template: 'setup', title: 'One brief. Four rooms.', body: 'Four AI artists got the same question and a different bias. Each researched its side, planned a series and made it, one spread every half hour. They met once, in a debate. A Curator watched everything and made nothing.' }, { template: 'cast', title: 'The four artists' }];
-    for (const c of Z.cast) sp.push({ template: 'artist', artist: c.id, image: null, caption: c.series });
+    const sp = [{ template: 'opener', title: Z.title, body: Z.question }, { template: 'setup', title: 'One brief. Four rooms.', body: 'Four AI artists, created for this experiment, got the same question and a different bias. Each researched its side, planned a series and made it, one spread every half hour. They met once, in a debate. A Curator watched everything and made nothing.' }, { template: 'cast', title: 'The four AI artists' }];
+    for (const c of Z.cast) sp.push({ template: 'artist', artist: c.id, image: null, caption: '' });
     sp.push({ template: 'debate', title: 'The only time they met' }, { template: 'after', title: 'What changed' }, { template: 'close', title: 'Is it creative?', body: Z.stance });
     return { spreads: sp.slice(0, 10).map((s, i) => ({ n: i + 1, ...s })), version: 0 };
   }
@@ -813,19 +816,19 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     const folio = `<div class="zfolio l mono">${pad(sp.n)} / ${pad(total)}</div><div class="zfolio r mono">Stochastic by Design</div>`;
     const t = sp.template;
     if (t === 'opener') return `<section class="zs z-opener"><div class="pg l ink"><div class="mono">${esc(Z.publication)}</div><h1 class="mega">Stoch&shy;astic<br>by<br>Design</h1></div>
-      <div class="pg r"><p class="zq">${esc(sp.body || Z.question)}</p><ol class="zcast">${cast.map(c => `<li><i style="background:${ZC[c.id]}"></i><b>${esc(c.name)}</b><span class="mono">${esc(c.label)}</span><em>${esc(firstSentence(c.argument))}</em></li>`).join('')}</ol><div class="mono zfoot">Curated by an AI. Edited by Ami Nigam.</div></div>${folio}</section>`;
+      <div class="pg r"><p class="zq">${esc(sp.body || Z.question)}</p><p class="mono">Four AI artists, built for this experiment, answer it:</p><ol class="zcast">${cast.map(c => `<li><i style="background:${ZC[c.id]}"></i><b>${esc(c.name)}</b><span class="mono">${esc(c.label)}</span><em>${esc(firstSentence(c.argument))}</em></li>`).join('')}</ol><div class="mono zfoot">Made by AI artists. Curated by an AI. Edited by Ami Nigam.</div></div>${folio}</section>`;
     if (t === 'method' || t === 'setup') {
       const sc = Z.schedule || {};
       const labs = cast.slice(0, 4).map((c, i) => { const r = ROOMS[i]; return `<span class="zplab" style="left:${(r.x + 4) / PW * 100}%;top:${(r.y + (r.y ? 5 : 4)) / PH * 100}%;border-left:.4cqw solid ${ZC[c.id]}">${esc(c.name)} · ${esc(c.label)}</span>`; }).join('')
         + `<span class="zplab" style="left:1.5%;top:${93 / PH * 100}%">Curator</span><span class="zplab" style="left:50%;top:${93 / PH * 100}%;transform:translateX(-50%)">Debate table</span><span class="zplab" style="right:1.5%;top:${93 / PH * 100}%">Engineer</span>`;
       return `<section class="zs z-setup"><div class="pg l"><div class="mono">The studio</div><h2>${esc(sp.title || 'One brief. Four rooms.')}</h2><p class="body">${esc(sp.body || '')}</p>
-        <ol class="zsetupsteps">${[`Four AI artists, one room each. They never see each other's work.`, `Each researches its side and plans a series of six spreads.`, `Every ${sc.interval || 30} minutes, from ${esc(sc.start || '')} to ${esc(sc.last || '21:30')}, each makes the next spread.`, `Once, midway, they meet at the debate table.`, `A Curator sees everything, directs, and makes nothing.`, `An Engineer fixes what breaks.`].map((x, i) => `<li><b>${pad(i + 1)}</b>${x}</li>`).join('')}</ol></div>
+        <ol class="zsetupsteps">${[`Four AI artists, created for this experiment: one language model each, given a name, a temperament and a bias. One room each; they never see each other's work.`, `Each researches its side and plans a series of six spreads.`, `Every ${sc.interval || 30} minutes, from ${esc(sc.start || '')} to ${esc(sc.last || '21:30')}, each makes the next spread.`, `Once, midway, they meet at the debate table.`, `A Curator sees everything, directs, and makes nothing.`, `An Engineer fixes what breaks.`].map((x, i) => `<li><b>${pad(i + 1)}</b>${x}</li>`).join('')}</ol></div>
         <div class="pg r"><div class="zplanwrap"><img class="zplanimg" alt="Studio floor plan">${labs}</div><div class="mono">Floor plan, live from the studio</div></div>${folio}</section>`;
     }
     if (t === 'cast') {
       const habit = c => (String(c.personality).match(/Visual habit:\s*([^.]+)\./) || [])[1] || '';
       const temper = c => String(c.personality).split('.')[0];
-      return `<section class="zs z-cast"><div class="zcastgrid"><h2>${esc(sp.title || 'The four artists')}</h2>${cast.map(c => `<div class="zcol" style="--c:${ZC[c.id]}">
+      return `<section class="zs z-cast"><div class="zcastgrid"><h2>${esc(sp.title || 'The four AI artists')}</h2><p class="zcastintro">Not people. Each is a language model, created for this experiment and given a name, a temperament, a bias and one question. Each researched its side before making anything.</p>${cast.map(c => `<div class="zcol" style="--c:${ZC[c.id]}">
         <div><b class="n">${esc(c.name)}</b><div class="k">${esc(c.label)} · ${esc(temper(c))}</div></div>
         <div class="k">Thinks</div><p class="arg">${esc(c.argument)}</p>
         ${habit(c) ? `<div class="k">Makes it with</div><p>${esc(habit(c))}</p>` : ''}
@@ -836,7 +839,11 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     if (t === 'artist') {
       const c = A(sp.artist) || cast[0]; const mine = imgs.filter(i => i.artist === c?.id);
       const id = sp.image || mine[mine.length - 1]?.task_id; const im = S.images.find(i => i.task_id === id);
-      return `<section class="zs z-artist">${zImg(id, finals, 'zbleed')}<div class="ztag" style="--c:${ZC[c?.id] || '#111'}"><div class="mono">${esc(c?.label)}${im ? ` · spread ${im.beat || '?'} of ${c?.beats?.length || 6} · round ${im.round}` : ''}</div><b>${esc(c?.name)}</b><p>${esc(sp.caption || firstSentence(c?.argument))}</p></div>${folio}</section>`;
+      const nt = (Z.notes || {})[id] || {};
+      const says = sp.caption || nt.intent || nt.beat_text || '';
+      return `<section class="zs z-artist">${zImg(id, finals, 'zbleed')}<div class="ztag" style="--c:${ZC[c?.id] || '#111'}"><div class="mono">AI artist · ${esc(c?.label)}${im ? ` · spread ${im.beat || '?'} of ${c?.beats?.length || 6}` : ''}</div><b>${esc(c?.name)}</b>
+        <div class="zk">Argues</div><p class="zarg">${esc(firstSentence(c?.argument))}</p>
+        ${says ? `<div class="zk">This spread</div><p>${esc(says)}</p>` : ''}</div>${folio}</section>`;
     }
     if (t === 'series') {
       const c = A(sp.artist) || cast[0]; const mine = imgs.filter(i => i.artist === c?.id).slice(0, 6);
