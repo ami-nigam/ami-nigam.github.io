@@ -244,6 +244,19 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .zsetupsteps{list-style:none;display:flex;flex-direction:column;gap:.7cqw;margin-top:auto}
 .zsetupsteps li{font-size:1.2cqw;line-height:1.3;border-top:.15cqw solid #0b0b0b;padding-top:.5cqw;display:grid;grid-template-columns:3cqw 1fr}
 .zsetupsteps b{font-family:'Archivo Black';font-weight:400;color:#c0186c}
+.z-argument{display:block;background:#0b0b0b}
+.zmosaic{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.zmosaic figure{position:relative;margin:0;overflow:hidden;min-width:0;min-height:0}
+.zmosaic img,.zmosaic .zph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;aspect-ratio:auto}
+.zchip{position:absolute;bottom:1.4cqw;max-width:22cqw;background:#fff;color:#0b0b0b;padding:.55cqw .8cqw;font-size:.95cqw;line-height:1.3;display:flex;gap:.7cqw;align-items:baseline;z-index:2}
+.zchip.l{left:1.4cqw}.zchip.r{right:1.4cqw}
+.zchip.b{bottom:3.6cqw}
+.zchip b{font-family:'Archivo Black';font-weight:400;color:var(--c)}
+.zcenter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:30cqw;max-height:52cqw;overflow:hidden;background:var(--c);color:#fff;padding:1.8cqw 2cqw;z-index:3;display:flex;flex-direction:column;gap:.7cqw}
+.zcenter b.n{font-family:'Archivo Black';font-weight:400;font-size:4cqw;line-height:.95;text-transform:uppercase}
+.zcenter .zargtxt{font-weight:800;font-size:1.35cqw;line-height:1.25}
+.zcenter .zframe{font-size:1.05cqw;line-height:1.4;opacity:.92}
+.z-argument .zfolio{color:#fff;opacity:.85;text-shadow:0 0 .4cqw rgba(0,0,0,.6)}
 .zargbig{font-weight:800;font-size:2cqw;line-height:1.15;letter-spacing:-.01em;border-left:.5cqw solid var(--c);padding-left:1.2cqw}
 .zarglist{list-style:none;display:flex;flex-direction:column;gap:.8cqw;margin-top:auto}
 .zarglist li{display:grid;grid-template-columns:3cqw 1fr;font-size:1.15cqw;line-height:1.3;border-top:.15cqw solid #0b0b0b;padding-top:.5cqw}
@@ -850,10 +863,8 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       let ids = (sp.images || []).filter(x => mine.some(m => m.task_id === x));
       if (ids.length < 4) { const pool = mine.map(m => m.task_id).filter(x => !ids.includes(x)); const need = 4 - ids.length; const step = pool.length / need; for (let k = 0; k < need && pool.length; k++) ids.push(pool[Math.min(pool.length - 1, Math.floor(k * step + (need === pool.length ? 0 : step / 2)))]); ids = [...new Set(ids)]; }
       const caps = ids.map((x, k) => sp.captions?.[k] || (Z.notes || {})[x]?.intent || (Z.notes || {})[x]?.beat_text || '');
-      return `<section class="zs z-argument" style="--c:${ZC[c?.id] || '#111'}"><div class="pg l"><div class="mono">AI artist · ${esc(c?.label)}</div><h2 style="color:var(--c)">${esc(c?.name)}</h2>
-        <p class="zargbig">${esc(c?.argument)}</p>${sp.body ? `<p class="body">${esc(sp.body)}</p>` : ''}
-        <ol class="zarglist">${caps.map((x, k) => `<li><b>${pad(k + 1)}</b>${esc(x)}</li>`).join('')}</ol></div>
-        <div class="pg r"><div class="zgrid4">${Array.from({ length: 4 }).map((_, k) => `<figure>${zImg(ids[k], finals)}<figcaption class="mono"><b>${pad(k + 1)}</b>${ids[k] ? esc((S.images.find(i => i.task_id === ids[k])?.title) || '') : ''}</figcaption></figure>`).join('')}</div></div>${folio}</section>`;
+      return `<section class="zs z-argument" style="--c:${ZC[c?.id] || '#111'}"><div class="zmosaic">${Array.from({ length: 4 }).map((_, k) => `<figure>${zImg(ids[k], finals)}${caps[k] ? `<figcaption class="zchip ${k % 2 ? 'r' : 'l'} ${k > 1 ? 'b' : ''}"><b>${pad(k + 1)}</b><span>${esc(caps[k])}</span></figcaption>` : ''}</figure>`).join('')}</div>
+        <div class="zcenter"><div class="mono">AI artist · ${esc(c?.label)}</div><b class="n">${esc(c?.name)}</b><p class="zargtxt">${esc(c?.argument)}</p>${sp.body ? `<p class="zframe">${esc(sp.body)}</p>` : ''}</div>${folio}</section>`;
     }
     if (t === 'artist') {
       const c = A(sp.artist) || cast[0]; const mine = imgs.filter(i => i.artist === c?.id);
@@ -912,10 +923,10 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     root.querySelectorAll('.zs').forEach(zs => {
       const unit = zs.clientWidth / 100; if (!unit) return;
       const setFs = (el, px) => { el.style.fontSize = (px / unit) + 'cqw'; };
-      zs.querySelectorAll('.mega, h2, .zpull, .zq, .ztag b, .zcol b.n, .zrow b').forEach(el => {
+      zs.querySelectorAll('.mega, h2, .zpull, .zq, .ztag b, .zcol b.n, .zrow b, .zcenter b.n').forEach(el => {
         let n = 0; while (el.scrollWidth > el.clientWidth + 1 && n++ < 40) setFs(el, parseFloat(getComputedStyle(el).fontSize) * 0.94);
       });
-      zs.querySelectorAll('.pg, .zrows, .zcol, .ztag').forEach(box => {
+      zs.querySelectorAll('.pg, .zrows, .zcol, .ztag, .zcenter, .zchip').forEach(box => {
         let n = 0;
         while (box.scrollHeight > box.clientHeight + 1 && n++ < 30) {
           box.querySelectorAll('h1,h2,h3,p,li,b,em,figcaption,.mono,.k').forEach(el => setFs(el, parseFloat(getComputedStyle(el).fontSize) * 0.95));
