@@ -55,5 +55,6 @@ export function streamZip(res) {
   }
   zip.append(textMd(), { name: 'text.md' });
   zip.append(creditsCsv(rows), { name: 'credits.csv' });
+  if (state.zine) zip.append(JSON.stringify(state.zine, null, 2), { name: 'zine-flatplan.json' });
   zip.finalize();
 }

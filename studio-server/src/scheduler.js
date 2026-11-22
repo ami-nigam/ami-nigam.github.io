@@ -7,6 +7,7 @@ import { ukParts, hhmmToMin, minToHhmm } from './util.js';
 import { artistWake, curatorBudget, curatorCheckpoint, curatorFinal, curatorWriteBrief, withEngineer, limits } from './agents.js';
 import { StopError, isStopped } from './openrouter.js';
 import { runDebateSteps } from './debate.js';
+import { curatorZine } from './zine.js';
 
 let busy = null;
 export const isBusy = () => busy;
@@ -56,7 +57,9 @@ export async function runCheckpoint(label = 'checkpoint') {
   for (let i = 0; i < 90 && busy; i++) await new Promise(r => setTimeout(r, 10000));
   if (busy || isStopped()) return;
   busy = label;
-  try { await curatorCheckpoint(state.round || 0, label); } catch (e) { log('curator', `${label}.error`, { data: { message: e.message } }); } finally { busy = null; }
+  try { await curatorCheckpoint(state.round || 0, label); } catch (e) { log('curator', `${label}.error`, { data: { message: e.message } }); }
+  try { await curatorZine(state.round || 0, label); } catch (e) { log('curator', 'zine.error', { data: { message: e.message } }); }
+  finally { busy = null; }
 }
 
 export async function runDebate() {
@@ -69,6 +72,13 @@ export async function runDebate() {
   finally { busy = null; }
 }
 
+export async function runZine() {
+  if (busy) return false;
+  busy = 'zine';
+  try { await curatorZine(state.round || 0, 'manual'); } catch (e) { log('curator', 'zine.error', { data: { message: e.message } }); } finally { busy = null; }
+  return true;
+}
+
 export async function runFinal() {
   for (let i = 0; i < 90 && busy; i++) await new Promise(r => setTimeout(r, 10000));
   if (busy) return;
@@ -77,6 +87,7 @@ export async function runFinal() {
   try {
     if (!state.final?.picks?.length) { try { await curatorCheckpoint(state.round || 0, 'checkpoint'); } catch (e) { log('curator', 'checkpoint.error', { data: { message: e.message } }); } }
     await curatorFinal(state.round || 0);
+    try { await curatorZine(state.round || 0, 'final'); } catch (e) { log('curator', 'zine.error', { data: { message: e.message } }); }
   } catch (e) {
     state.final = { ...(state.final || {}), status: 'error', error: e.message }; saveState();
     log('curator', 'final.error', { data: { message: e.message } });

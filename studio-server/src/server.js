@@ -6,7 +6,8 @@ import crypto from 'node:crypto';
 import { env, studio, runtime, CEILING } from './config.js';
 import { state, saveState, log, events, allImages, IMG_DIR, THUMB_DIR, FINAL_DIR, ledgerEntries, archiveAndReset } from './store.js';
 import { hasKey, getKey, spend, abortAll, resolveModels, chat, generateImage, lastKey } from './openrouter.js';
-import { startScheduler, runRound, runFinal, runCheckpoint, runDebate, nextWake, isBusy } from './scheduler.js';
+import { startScheduler, runRound, runFinal, runCheckpoint, runDebate, runZine, nextWake, isBusy } from './scheduler.js';
+import { stats as zineStats } from './zine.js';
 import { debatePlan } from './debate.js';
 import { currentBrief, limits } from './agents.js';
 import { streamZip, exportManifest, creditsCsv, textMd } from './export.js';
@@ -193,6 +194,15 @@ const server = http.createServer(async (req, res) => {
       const out = archiveAndReset();
       log('system', 'experiment.restart', { data: { message: `experiment restarted; previous run archived to ${out.archive}` } });
       return send(res, 200, { ok: true, ...out });
+    }
+    if (p === '/api/zine' && req.method === 'GET') {
+      const cast = studio.artists.map(a => { const pp = studio.personas[a.persona]; return { id: a.id, name: pp.name || a.id, label: pp.label, argument: state.thesis?.[a.id]?.text || pp.point || '', series: state.arc?.[a.id]?.series_title || '', beats: state.arc?.[a.id]?.beats || [], takeaway: state.debate?.takeaways?.[a.id] || null }; });
+      const finals = Object.fromEntries(Object.entries(state.final?.renders || {}));
+      return send(res, 200, { zine: state.zine || null, cast, finals, stats: zineStats(), question: studio.question, stance: studio.stance, title: studio.title, publication: studio.publication, brief_version: state.briefVersion || 1, debate_at: studio.schedule.debate_at, debate_done: state.debate?.status === 'done', debate_ended: state.debate?.ended || null });
+    }
+    if (p === '/api/run-zine' && req.method === 'POST') {
+      if (isBusy()) return send(res, 409, { error: `${isBusy()} running, try when it finishes` });
+      runZine(); return send(res, 202, { started: true });
     }
     if (p === '/api/debate' && req.method === 'GET') return send(res, 200, { debate: state.debate || null, plan: debatePlan() });
     if (p === '/api/admin/check' && req.method === 'POST') {
