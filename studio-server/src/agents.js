@@ -67,13 +67,22 @@ export function currentBrief() {
 
 // ---------- Curator ----------
 export async function curatorWriteBrief(round) {
-  if (currentBrief()) return currentBrief();
+  const version = studio.brief_version || 1;
+  if (studio.brief_override) return studio.brief_override;
+  if (state.brief && state.briefVersion === version) return state.brief;
+  if (state.brief) { state.briefHistory = [...(state.briefHistory || []), { version: state.briefVersion || 1, brief: state.brief, replaced: new Date().toISOString() }]; }
   const system = `You are the Curator of an AI art studio producing a submission for ${studio.publication}, working title "${studio.title}". You write in Ami Nigam's voice.\n\n${amiVoiceBlock()}`;
   const user = `Write the shared brief that five AI artists will all receive, unchanged, for the whole day. Editorial stance (${studio.stance_status}): "${studio.stance}".
-The brief must: state the theme in plain words; ask for single still images suitable for print in a magazine (portrait); leave subject matter open enough that artists can diverge; not mention the other artists or the study design. 120 to 200 words. No em-dashes. Return only the brief text.`;
+The brief must:
+- give ONE concrete, ordinary subject or situation from life that every artist works from (for example a person, a place, an object, a moment in a city). It must be specific enough that images can be compared, and open enough that interpretations can differ widely;
+- explicitly rule out illustrating the theme literally: no images about AI, machines, data, code, noise, probability, dice, patterns turning into paintings, glitch, or the act of image-making;
+- let the stance show through how the subject is treated, not what is depicted;
+- ask for single still images suitable for print in a magazine (portrait);
+- not mention the other artists or the study design.
+120 to 200 words. No em-dashes. Return only the brief text.`;
   log('curator', 'brief.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.05, maxTokens: 600 });
-  state.brief = noDashes(r.text.trim()); saveState();
+  state.brief = noDashes(r.text.trim()); state.briefVersion = version; saveState();
   log('curator', 'brief.result', { round, response: state.brief, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost });
   return state.brief;
 }
@@ -255,7 +264,7 @@ export async function artistWake(a, round, lim) {
   const shown = [...mine.filter(i => favs.has(i.task_id)).slice(-2), ...mine.slice(-runtime.artistHistoryImages)]
     .filter((v, i, arr) => arr.findIndex(x => x.task_id === v.task_id) === i).slice(-runtime.artistHistoryImages);
   const system = artistSystem(a);
-  const text = `Brief:\n${currentBrief()}\n\nThis is wake ${round}. You may make ${n} image${n > 1 ? 's' : ''} this wake.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next.\n\nReturn JSON only:\n{"review":"one sentence on your previous images","keep":["task ids you select from your own images"],"intent":"one sentence on what you will make next and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
+  const text = `Brief:\n${currentBrief()}\n\nThis is wake ${round}. You may make ${n} image${n > 1 ? 's' : ''} this wake.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"review":"one sentence on your previous images","keep":["task ids you select from your own images"],"intent":"one sentence on what you will make next and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
   const content = [{ type: 'text', text }, ...(await imageParts(shown, 512))];
   log(a.id, 'artist.plan.request', { round, prompt: text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { shown: shown.map(s => s.task_id) } });
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content }], agent: a.id, round, estimate: 0.06, maxTokens: 1200 });
