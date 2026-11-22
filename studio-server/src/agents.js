@@ -64,6 +64,10 @@ function amiVoiceBlock() {
 
 function artistSystem(a) {
   const p = persona(a);
+  const who = p.name ? `Your name is ${p.name}. Personality: ${p.personality}\n\n` : '';
+  return who + artistSystemBase(a, p);
+}
+function artistSystemBase(a, p) {
   if (a.persona === 'control') return p.system;
   if (p.bias) return `You are an image-making agent with a strong point of view. ${p.bias}\n\nYou make two-page zine spreads that argue your side. You are not neutral and you do not hedge.`;
   return [
@@ -179,7 +183,7 @@ export async function curatorCheckpoint(round, label = 'checkpoint') {
   const review = recent.slice(-runtime.curatorReviewImages);
   const s = spend();
   const reflections = events().filter(e => e.type === 'artist.reflection').slice(-15).map(e => `${e.agent} r${e.round}: ${e.response}`).join('\n');
-  const system = `You are the Curator. You see all artists' work; they cannot see each other. Each artist has a point of view: ${studio.artists.map(x => `${x.id} = ${persona(x).label}`).join('; ')}. P1 and P2 carry Ami's voice. (In the first rounds of the day A1 to A3 were identical controls.) You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
+  const system = `You are the Curator. You see all artists' work; they cannot see each other. Each artist has a point of view: ${studio.artists.map(x => `${x.id} ${persona(x).name || ''} = ${persona(x).label}, ${persona(x).personality || ''}`).join('; ')}. P1 and P2 carry Ami's voice. (In the first rounds of the day A1 to A3 were identical controls.) You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
   const user = [
     { type: 'text', text: `Brief:\n${currentBrief()}\n\nSpend: $${s.spent} of $${CEILING}. Current shortlist: ${JSON.stringify(state.shortlist || [])}.\nRecent artist reflections:\n${reflections}\n\nEach artist argues one point (thesis) across zine spreads. Theses: ${JSON.stringify(state.thesis || {})}.
 Current directions: ${JSON.stringify(state.directions || {})}.
@@ -263,7 +267,7 @@ export async function curatorWriteText(round) {
   const user = `Write about 1,500 words for ${studio.publication}, working title "${studio.title}". Markdown, with a title and a few section headings.
 Stance (${studio.stance_status}): "${studio.stance}"
 Core position: ${studio.ami.position}
-What happened: five AI artists worked from one brief through one day, waking every 30 minutes. In the morning A1, A2 and A3 were identical (same model, system prompt and brief) and could not see each other's work. From midday each artist was given a bias, researched its side and argued one point across zine spreads: ${studio.artists.map(x => `${x.id} (${persona(x).label}): ${state.thesis?.[x.id]?.text || ''}`).join('; ')}. P1 and P2 carried my voice. The Curator directed each artist at checkpoints. ${totalImages} drafts were made; the Curator chose ${picks.length}.
+What happened: five AI artists worked from one brief through one day, waking every 30 minutes. In the morning A1, A2 and A3 were identical (same model, system prompt and brief) and could not see each other's work. From midday each artist was given a bias, researched its side and argued one point across zine spreads: ${studio.artists.map(x => `${persona(x).name || x.id} (${x.id}, ${persona(x).label}): ${state.thesis?.[x.id]?.text || ''}`).join('; ')}. P1 and P2 carried my voice. The Curator directed each artist at checkpoints. ${totalImages} drafts were made; the Curator chose ${picks.length}.
 Brief:\n${currentBrief()}
 Curator notes through the day:\n${notes}
 Artist reflections (sample):\n${reflections}

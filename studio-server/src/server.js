@@ -76,7 +76,7 @@ function status() {
     limits: limits(), limits_reason: state.limitsReason || null,
     models: { image: runtime.imageModel, sonnet: runtime.sonnetModel, opus: runtime.opusModel, draft_quality: runtime.draftQuality, aspect_ratio: runtime.aspectRatio },
     agents: studio.artists.map(a => ({
-      id: a.id, group: a.group, persona: studio.personas[a.persona].label,
+      id: a.id, name: studio.personas[a.persona].name || a.id, personality: (studio.personas[a.persona].personality || '').split('.')[0], group: a.group, persona: studio.personas[a.persona].label,
       drafts: imgs.filter(i => i.artist === a.id && i.kind === 'draft').length,
       last_event: [...events()].reverse().find(e => e.agent === a.id)?.type || null,
     })),
