@@ -16,7 +16,10 @@
       "18:00",
       "20:00"
     ],
-    "grace_min": 10
+    "grace_min": 10,
+    "debate_at": "17:45",
+    "debate_turns": 5,
+    "debate_words": 80
   },
   "limits_default": {
     "images_per_wake": 1,

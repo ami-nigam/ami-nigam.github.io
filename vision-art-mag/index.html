@@ -155,6 +155,16 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 @keyframes slide{from{opacity:0;transform:translateY(-4px)}}
 .countdown{font-family:'Playfair Display',serif;font-size:22px}
 @media (prefers-reduced-motion:reduce){.wires path,.dot,.canvas.gen::after,.canvas img.new,.typing span,.tick{animation:none!important}}
+.chat{display:flex;flex-direction:column;gap:.6rem;margin-top:.75rem}
+.turn{display:flex;gap:.55rem;align-items:flex-start;animation:slide .5s ease-out}
+.avatar{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:'Playfair Display',serif;font-weight:700;font-size:14px;color:#fff}
+.turn .say{background:var(--card-bg);border:1px solid var(--border-faint);border-radius:10px;padding:.45rem .65rem;font-size:13px;line-height:1.5;min-width:0}
+.turn .say b{font-weight:500;font-size:12px}
+.turn .say .to{font-size:11px;color:var(--text-secondary)}
+.turn.curator .say{border-color:var(--accent);background:var(--primary-bg)}
+.debate-round{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-secondary);text-align:center;margin:.5rem 0 0}
+.live{display:inline-block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--bad);border-radius:999px;padding:.05rem .45rem;margin-right:.35rem;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.55}}
 footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border-tertiary)}
 </style>
 </head>
@@ -194,6 +204,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     <div class="tabs" role="tablist">
       <button data-tab="studio" class="on">Studio</button>
       <button data-tab="overview">Overview</button>
+      <button data-tab="debate">Debate</button>
       <button data-tab="timeline">Timeline</button>
       <button data-tab="gallery">Gallery</button>
       <button data-tab="compare">Compare</button>
@@ -215,6 +226,13 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       <p id="limits" class="small"></p>
       <div id="incidents"></div>
       <div id="checkOut"></div>
+    </section>
+
+    <section class="view hidden" id="v-debate">
+      <p id="debateHead" class="small"></p>
+      <div id="debateBtnWrap"></div>
+      <div class="chat" id="chat"></div>
+      <div id="takeaways"></div>
     </section>
 
     <section class="view hidden" id="v-timeline">
@@ -365,6 +383,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       S.status = st; S.images = im.images; S.favourites = im.favourites; S.shortlist = im.shortlist; S.curator = cu;
       if (ev.events.length) { S.events = S.events.concat(ev.events).slice(-3000); S.lastSeq = ev.events[ev.events.length - 1].seq; }
       if (tab === 'costs') S.costs = await json('/api/costs');
+      if (tab === 'debate' || tab === 'studio' || st.debate?.status === 'running') S.debate = await json('/api/debate');
       render();
     } catch (e) { $('#statusLine').textContent = 'Refresh failed: ' + e.message; }
   }
@@ -384,6 +403,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     $('#statusLine').textContent = `Round ${st.round} · ${st.busy ? 'running: ' + st.busy : 'idle'} · next wake ${st.next_wake_uk || 'none'} UK · final ${st.schedule.final} · updated ${time(st.now)}`;
 
     if (tab === 'studio') renderStudio();
+    if (tab === 'debate') renderDebate();
     if (tab === 'overview') renderOverview(st);
     if (tab === 'timeline') renderTimeline();
     if (tab === 'gallery') renderGallery();
@@ -432,10 +452,15 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     const openInc = (st.incidents || []).filter(i => i.status === 'open');
     const brief = S.curator?.brief || 'No brief yet. The Curator pins it at the first round.';
     const lastNote = (S.curator?.notes || []).slice(-1)[0];
+    const D = S.debate?.debate; const debating = D?.status === 'running';
+    const plan = S.debate?.plan || []; const dTurns = D?.turns || [];
+    const lastTurn = dTurns[dTurns.length - 1]; const nextSpeaker = debating ? plan[dTurns.length]?.speaker : null;
+    const lastLine = id => [...dTurns].reverse().find(t => t.speaker === id);
     let reviewing = [];
     if (cur.st === 'reviewing' && cur.last?.data) reviewing = cur.last.data.images || cur.last.data.candidates || [];
 
-    const curBubble = cur.st === 'reviewing' || cur.st === 'thinking' || cur.st === 'writing'
+    if (debating) { cur.st = nextSpeaker === 'curator' ? 'thinking' : 'idle'; cur.label = nextSpeaker === 'curator' ? 'Speaking' : 'Moderating'; }
+    const curBubble = debating && lastLine('curator') ? esc(lastLine('curator').text) : cur.st === 'reviewing' || cur.st === 'thinking' || cur.st === 'writing'
       ? `<span class="typing"><span></span><span></span><span></span></span>`
       : esc(st.limits_reason || lastNote?.notes || 'Waiting for the first round.');
     const engBubble = openInc.length ? esc(`${openInc[0].agent}: ${openInc[0].error}`) : eng.last?.type === 'fix.applied' ? esc(eng.last.data?.message || '') : 'Nothing broken.';
@@ -443,6 +468,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     let html = `
       <div class="board span-all" id="n-brief"><div class="lbl">Pinned brief · same for every artist</div>
         <p class="prose" id="briefText">${md(brief)}</p>
+        ${debating ? `<p style="margin-top:.5rem"><span class="live">Debate</span>Turn ${dTurns.length + 1} of ${plan.length}. ${esc(nameOf(nextSpeaker || ''))} is about to speak.</p>` : ''}
         <div class="room-f"><span>Next wake <span class="countdown" id="countdown">–</span></span><span>Round ${st.round}${st.busy ? ' · ' + esc(st.busy) + ' running' : ''}</span></div></div>
       <div class="room span-2 st-${cur.st} ${ACTIVE.includes(cur.st) ? 'active' : ''}" id="n-curator">
         <div class="room-h"><b>Curator</b><span class="role">Sees everything<br>makes no images</span></div>
@@ -469,7 +495,9 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       const refl = [...myEv].reverse().find(e => e.type === 'artist.reflection');
       const genReq = s2.st === 'painting' && s2.last?.type === 'image.request' ? s2.last : null;
       let bubble;
-      if (s2.st === 'thinking') bubble = `<span class="typing"><span></span><span></span><span></span></span>`;
+      if (debating) { s2.st = nextSpeaker === a.id ? 'thinking' : 'idle'; s2.label = nextSpeaker === a.id ? 'Speaking' : 'Listening'; }
+      if (debating) bubble = nextSpeaker === a.id ? `<span class="typing"><span></span><span></span><span></span></span>` : lastLine(a.id) ? `<span class="who">In debate</span>${esc(lastLine(a.id).text)}` : '<span class="muted">Waiting to speak.</span>';
+      else if (s2.st === 'thinking') bubble = `<span class="typing"><span></span><span></span><span></span></span>`;
       else if (genReq) bubble = `<span class="who">Prompt</span>${esc(String(genReq.prompt || '').slice(0, 160))}…`;
       else if (refl && (!plan || refl.seq > plan.seq)) bubble = `<span class="who">Reflection · r${refl.round}</span>${esc(refl.response)}`;
       else if (plan) bubble = `<span class="who">Intent · r${plan.round}</span>${esc(plan.data?.intent || '')}`;
@@ -494,7 +522,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
         <div class="room-f"><span>${mine.length} drafts</span><span>${money(spentA)}</span></div>
       </div>`;
     }
-    html += `<div class="wall-note span-all">Artists work in separate rooms and never see each other. Pink outline on a thumbnail = kept by the artist.</div>
+    html += `<div class="wall-note span-all">${debating ? 'Debate: the walls are down. Lines show who is answering whom.' : 'Artists work in separate rooms and never see each other, except once, in the debate.'} Pink outline on a thumbnail = kept by the artist.</div>
       <svg class="wires" id="wires" aria-hidden="true"></svg>`;
     floor.innerHTML = html;
     firstPaint = false;
@@ -503,6 +531,10 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     // Wires: who is interacting with whom right now.
     S.wires = [];
     const artistIds = st.agents.map(a => a.id);
+    if (debating && lastTurn) {
+      const targets = lastTurn.mentions?.length ? lastTurn.mentions : ['curator', ...artistIds].filter(x => x !== lastTurn.speaker);
+      targets.forEach(t => S.wires.push(['n-' + (lastTurn.speaker === 'curator' ? 'curator' : lastTurn.speaker), 'n-' + (t === 'curator' ? 'curator' : t), 'eye']));
+    }
     if (cur.st === 'reviewing') artistIds.forEach(id => S.wires.push(['n-curator', 'n-' + id, 'eye']));
     if (cur.st === 'thinking' || cur.st === 'writing') artistIds.forEach(id => S.wires.push(['n-curator', 'n-' + id, 'brief']));
     st.agents.forEach(a => { const x = agentState(a.id, ARTIST_MAP); if (x.st === 'thinking' && x.last?.type === 'artist.plan.request') S.wires.push(['n-brief', 'n-' + a.id, 'brief']); });
@@ -549,6 +581,10 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       case 'brief.result': return 'Pinned a new brief on the wall.';
       case 'budget.set': return `Set ${d.limits?.images_per_wake} image(s) per artist. ${d.message || ''}`;
       case 'direction': return d.message || 'Sent directions.';
+      case 'debate.start': return 'The debate opens. The artists see each other for the first time.';
+      case 'debate.turn': return `“${(e.response || '').slice(0, 140)}${(e.response || '').length > 140 ? '…' : ''}”`;
+      case 'debate.takeaway': return `After the debate: “${e.response}”`;
+      case 'debate.end': return 'The debate closes. Back to separate rooms.';
       case 'artist.research': return `Researched its side (${(d.findings || []).length} findings, ${(d.sources || []).length} sources).`;
       case 'artist.thesis': return `Commits to a point: “${e.response}”`;
       case 'checkpoint.result': return `Reviewed the floor. Shortlist now ${(d.shortlist || []).length}.`;
@@ -569,6 +605,25 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       case 'api.retry': return d.message || 'Retrying.';
       default: return null;
     }
+  }
+  const COLORS = { curator: '#c0186c', A1: '#d97706', A2: '#404040', A3: '#0f766e', P1: '#2563eb', P2: '#7c3aed' };
+  function renderDebate() {
+    const st = S.status; const D = S.debate?.debate; const plan = S.debate?.plan || [];
+    const n = D?.turns?.length || 0;
+    const status = D?.status || 'not held';
+    $('#debateHead').innerHTML = status === 'running' ? `<span class="live">Live</span>Turn ${n + 1} of ${plan.length}. Next: <b>${esc(nameOf(plan[n]?.speaker || ''))}</b>`
+      : status === 'done' ? `Held ${D.started ? time(D.started).slice(0, 5) : ''} to ${D.ended ? time(D.ended).slice(0, 5) : ''}. ${n} turns.`
+      : `Scheduled for ${esc(st.debate?.at || '–')} UK. The only time the artists see each other. ${status === 'interrupted' ? '<span class="warn">Interrupted: ' + esc(D?.error || '') + '</span>' : ''}`;
+    $('#debateBtnWrap').innerHTML = status === 'done' || status === 'running' ? '' : `<button id="debateBtn" style="margin:.5rem 0">${status === 'interrupted' ? 'Resume debate' : 'Start debate now'}</button>`;
+    const btn = $('#debateBtn'); if (btn) btn.onclick = async () => { if (!confirm('Start the debate now? It runs once (about 35 calls, roughly $1).')) return; try { await json('/api/run-debate', { method: 'POST' }); setTimeout(refresh, 2000); } catch (e) { alert(e.message); } };
+    let lastR = 0;
+    $('#chat').innerHTML = (D?.turns || []).map(t => {
+      const sep = t.round !== lastR ? `<div class="debate-round">Round ${t.round} of ${Math.max(...plan.map(x => x.round), 5)}</div>` : ''; lastR = t.round;
+      const nm = nameOf(t.speaker);
+      return `${sep}<div class="turn ${t.speaker === 'curator' ? 'curator' : ''}"><div class="avatar" style="background:${COLORS[t.speaker] || '#555'}">${esc(nm[0])}</div><div class="say"><b>${esc(nm)}</b>${t.mentions?.length ? ` <span class="to">→ ${t.mentions.map(m => esc(nameOf(m))).join(', ')}</span>` : ''}<br>${esc(t.text)}</div></div>`;
+    }).join('') + (status === 'running' && plan[n] ? `<div class="turn"><div class="avatar" style="background:${COLORS[plan[n].speaker] || '#555'}">${esc(nameOf(plan[n].speaker)[0])}</div><div class="say"><span class="typing"><span></span><span></span><span></span></span></div></div>` : '');
+    const tk = D?.takeaways || {};
+    $('#takeaways').innerHTML = Object.keys(tk).length ? `<h2 style="margin-top:1.5rem">What each will keep or change</h2>` + Object.entries(tk).map(([id, l]) => `<div class="note"><b>${esc(nameOf(id))}</b> <span class="small">${esc(l)}</span></div>`).join('') : '';
   }
   function nameOf(id) { const a = (S.status?.agents || []).find(x => x.id === id); return a ? a.name : id === 'system' ? 'Studio' : id[0].toUpperCase() + id.slice(1); }
   function renderTicker() {

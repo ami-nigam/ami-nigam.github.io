@@ -6,6 +6,7 @@ import { state, saveState, log } from './store.js';
 import { ukParts, hhmmToMin, minToHhmm } from './util.js';
 import { artistWake, curatorBudget, curatorCheckpoint, curatorFinal, curatorWriteBrief, withEngineer, limits } from './agents.js';
 import { StopError, isStopped } from './openrouter.js';
+import { runDebateSteps } from './debate.js';
 
 let busy = null;
 export const isBusy = () => busy;
@@ -58,6 +59,16 @@ export async function runCheckpoint(label = 'checkpoint') {
   try { await curatorCheckpoint(state.round || 0, label); } catch (e) { log('curator', `${label}.error`, { data: { message: e.message } }); } finally { busy = null; }
 }
 
+export async function runDebate() {
+  for (let i = 0; i < 90 && busy; i++) await new Promise(r => setTimeout(r, 10000));
+  if (busy) return;
+  if (isStopped()) { log('system', 'debate.skipped', { data: { message: 'paused or ceiling reached' } }); return; }
+  busy = 'debate';
+  try { await runDebateSteps(state.round || 0); }
+  catch (e) { state.debate = { ...(state.debate || {}), status: 'interrupted', error: e.message }; saveState(); log('system', e instanceof StopError ? 'debate.stopped' : 'debate.error', { data: { message: e.message } }); }
+  finally { busy = null; }
+}
+
 export async function runFinal() {
   for (let i = 0; i < 90 && busy; i++) await new Promise(r => setTimeout(r, 10000));
   if (busy) return;
@@ -95,6 +106,12 @@ function tick() {
         });
       } else log('system', 'round.skipped', { data: { message: `slot ${slot} skipped: paused or ceiling` } });
     }
+    const debateMin = s.debate_at ? hhmmToMin(s.debate_at) : null;
+    if (debateMin != null && now >= debateMin && now < finalMin && !state.debateFired) {
+      state.debateFired = slot; saveState();
+      log('system', 'debate.scheduled', { data: { message: 'debate time' } });
+      runDebate();
+    }
     if (now >= finalMin && now < finalMin + 60 && !state.finalFired) {
       state.finalFired = slot; saveState();
       log('system', 'final.start', { data: { message: 'final selection' } });
@@ -107,6 +124,7 @@ export function startScheduler() {
   if (state.paused == null) { state.paused = process.env.AUTOSTART !== '1'; saveState(); } // first boot starts paused until Ami resumes
   limits(); schedule();
   if (state.final?.status === 'running') { state.final.status = 'interrupted'; saveState(); }
+  if (state.debate?.status === 'running') { log('system', 'debate.resume', { data: { message: 'resuming debate after restart' } }); setTimeout(runDebate, 8000); }
   log('system', 'scheduler.start', { data: { message: `date ${state.schedule.date}, start ${state.schedule.start}, last wake ${studio.schedule.last_artist_wake}, final ${studio.schedule.final}`, lastSlot: state.lastSlot || null } });
   setInterval(tick, 15000);
   setTimeout(tick, 3000);

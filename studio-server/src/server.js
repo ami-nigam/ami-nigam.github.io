@@ -6,7 +6,8 @@ import crypto from 'node:crypto';
 import { env, studio, runtime, CEILING } from './config.js';
 import { state, saveState, log, events, allImages, IMG_DIR, THUMB_DIR, FINAL_DIR, ledgerEntries } from './store.js';
 import { hasKey, getKey, spend, abortAll, resolveModels, chat, generateImage, lastKey } from './openrouter.js';
-import { startScheduler, runRound, runFinal, runCheckpoint, nextWake, isBusy } from './scheduler.js';
+import { startScheduler, runRound, runFinal, runCheckpoint, runDebate, nextWake, isBusy } from './scheduler.js';
+import { debatePlan } from './debate.js';
 import { currentBrief, limits } from './agents.js';
 import { streamZip, exportManifest, creditsCsv, textMd } from './export.js';
 import { round4 } from './util.js';
@@ -82,6 +83,7 @@ function status() {
     })),
     incidents: state.incidents || [], notices: state.notices || [],
     thesis: state.thesis || {}, research: state.research || {}, directions: state.directions || null, brief_version: state.briefVersion || 1,
+    debate: { status: state.debate?.status || null, turns: (state.debate?.turns || []).length, total: debatePlan().length, at: studio.schedule.debate_at || null, next: debatePlan()[(state.debate?.turns || []).length]?.speaker || null },
     final_status: state.final?.status || null, stance: studio.stance, stance_status: studio.stance_status,
   };
 }
@@ -176,6 +178,13 @@ const server = http.createServer(async (req, res) => {
     }
     if (p === '/api/run-checkpoint' && req.method === 'POST') { runCheckpoint('checkpoint'); return send(res, 202, { started: true }); }
     if (p === '/api/run-final' && req.method === 'POST') { runFinal(); return send(res, 202, { started: true }); }
+    if (p === '/api/run-debate' && req.method === 'POST') {
+      if (isBusy()) return send(res, 409, { error: `${isBusy()} running` });
+      if (state.debate?.status === 'done') return send(res, 409, { error: 'debate already held' });
+      state.debateFired = state.debateFired || 'manual'; saveState();
+      runDebate(); return send(res, 202, { started: true });
+    }
+    if (p === '/api/debate' && req.method === 'GET') return send(res, 200, { debate: state.debate || null, plan: debatePlan() });
     if (p === '/api/admin/check' && req.method === 'POST') {
       if (isBusy()) return send(res, 409, { error: `${isBusy()} running` });
       return send(res, 200, await connectionCheck());
