@@ -260,6 +260,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     del(k) { try { sessionStorage.removeItem(k); } catch {} },
   };
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const md = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|\s)\*(\S.*?)\*(?=\s|$)/g, '$1<em>$2</em>').replace(/^#+\s*/gm, '');
   const money = n => n == null ? '–' : '$' + Number(n).toFixed(2);
   const time = iso => new Date(iso).toLocaleTimeString('en-GB', { timeZone: 'Europe/London', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
@@ -431,7 +432,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
 
     let html = `
       <div class="board span-all" id="n-brief"><div class="lbl">Pinned brief · same for every artist</div>
-        <p class="${briefOpen ? '' : 'clamp'}" id="briefText">${esc(brief)}</p>
+        <p class="prose" id="briefText">${md(brief)}</p>
         <div class="room-f"><span>Next wake <span class="countdown" id="countdown">–</span></span><span>Round ${st.round}${st.busy ? ' · ' + esc(st.busy) + ' running' : ''}</span></div></div>
       <div class="room span-2 st-${cur.st} ${ACTIVE.includes(cur.st) ? 'active' : ''}" id="n-curator">
         <div class="room-h"><b>Curator</b><span class="role">Sees everything<br>makes no images</span></div>
@@ -484,7 +485,6 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       <svg class="wires" id="wires" aria-hidden="true"></svg>`;
     floor.innerHTML = html;
     firstPaint = false;
-    $('#briefText').onclick = () => { briefOpen = !briefOpen; $('#briefText').classList.toggle('clamp', !briefOpen); drawWires(); };
     hydrate(floor);
 
     // Wires: who is interacting with whom right now.
@@ -631,7 +631,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
 
   function renderCurator() {
     const c = S.curator || {};
-    $('#brief').textContent = c.brief || 'Not written yet. The Curator writes it at the first round.';
+    $('#brief').innerHTML = c.brief ? md(c.brief) : 'Not written yet. The Curator writes it at the first round.';
     const sl = (c.shortlist || []).map(id => S.images.find(i => i.task_id === id)).filter(Boolean);
     $('#shortlist').innerHTML = sl.map(card).join('') || '<p class="muted small">Empty.</p>';
     const f = c.final;
