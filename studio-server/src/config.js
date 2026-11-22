@@ -42,11 +42,13 @@ const RUNTIME_DEFAULTS = {
   artistHistoryImages: 4,
   curatorReviewImages: 15,
   chatMaxTokens: 1200,
+  reasoningMode: 'budget',
+  reasoningBudget: 1024,
 };
 export const ENGINEER_EDITABLE = [
   'imageModel', 'sonnetModel', 'opusModel', 'draftQuality', 'aspectRatio', 'sendAspectRatio',
   'extraImageParams', 'imageTimeoutMs', 'chatTimeoutMs', 'backoffBaseMs', 'artistHistoryImages',
-  'curatorReviewImages', 'chatMaxTokens',
+  'curatorReviewImages', 'chatMaxTokens', 'reasoningMode', 'reasoningBudget',
 ];
 for (const [k, v] of Object.entries(RUNTIME_DEFAULTS)) if (!(k in runtime)) runtime[k] = v;
 // One-time migration to zine spreads: landscape, medium drafts so text is legible.

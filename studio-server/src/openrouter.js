@@ -115,24 +115,50 @@ async function call(path, body, { estimate, timeoutMs, agent, round, kind }) {
 }
 
 // ---- Chat ----
+function wantsJson(messages) {
+  const last = messages[messages.length - 1]?.content;
+  const t = Array.isArray(last) ? last.map(c => c.text || '').join(' ') : String(last || '');
+  return /JSON only/i.test(t);
+}
+function looksLikeJson(text) {
+  const a = text.indexOf('{'), b = text.lastIndexOf('}');
+  if (a < 0 || b < a) return false;
+  try { JSON.parse((text.match(/```(?:json)?\s*([\s\S]*?)```/)?.[1] || text).slice(a, b + 1)); return true; } catch { return a >= 0 && b > a; }
+}
+
+// Reasoning is capped separately so it cannot eat the whole allowance.
+// runtime.reasoningMode: 'budget' (default) | 'off' (send nothing, large max_tokens).
 export async function chat({ model, system, messages, maxTokens, agent, round, estimate = 0.08, temperature, plugins }) {
-  // Floor of 1500 tokens: reasoning models can spend a small allowance before writing any text.
-  let max = Math.max(maxTokens || runtime.chatMaxTokens, runtime.chatMinTokens || 1500);
-  for (let attempt = 1; attempt <= 2; attempt++) {
-    const body = { model, max_tokens: max, messages: [{ role: 'system', content: system }, ...messages] };
-    if (temperature != null) body.temperature = temperature;
+  const answer = Math.max(maxTokens || runtime.chatMaxTokens, 800);
+  const reasoningBudget = runtime.reasoningBudget || 1024;
+  const json = wantsJson(messages);
+  let mode = runtime.reasoningMode || 'budget';
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const body = { model, messages: [{ role: 'system', content: system }, ...messages] };
+    if (mode === 'budget') { body.reasoning = { max_tokens: reasoningBudget, exclude: true }; body.max_tokens = answer * attempt + reasoningBudget; }
+    else body.max_tokens = Math.min(answer * attempt + 6000, 16000);
+    if (temperature != null && mode !== 'budget') body.temperature = temperature;
     if (plugins) body.plugins = plugins;
-    const { json, cost } = await call('/chat/completions', body, { estimate, timeoutMs: runtime.chatTimeoutMs, agent, round, kind: 'chat' });
-    const choice = json.choices?.[0] || {};
+    let res;
+    try { res = await call('/chat/completions', body, { estimate, timeoutMs: runtime.chatTimeoutMs, agent, round, kind: 'chat' }); }
+    catch (e) {
+      if (mode === 'budget' && e.status === 400 && /reason/i.test(e.message)) {
+        log(agent, 'chat.reasoning_rejected', { round, model, data: { message: e.message.slice(0, 200) } });
+        mode = 'off'; runtime.reasoningMode = 'off'; continue;
+      }
+      throw e;
+    }
+    const { json: j, cost } = res;
+    const choice = j.choices?.[0] || {};
     const content = choice.message?.content;
     const text = Array.isArray(content) ? content.map(c => c.text || '').join('') : (content || '');
     const annotations = choice.message?.annotations || [];
-    if (text.trim()) return { text, cost: round4(cost), id: json.id, model: json.model || model, usage: json.usage, annotations };
-    const diag = { finish_reason: choice.finish_reason || choice.native_finish_reason || null, max_tokens: max, completion_tokens: json.usage?.completion_tokens ?? null, reasoning_tokens: json.usage?.completion_tokens_details?.reasoning_tokens ?? null, has_reasoning: !!choice.message?.reasoning, error: choice.error || json.error || null, attempt };
-    log(agent, 'chat.empty', { round, model, endpoint: '/chat/completions', data: { message: `empty reply (finish: ${diag.finish_reason}, tokens ${diag.completion_tokens}/${max})`, ...diag } });
-    max = Math.min(max * 2, 8000);
+    const ok = text.trim() && (!json || looksLikeJson(text));
+    if (ok) return { text, cost: round4(cost), id: j.id, model: j.model || model, usage: j.usage, annotations };
+    const diag = { finish_reason: choice.finish_reason || choice.native_finish_reason || null, max_tokens: body.max_tokens, completion_tokens: j.usage?.completion_tokens ?? null, reasoning_tokens: j.usage?.completion_tokens_details?.reasoning_tokens ?? null, mode, attempt, chars: text.length };
+    log(agent, 'chat.empty', { round, model, endpoint: '/chat/completions', data: { message: `${text.trim() ? 'cut-off JSON' : 'empty reply'} (finish: ${diag.finish_reason}, tokens ${diag.completion_tokens}/${body.max_tokens}, reasoning ${diag.reasoning_tokens}, mode ${mode})`, ...diag } });
   }
-  throw new Error('empty reply after retry');
+  throw new Error('no usable reply after 3 attempts');
 }
 
 // ---- Images ----
