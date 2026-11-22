@@ -9,7 +9,8 @@ import { spend } from './openrouter.js';
 
 export const TEMPLATES = {
   opener: 'Title spread: STOCHASTIC BY DESIGN, the question, the cast of artists. Fields: title, body (the question or a short intro).',
-  method: 'How the experiment worked: one brief, artists with biases, research, series, one debate, the Curator. Fields: title, body (60 to 120 words).',
+  setup: 'The studio: how the experiment worked (one brief, separate rooms, research, series, one debate, the Curator, the Engineer) beside a floor plan of the studio. Fields: title, body (60 to 120 words).',
+  cast: 'The four artists side by side: what each thinks, how it makes the argument, its main research pointers. Fields: title, caption (optional one line).',
   artist: 'One artist\'s strongest spread, full bleed. Fields: artist, image (task id), caption (one line).',
   series: 'Contact sheet of one artist\'s whole series in order, showing the narrative. Fields: artist, title, caption.',
   debate: 'The debate: one big pull quote plus 4 to 6 short excerpts. Fields: title, quote {speaker, text}, quotes [{speaker, text}].',
@@ -59,7 +60,7 @@ Final essay ${state.final?.text ? 'exists (use essay spreads for sections of it)
 
 Templates you may use:\n${Object.entries(TEMPLATES).map(([k, v]) => `- ${k}: ${v}`).join('\n')}
 
-Rules: exactly ${n} spreads, numbered in reading order. Start with opener, end with close. Give every artist one "artist" spread and use "series" where it shows a narrative. If the debate has not happened, still reserve a debate spread and an after spread with placeholder copy. Never mention money, cost, budget or spend anywhere in the zine. Modern, confident, very little text per spread. Headlines short and sharp. Plain words, no hype, never em-dashes. Do not invent facts, quotes or numbers: quotes must come from the debate transcript above.
+Rules: exactly ${n} spreads, numbered in reading order. Start with opener, then setup, then cast. End with close. Give every artist one "artist" spread and use "series" where it shows a narrative. If the debate has not happened, still reserve a debate spread and an after spread with placeholder copy. Never mention money, cost, budget or spend anywhere in the zine. Modern, confident, very little text per spread. Headlines short and sharp. Plain words, no hype, never em-dashes. Do not invent facts, quotes or numbers: quotes must come from the debate transcript above.
 Return JSON only: {"spreads":[{"n":1,"template":"opener","title":"...","body":"...","artist":"A1","image":"task id","caption":"...","quote":{"speaker":"...","text":"..."},"quotes":[{"speaker":"...","text":"..."}]}],"note":"one sentence on the zine's arc"}`;
   log('curator', 'zine.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.15, maxTokens: 5000 });
@@ -67,9 +68,10 @@ Return JSON only: {"spreads":[{"n":1,"template":"opener","title":"...","body":".
   const ids = new Set(images.map(i => i.id));
   const artistIds = new Set(studio.artists.map(a => a.id));
   const clean = v => (typeof v === 'string' ? noDashes(v) : v);
+  const alias = { method: 'setup' };
   const spreads = (d.spreads || []).slice(0, n).map((sp, i) => ({
     n: i + 1,
-    template: TEMPLATES[sp.template] ? sp.template : 'essay',
+    template: TEMPLATES[alias[sp.template] || sp.template] ? (alias[sp.template] || sp.template) : 'essay',
     title: clean(sp.title || ''), body: clean(sp.body || ''), caption: clean(sp.caption || ''),
     artist: artistIds.has(sp.artist) ? sp.artist : null,
     image: ids.has(sp.image) ? sp.image : null,
