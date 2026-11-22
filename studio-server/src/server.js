@@ -111,7 +111,7 @@ async function connectionCheck() {
 function serveImage(res, name, thumb) {
   if (!/^[a-z0-9-]+$/i.test(name)) return send(res, 400, { error: 'bad name' });
   const candidates = thumb ? [path.join(THUMB_DIR, `${name}.jpg`)] : [];
-  candidates.push(path.join(IMG_DIR, `${name}.png`), path.join(FINAL_DIR, `${name}.png`));
+  candidates.push(path.join(IMG_DIR, `${name}-a3.png`), path.join(FINAL_DIR, `${name}-a3.png`), path.join(IMG_DIR, `${name}.png`), path.join(FINAL_DIR, `${name}.png`));
   const file = candidates.find(f => fs.existsSync(f));
   if (!file) return send(res, 404, { error: 'not found' });
   res.writeHead(200, { 'Content-Type': file.endsWith('.jpg') ? 'image/jpeg' : 'image/png', 'Cache-Control': 'private, max-age=86400' });

@@ -17,7 +17,19 @@ async function saveImage(buf, taskId, dir = IMG_DIR) {
   let out = buf;
   try { out = await sharp(buf).png().toBuffer(); } catch { /* keep original bytes */ }
   fs.writeFileSync(file, out, { flag: 'wx' });
-  try { await sharp(out).resize({ width: 640, withoutEnlargement: true }).jpeg({ quality: 78 }).toFile(path.join(THUMB_DIR, `${taskId}.jpg`)); } catch { /* thumb optional */ }
+  // A3 landscape trim (sqrt 2 : 1), centred. Original stays untouched; the trim is a separate file.
+  let view = out;
+  try {
+    const m = await sharp(out).metadata(); const R = Math.SQRT2;
+    let w = m.width, h = m.height;
+    if (w / h > R) w = Math.round(h * R); else h = Math.round(w / R);
+    const left = Math.floor((m.width - w) / 2), top = Math.floor((m.height - h) / 2);
+    if (w !== m.width || h !== m.height) {
+      view = await sharp(out).extract({ left, top, width: w, height: h }).png().toBuffer();
+      fs.writeFileSync(path.join(dir, `${taskId}-a3.png`), view, { flag: 'wx' });
+    }
+  } catch { /* keep untrimmed */ }
+  try { await sharp(view).resize({ width: 640, withoutEnlargement: true }).jpeg({ quality: 78 }).toFile(path.join(THUMB_DIR, `${taskId}.jpg`)); } catch { /* thumb optional */ }
   return file;
 }
 async function asDataUrl(taskId, width = 512) {
@@ -77,7 +89,7 @@ The brief must:
 - give ONE concrete, ordinary subject or situation from life that every artist works from (for example a person, a place, an object, a moment in a city). It must be specific enough that images can be compared, and open enough that interpretations can differ widely;
 - explicitly rule out illustrating the theme literally: no images about AI, machines, data, code, noise, probability, dice, patterns turning into paintings, glitch, or the act of image-making;
 - let the stance show through how the subject is treated, not what is depicted;
-- ask for two-page zine spreads (one landscape image per spread) that make an argument with image and short text together: headline, a line of body text, labels or captions where they help;
+- ask for two-page zine spreads, A3 landscape (one image per spread), that make an argument with image and short text together: headline, a line of body text, labels or captions where they help;
 - not mention the other artists or the study design.
 120 to 200 words. No em-dashes. Return only the brief text.`;
   log('curator', 'brief.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
@@ -280,7 +292,7 @@ export async function artistWake(a, round, lim) {
   const shown = [...cur.filter(i => favs.has(i.task_id)).slice(-2), ...cur.slice(-runtime.artistHistoryImages)]
     .filter((v, i, arr) => arr.findIndex(x => x.task_id === v.task_id) === i).slice(-runtime.artistHistoryImages);
   const system = artistSystem(a);
-  const fmt = `Format: each image is ONE two-page zine spread, landscape. Design the whole spread: imagery, layout and the words on it. Use text where it carries your point: a headline, a short line of body text, labels or captions. At most 30 words of text on a spread. In the prompt, put every word that must appear in double quotes, spelled exactly, and say where it sits. The spread must make your point, not just show the subject.`;
+  const fmt = `Format: each image is ONE two-page zine spread, A3 landscape (two A4 pages side by side, gutter in the middle). The left and right edges (outer 5% each side) will be trimmed, so keep all text and key content well inside them. Design the whole spread: imagery, layout and the words on it. Use text where it carries your point: a headline, a short line of body text, labels or captions. At most 30 words of text on a spread. In the prompt, put every word that must appear in double quotes, spelled exactly, and say where it sits. The spread must make your point, not just show the subject.`;
   const thesisLine = state.thesis[a.id]?.text
     ? `Your point (you chose it, keep arguing it): "${state.thesis[a.id].text}"`
     : thesis ? `Your point to argue across every spread today: "${thesis}". Restate it in your own words as "thesis".`

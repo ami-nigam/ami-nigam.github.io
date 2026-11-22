@@ -48,7 +48,9 @@ export function streamZip(res) {
   res.writeHead(200, { 'Content-Type': 'application/zip', 'Content-Disposition': 'attachment; filename="stochastic-by-design.zip"' });
   zip.pipe(res);
   for (const x of items) {
-    const file = path.join(x.isFinal ? FINAL_DIR : IMG_DIR, x.img.file);
+    const dir = x.isFinal ? FINAL_DIR : IMG_DIR;
+    const a3 = path.join(dir, x.img.file.replace(/\.png$/, '-a3.png'));
+    const file = fs.existsSync(a3) ? a3 : path.join(dir, x.img.file);
     if (fs.existsSync(file)) zip.file(file, { name: `images/${x.name}` });
   }
   zip.append(textMd(), { name: 'text.md' });
