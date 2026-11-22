@@ -165,6 +165,14 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .debate-round{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--text-secondary);text-align:center;margin:.5rem 0 0}
 .live{display:inline-block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--bad);border-radius:999px;padding:.05rem .45rem;margin-right:.35rem;animation:blink 1.4s infinite}
 @keyframes blink{50%{opacity:.55}}
+.plan{position:relative;margin:1rem 0 .5rem;border:1px solid var(--border-tertiary);border-radius:10px;overflow:hidden;cursor:pointer}
+.plan canvas{display:block;width:100%;height:auto;aspect-ratio:256/240;image-rendering:pixelated;image-rendering:crisp-edges}
+#planOverlay{position:absolute;inset:0;pointer-events:none}
+.plabel{position:absolute;font-size:10px;line-height:1.2;background:var(--primary-bg);padding:1px 4px;border-radius:3px;opacity:.9;white-space:nowrap;max-width:48%;overflow:hidden;text-overflow:ellipsis}
+.plabel b{font-weight:500}
+.pbubble{position:absolute;transform:translate(-50%,-100%);background:var(--primary-bg);color:var(--primary-text);border:1px solid var(--border-tertiary);border-radius:8px;padding:2px 6px;font-size:10px;line-height:1.3;max-width:42%;width:max-content;display:none;box-shadow:0 2px 6px rgba(0,0,0,.12)}
+.pbubble.speak{border-color:var(--accent);font-size:11px;max-width:60%;z-index:2}
+@media(min-width:640px){.plabel{font-size:12px}.pbubble{font-size:12px}.pbubble.speak{font-size:13px}}
 footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border-tertiary)}
 </style>
 </head>
@@ -213,6 +221,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     </div>
 
     <section class="view" id="v-studio">
+      <div class="plan" id="plan"><canvas id="planCanvas" width="256" height="240" aria-label="Studio floor plan"></canvas><div id="planOverlay"></div></div>
       <div class="floor" id="floor"></div>
       <h2 style="margin-top:1.5rem">On the floor</h2>
       <div class="ticker" id="ticker"></div>
@@ -454,6 +463,249 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   }
   const seen = new Set(); let firstPaint = true; let briefOpen = false;
 
+  // ===== Pixel floor plan =====
+  const PW = 256, PH = 240;
+  const ROOMS = [{ x: 0, y: 0 }, { x: 128, y: 0 }, { x: 0, y: 150 }, { x: 128, y: 150 }].map(r => ({ ...r, w: 128, h: 90 }));
+  const HALL = { y0: 90, y1: 150 };
+  const SPRITE = [
+    '..hhhh..', '.hhhhhh.', '.hssssh.', '.sesses.', '..ssss..',
+    '.bbbbbb.', 'bbbbbbbb', 'sbbbbbbs', '.bbbbbb.', '.llllll.', '.ll..ll.', '.ll..ll.',
+  ];
+  const WALK = ['.llllll.', '.ll..l..', '..l..ll.'];
+  const LOOKS = {
+    A1: { h: '#7c2d12', s: '#e8b48a', b: '#f59e0b', l: '#44403c', e: '#1c1917', tint: '#fff4e0', tintD: '#3a2a12' },
+    A2: { h: '#111111', s: '#f1c9a5', b: '#3f3f46', l: '#18181b', e: '#e5e5e5', tint: '#eeeeee', tintD: '#232323' },
+    A3: { h: '#1e1b4b', s: '#b77b55', b: '#0f766e', l: '#334155', e: '#1c1917', tint: '#e2f5f1', tintD: '#10302b' },
+    P1: { h: '#1f2937', s: '#a66a43', b: '#2563eb', l: '#1e293b', e: '#1c1917', tint: '#e6eeff', tintD: '#13203d' },
+    curator: { h: '#9d174d', s: '#e0a97e', b: '#c0186c', l: '#3b0d24', e: '#1c1917' },
+    engineer: { h: '#facc15', s: '#d9a17a', b: '#ea580c', l: '#1e3a8a', e: '#1c1917' },
+  };
+  const FL = { agents: {}, modes: {}, easel: {}, imgs: {}, frame: 0, running: false, particles: [] };
+  const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function roomOf(id) { const ids = (S.status?.agents || []).map(a => a.id); const i = ids.indexOf(id); return i >= 0 && i < 4 ? ROOMS[i] : null; }
+  const isDark = () => document.documentElement.getAttribute('data-theme') === 'dark';
+  function spot(id, kind, seat) {
+    const r = roomOf(id);
+    if (kind === 'curatorDesk') return { x: 24, y: 128 };
+    if (kind === 'bench') return { x: 228, y: 128 };
+    if (kind === 'seat') {
+      const seats = [{ x: 110, y: 108 }, { x: 128, y: 104 }, { x: 146, y: 108 }, { x: 110, y: 138 }, { x: 128, y: 142 }, { x: 146, y: 138 }];
+      return seats[seat % seats.length];
+    }
+    if (!r) return { x: 128, y: 120 };
+    const top = r.y === 0;
+    const p = { desk: { x: 22, y: top ? 30 : 36 }, easel: { x: 98, y: top ? 46 : 52 }, rest: { x: 22, y: top ? 70 : 76 }, center: { x: 64, y: 50 } }[kind] || { x: 64, y: 45 };
+    return { x: r.x + p.x, y: r.y + p.y };
+  }
+  function region(p) { if (p.y > HALL.y0 - 2 && p.y < HALL.y1 + 2) return 'hall'; return (p.y < 90 ? 0 : 2) + (p.x < 128 ? 0 : 1); }
+  function doorPts(ri) { const r = ROOMS[ri]; const cx = r.x + 64; return r.y === 0 ? [{ x: cx, y: 82 }, { x: cx, y: 98 }] : [{ x: cx, y: 158 }, { x: cx, y: 142 }]; }
+  function route(from, to) {
+    const a = region(from), b = region(to); const pts = [];
+    if (a !== b) { if (a !== 'hall') pts.push(...doorPts(a)); if (b !== 'hall') pts.push(...doorPts(b).reverse()); }
+    pts.push(to); return pts;
+  }
+  function setTarget(id, t, key) {
+    const ag = FL.agents[id]; if (!ag) return;
+    if (ag.key === key) return;
+    ag.key = key; ag.path = route({ x: ag.x, y: ag.y }, t); ag.home = t; ag.wanderAt = 0;
+  }
+
+  function planModes() {
+    const st = S.status; if (!st) return;
+    const D = S.debate?.debate; const debating = D?.status === 'running';
+    const plan = S.debate?.plan || []; const turns = D?.turns || [];
+    const next = debating ? plan[turns.length]?.speaker : null;
+    const lastLine = id => [...turns].reverse().find(t => t.speaker === id)?.text;
+    const ids = st.agents.slice(0, 4).map(a => a.id);
+    ids.forEach((id, i) => {
+      if (!FL.agents[id]) { const p = spot(id, 'rest'); FL.agents[id] = { x: p.x, y: p.y, path: [], walk: 0 }; }
+      const s2 = agentState(id, ARTIST_MAP); const last = s2.last?.type || '';
+      const a = st.agents.find(x => x.id === id);
+      let mode = 'rest', text = '', key;
+      if (debating) { mode = next === id ? 'speak' : 'listen'; text = next === id ? '…' : (lastLine(id) || ''); setTarget(id, spot(id, 'seat', i + 1), 'seat'); }
+      else if (s2.st === 'thinking') { mode = last.startsWith('artist.research') ? 'research' : last.startsWith('artist.arc') ? 'plan' : 'think'; text = mode === 'research' ? 'researching…' : mode === 'plan' ? 'planning the series…' : 'thinking…'; setTarget(id, spot(id, 'desk'), 'desk'); }
+      else if (s2.st === 'painting') { mode = 'paint'; const g = s2.last?.type === 'image.request' ? s2.last : null; text = g ? `painting “${(g.data?.title || '').slice(0, 30)}”` : 'at the easel'; setTarget(id, spot(id, 'easel'), 'easel'); }
+      else if (s2.st === 'error') { mode = 'error'; text = 'stuck!'; setTarget(id, spot(id, 'center'), 'center'); }
+      else { mode = 'rest'; setTarget(id, spot(id, 'rest'), 'rest'); }
+      FL.modes[id] = { mode, text, name: a?.name || id };
+      const mine = S.images.filter(x => x.artist === id && x.kind === 'draft');
+      FL.easel[id] = { id: mine[mine.length - 1]?.task_id || null, gen: mode === 'paint' };
+    });
+    // Curator
+    if (!FL.agents.curator) { const p = spot(0, 'curatorDesk'); FL.agents.curator = { x: p.x, y: p.y, path: [], walk: 0 }; }
+    const cur = agentState('curator', CURATOR_MAP);
+    let cm = 'desk', ct = '';
+    if (debating) { cm = next === 'curator' ? 'speak' : 'listen'; ct = next === 'curator' ? '…' : (lastLine('curator') || ''); setTarget('curator', spot(0, 'seat', 0), 'seat'); }
+    else if (cur.st === 'reviewing' || (cur.last?.type === 'direction' && Date.now() - new Date(cur.last.ts) < 120000)) {
+      cm = 'tour'; ct = cur.st === 'reviewing' ? 'reviewing everyone' : 'giving directions';
+      const idx = Math.floor(Date.now() / 3500) % ids.length;
+      setTarget('curator', spot(ids[idx], 'center'), 'tour' + idx);
+    } else { cm = cur.st === 'writing' || cur.st === 'thinking' ? 'work' : 'desk'; ct = cur.st === 'writing' ? 'writing…' : cur.st === 'thinking' ? 'doing the budget…' : ''; setTarget('curator', spot(0, 'curatorDesk'), 'desk'); }
+    FL.modes.curator = { mode: cm, text: ct, name: 'Curator' };
+    // Engineer
+    if (!FL.agents.engineer) { const p = spot(0, 'bench'); FL.agents.engineer = { x: p.x, y: p.y, path: [], walk: 0 }; }
+    const open = (st.incidents || []).filter(i => i.status === 'open');
+    if (open.length && roomOf(open[0].agent)) { FL.modes.engineer = { mode: 'fix', text: `fixing ${nameOf(open[0].agent)}`, name: 'Engineer' }; setTarget('engineer', spot(open[0].agent, 'easel'), 'fix' + open[0].agent); }
+    else if (debating) { FL.modes.engineer = { mode: 'listen', text: '', name: 'Engineer' }; setTarget('engineer', spot(0, 'bench'), 'bench'); }
+    else { FL.modes.engineer = { mode: 'desk', text: '', name: 'Engineer' }; setTarget('engineer', spot(0, 'bench'), 'bench'); }
+    // Easel images (pixelated thumbnails)
+    for (const id of ids) {
+      const t = FL.easel[id]?.id; if (!t || FL.imgs[t]) continue;
+      FL.imgs[t] = 'loading';
+      api(`/api/image/${t}?thumb=1`).then(r => r.blob()).then(b => { const im = new Image(); im.onload = () => { FL.imgs[t] = im; }; im.src = URL.createObjectURL(b); }).catch(() => { delete FL.imgs[t]; });
+    }
+    labelPlan();
+  }
+
+  function labelPlan() {
+    const ov = $('#planOverlay'); if (!ov || !S.status) return;
+    const ids = S.status.agents.slice(0, 4);
+    const pct = (v, m) => (v / m * 100) + '%';
+    let h = ids.map((a, i) => { const r = ROOMS[i]; return `<span class="plabel" style="left:${pct(r.x + 3, PW)};top:${pct(r.y + (r.y ? 4 : 2), PH)}"><b>${esc(a.name)}</b> ${esc((a.persona || '').replace(/^Ami voice:.*/, 'Ami voice'))}</span>`; }).join('');
+    h += `<span class="plabel" style="left:${pct(3, PW)};top:${pct(92, PH)}"><b>Curator</b></span><span class="plabel" style="right:${pct(3, PW)};top:${pct(92, PH)};text-align:right"><b>Engineer</b></span>`;
+    h += `<span class="plabel muted" style="left:50%;top:${pct(92, PH)};transform:translateX(-50%)">${S.debate?.debate?.status === 'running' ? '<b style="color:var(--bad)">DEBATE LIVE</b>' : 'debate table'}</span>`;
+    h += Object.keys(FL.agents).map(id => `<div class="pbubble" id="pb-${id}"></div>`).join('');
+    ov.innerHTML = h;
+  }
+
+  function drawSprite(ctx, id, x, y, frame, mode) {
+    const L = LOOKS[id] || LOOKS.curator;
+    const rows = SPRITE.slice();
+    if (frame) rows[10] = WALK[frame]; if (frame) rows[11] = WALK[frame];
+    const bob = (mode === 'speak' || mode === 'paint') && FL.frame % 30 < 15 ? -1 : 0;
+    const ox = Math.round(x - 4), oy = Math.round(y - 12 + bob);
+    for (let r = 0; r < rows.length; r++) for (let c = 0; c < 8; c++) {
+      const ch = rows[r][c]; if (ch === '.') continue;
+      let col = L[ch] || L.b;
+      if (ch === 'e' && id === 'A2') col = '#e5e5e5';
+      ctx.fillStyle = col; ctx.fillRect(ox + c, oy + r, 1, 1);
+    }
+    if (id === 'A2') { ctx.fillStyle = '#e5e5e5'; ctx.fillRect(ox + 1, oy + 3, 6, 1); } // glasses
+    if (id === 'engineer') { ctx.fillStyle = '#facc15'; ctx.fillRect(ox, oy, 8, 2); }        // hard hat
+    if (id === 'curator') { ctx.fillStyle = L.b; ctx.fillRect(ox + 1, oy + 9, 6, 2); }        // long coat
+    if (id === 'A3') { ctx.fillStyle = '#f59e0b'; ctx.fillRect(ox + 1, oy + 5, 6, 1); }       // scarf
+  }
+
+  function drawRoom(ctx, r, id, dark) {
+    const L = LOOKS[id] || {};
+    ctx.fillStyle = dark ? (L.tintD || '#222') : (L.tint || '#eee'); ctx.fillRect(r.x, r.y, r.w, r.h);
+    // floor boards
+    ctx.fillStyle = dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.035)';
+    for (let yy = r.y + 6; yy < r.y + r.h; yy += 8) ctx.fillRect(r.x, yy, r.w, 1);
+    const top = r.y === 0, oy = top ? 0 : 6;
+    // bookshelf
+    ctx.fillStyle = '#7c4a21'; ctx.fillRect(r.x + 44, r.y + oy + 4, 22, 14);
+    const books = ['#dc2626', '#2563eb', '#16a34a', '#f59e0b', '#7c3aed', '#0891b2'];
+    for (let i = 0; i < 6; i++) { ctx.fillStyle = books[i]; ctx.fillRect(r.x + 46 + i * 3, r.y + oy + 6, 2, 5); ctx.fillRect(r.x + 46 + ((i + 2) % 6) * 3, r.y + oy + 12, 2, 5); }
+    // desk + laptop
+    ctx.fillStyle = '#a16207'; ctx.fillRect(r.x + 8, r.y + oy + 12, 30, 10);
+    ctx.fillStyle = dark ? '#94a3b8' : '#334155'; ctx.fillRect(r.x + 16, r.y + oy + 9, 12, 6);
+    const m = FL.modes[id]?.mode;
+    ctx.fillStyle = (m === 'research' || m === 'plan' || m === 'think') && FL.frame % 20 < 10 ? '#38bdf8' : '#64748b'; ctx.fillRect(r.x + 17, r.y + oy + 10, 10, 4);
+    // rug + beanbag
+    ctx.fillStyle = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'; ctx.fillRect(r.x + 8, r.y + oy + 58, 28, 18);
+    ctx.fillStyle = L.h || '#999'; ctx.fillRect(r.x + 12, r.y + oy + 62, 14, 8);
+    // plant
+    ctx.fillStyle = '#15803d'; ctx.fillRect(r.x + 116, r.y + oy + 66, 6, 6); ctx.fillStyle = '#92400e'; ctx.fillRect(r.x + 117, r.y + oy + 72, 4, 4);
+    // easel with the latest spread
+    const ex = r.x + 80, ey = r.y + oy + 8;
+    ctx.fillStyle = '#78350f'; ctx.fillRect(ex + 4, ey + 24, 2, 12); ctx.fillRect(ex + 30, ey + 24, 2, 12); ctx.fillRect(ex + 17, ey + 24, 2, 10);
+    ctx.fillStyle = '#78350f'; ctx.fillRect(ex, ey, 36, 26);
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(ex + 2, ey + 2, 32, 22);
+    const e = FL.easel[id]; const im = e?.id && FL.imgs[e.id];
+    if (im && im !== 'loading') ctx.drawImage(im, ex + 2, ey + 2, 32, 22);
+    if (e?.gen) {
+      const sx = (FL.frame * 0.8) % 44 - 6;
+      ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fillRect(ex + 2 + Math.max(0, sx), ey + 2, Math.max(0, Math.min(6, 32 - sx)), 22);
+    }
+    // walls with door gap
+    ctx.fillStyle = dark ? '#d4d4d4' : '#262626';
+    ctx.fillRect(r.x, r.y, r.w, 2); ctx.fillRect(r.x, r.y + r.h - 2, r.w, 2);
+    ctx.fillRect(r.x, r.y, 2, r.h); ctx.fillRect(r.x + r.w - 2, r.y, 2, r.h);
+    ctx.fillStyle = dark ? '#1a1a1a' : '#e7e5e4';
+    const dy = top ? r.y + r.h - 2 : r.y; ctx.fillRect(r.x + 56, dy, 16, 2);
+  }
+
+  function drawPlan() {
+    const cv = $('#planCanvas'); if (!cv || !S.status) return;
+    const ctx = cv.getContext('2d'); ctx.imageSmoothingEnabled = false;
+    const dark = isDark(); FL.frame++;
+    ctx.fillStyle = dark ? '#151515' : '#f5f5f4'; ctx.fillRect(0, 0, PW, PH);
+    // hall
+    ctx.fillStyle = dark ? '#1a1a1a' : '#e7e5e4'; ctx.fillRect(0, HALL.y0, PW, HALL.y1 - HALL.y0);
+    ctx.fillStyle = dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)';
+    for (let x = 0; x < PW; x += 16) for (let y = HALL.y0; y < HALL.y1; y += 16) if (((x + y) / 16) % 2 === 0) ctx.fillRect(x, y, 16, 16);
+    const ids = S.status.agents.slice(0, 4).map(a => a.id);
+    ids.forEach((id, i) => drawRoom(ctx, ROOMS[i], id, dark));
+    // curator desk + spend screen
+    ctx.fillStyle = '#a16207'; ctx.fillRect(8, 108, 34, 10);
+    ctx.fillStyle = '#0f172a'; ctx.fillRect(14, 102, 22, 8);
+    const sp = S.status.spend; const frac = Math.min(1, (sp?.spent || 0) / (S.status.ceiling || 20));
+    ctx.fillStyle = frac > 0.8 ? '#ef4444' : '#22c55e'; ctx.fillRect(15, 105, Math.max(1, Math.round(20 * frac)), 2);
+    // engineer bench + toolbox + status light
+    ctx.fillStyle = '#57534e'; ctx.fillRect(212, 108, 36, 10);
+    ctx.fillStyle = '#dc2626'; ctx.fillRect(216, 103, 10, 5);
+    const openInc = (S.status.incidents || []).some(i => i.status === 'open');
+    ctx.fillStyle = openInc ? (FL.frame % 20 < 10 ? '#ef4444' : '#7f1d1d') : '#22c55e'; ctx.fillRect(240, 104, 3, 3);
+    // debate table + chairs
+    const debating = S.debate?.debate?.status === 'running';
+    ctx.fillStyle = '#92400e'; ctx.fillRect(100, 112, 56, 20);
+    ctx.fillStyle = debating ? '#fde68a' : '#b45309'; ctx.fillRect(102, 114, 52, 16);
+    // agents
+    const order = Object.keys(FL.agents).sort((a, b) => FL.agents[a].y - FL.agents[b].y);
+    for (const id of order) {
+      const ag = FL.agents[id]; const md = FL.modes[id]?.mode;
+      let moving = false;
+      if (ag.path.length) {
+        const t = ag.path[0]; const dx = t.x - ag.x, dy = t.y - ag.y; const d = Math.hypot(dx, dy);
+        const sp2 = reduceMotion ? 999 : 0.9;
+        if (d <= sp2) { ag.x = t.x; ag.y = t.y; ag.path.shift(); } else { ag.x += dx / d * sp2; ag.y += dy / d * sp2; moving = true; }
+      } else if (!reduceMotion && (md === 'rest' || md === 'desk') && ag.home) {
+        if (!ag.wanderAt) ag.wanderAt = FL.frame + 120 + Math.random() * 240;
+        if (FL.frame > ag.wanderAt) { ag.path = [{ x: ag.home.x + (Math.random() * 20 - 10), y: ag.home.y + (Math.random() * 8 - 4) }]; ag.wanderAt = 0; }
+      }
+      const frame = moving ? (Math.floor(FL.frame / 8) % 2) + 1 : 0;
+      drawSprite(ctx, id, ag.x, ag.y, frame, md);
+      // effects
+      const ox = Math.round(ag.x), oy = Math.round(ag.y) - 14;
+      if (md === 'rest' && id !== 'curator' && id !== 'engineer' && !reduceMotion) { ctx.fillStyle = dark ? '#a3a3a3' : '#737373'; const z = Math.floor(FL.frame / 20) % 3; for (let k = 0; k <= z; k++) ctx.fillRect(ox + 4 + k * 3, oy - k * 3, 2, 1); }
+      if ((md === 'think' || md === 'research' || md === 'plan' || md === 'work') && FL.frame % 40 < 30) { ctx.fillStyle = '#7c3aed'; for (let k = 0; k < 3; k++) if (FL.frame % 40 > k * 8) ctx.fillRect(ox - 3 + k * 3, oy - 2, 2, 2); }
+      if (md === 'paint' && !reduceMotion && FL.frame % 6 === 0) FL.particles.push({ x: ag.x + 2, y: ag.y - 8, vx: Math.random() - 0.3, vy: -Math.random(), life: 20, c: ['#ef4444', '#f59e0b', '#2563eb', '#16a34a'][Math.floor(Math.random() * 4)] });
+      if (md === 'fix' && !reduceMotion && FL.frame % 4 === 0) FL.particles.push({ x: ag.x + 4, y: ag.y - 6, vx: Math.random() * 2 - 1, vy: -Math.random() * 1.5, life: 12, c: '#facc15' });
+      if (md === 'error' && FL.frame % 20 < 12) { ctx.fillStyle = '#ef4444'; ctx.fillRect(ox, oy - 6, 2, 4); ctx.fillRect(ox, oy - 1, 2, 1); }
+      if (md === 'speak') { ctx.fillStyle = '#c0186c'; ctx.fillRect(ox - 1, oy - 3, 3, 1); }
+    }
+    FL.particles = FL.particles.filter(p => { p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life--; ctx.fillStyle = p.c; ctx.fillRect(Math.round(p.x), Math.round(p.y), 1, 1); return p.life > 0; });
+    // bubbles (DOM, crisp text)
+    for (const id of Object.keys(FL.agents)) {
+      const el = document.getElementById('pb-' + id); if (!el) continue;
+      const m = FL.modes[id]; const show = m && m.text && (m.mode !== 'listen' || FL.frame % 600 < 200);
+      if (!show) { el.style.display = 'none'; continue; }
+      const ag = FL.agents[id];
+      el.style.display = 'block';
+      const txt = m.text.length > 90 ? m.text.slice(0, 88) + '…' : m.text;
+      if (el.dataset.t !== txt) { el.textContent = txt; el.dataset.t = txt; }
+      const px = ag.x / PW * 100; const shift = px < 22 ? '-15%' : px > 78 ? '-85%' : '-50%';
+      el.style.left = px + '%'; el.style.top = ((ag.y - 16) / PH * 100) + '%'; el.style.transform = `translate(${shift},-100%)`;
+      el.classList.toggle('speak', m.mode === 'speak');
+    }
+  }
+  function planLoop() {
+    if (tab === 'studio' && !document.hidden) drawPlan();
+    setTimeout(() => requestAnimationFrame(planLoop), 33);
+  }
+  requestAnimationFrame(planLoop);
+  document.addEventListener('click', e => {
+    const cv = e.target.closest('#plan'); if (!cv || !S.status) return;
+    const r = $('#planCanvas').getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * PW, y = (e.clientY - r.top) / r.height * PH;
+    const ri = region({ x, y }); if (ri === 'hall') return;
+    const a = S.status.agents[ri]; const t = a && FL.easel[a.id]?.id; if (!t) return;
+    const i = S.images.find(z => z.task_id === t); const img = $('#lbImg'); img.removeAttribute('src'); img.dataset.src = `/api/image/${t}`; loadImg(img);
+    $('#lbInfo').innerHTML = i ? `<b>${esc(i.title)}</b> · ${esc(nameOf(i.artist))} · round ${i.round}<p class="small" style="margin-top:.5rem">${esc(i.prompt)}</p>` : '';
+    $('#lightbox').showModal();
+  });
+
   function renderStudio() {
     const st = S.status; const floor = $('#floor');
     const drafts = S.images.filter(i => i.kind === 'draft');
@@ -554,6 +806,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     drawWires();
     tickCountdown();
     renderTicker();
+    planModes();
   }
 
   function drawWires() {
