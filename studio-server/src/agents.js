@@ -91,10 +91,11 @@ export async function curatorWriteBrief(round) {
   const system = `You are the Curator of an AI art studio producing a submission for ${studio.publication}, working title "${studio.title}". You write in Ami Nigam's voice.\n\n${amiVoiceBlock()}`;
   const user = `Write the shared brief that ${studio.artists.length} AI artists will all receive, unchanged, for the whole day. Editorial stance (${studio.stance_status}): "${studio.stance}".
 The brief must:
-- give ONE concrete, ordinary subject or situation from life that every artist works from (for example a person, a place, an object, a moment in a city). It must be specific enough that images can be compared, and open enough that interpretations can differ widely;
-- explicitly rule out illustrating the theme literally: no images about AI, machines, data, code, noise, probability, dice, patterns turning into paintings, glitch, or the act of image-making;
-- let the stance show through how the subject is treated, not what is depicted;
-- ask for two-page zine spreads, A3 landscape (one image per spread), that make an argument with image and short text together: headline, a line of body text, labels or captions where they help;
+- pose this question to every artist, in plain words: "${studio.question}";
+- ask each artist to argue its own answer: yes, no, or something more precise, and to build that argument across a series of spreads;
+- leave subject matter completely open: each artist chooses whatever subjects serve its argument. Do NOT set a shared subject;
+- rule out cliches: no robots, circuits, glowing brains, code rain, glitch art, dice, or patterns turning into paintings;
+- ask for two-page zine spreads, A3 landscape, where image and short text work together: headline, a line of body text, labels or captions where they help;
 - not mention the other artists or the study design.
 120 to 200 words. No em-dashes. Return only the brief text.`;
   log('curator', 'brief.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
@@ -288,7 +289,7 @@ async function artistResearch(a, round, bv) {
   const p = persona(a);
   const system = artistSystem(a);
   const fixed = p.point ? `Your side is already set: "${p.point}". Research to support and sharpen it.` : 'Research to find your side, then commit to it.';
-  const user = `Before making anything, research this question from your point of view:\n"${studio.ami.position}"\n\nBrief you will work from:\n${currentBrief()}\n\n${fixed}\nFind 3 to 5 concrete references that support your side (artists, works, studies, events, numbers) and 1 that challenges it. Be accurate; do not invent sources.\nReturn JSON only: {"findings":["one line each, with who/what/when"],"counter":"the strongest point against you, one line","thesis":"ONE sentence: the strong point you will argue in every spread today"}`;
+  const user = `Before making anything, research this question from your point of view:\n"${studio.question || studio.ami.position}"\n\nBrief you will work from:\n${currentBrief()}\n\n${fixed}\nFind 3 to 5 concrete references that support your side (artists, works, studies, events, numbers) and 1 that challenges it. Be accurate; do not invent sources.\nReturn JSON only: {"findings":["one line each, with who/what/when"],"counter":"the strongest point against you, one line","thesis":"ONE sentence: the strong point you will argue in every spread today"}`;
   log(a.id, 'artist.research.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { web: true } });
   let r;
   try {

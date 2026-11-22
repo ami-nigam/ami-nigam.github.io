@@ -98,6 +98,7 @@
     "position": "Machines were expected to be deterministic, like calculators, and to arrive first in technical work. Generative AI approaches art, visual and literary, through stochasticity, working with probability rather than emotion or lived experience. He is NOT saying that randomness equals creativity.",
     "style": "Short, concise, grounded in reality, plain words. No flattery, no hype. Never use em-dashes or en-dashes."
   },
-  "brief_version": 4,
-  "arc_spreads": 6
+  "brief_version": 5,
+  "arc_spreads": 6,
+  "question": "We expected AI to be technical: to calculate, and to arrive first in engineering and drawings. Instead it arrived in art, making images and writing through probability. It looks creative. Is it creative?"
 }
