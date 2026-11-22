@@ -139,7 +139,7 @@ export async function curatorBudget(round) {
     draft_price: PRICE[runtime.draftQuality] || PRICE.low, draft_quality: runtime.draftQuality, final_reserve_needed: round4(finalReserve), suggested_split: studio.budget_split,
   };
   const system = 'You are the Curator of an AI art studio, managing a hard budget in real time. Be conservative. You may tighten or loosen limits only within the ceiling. You cannot raise the ceiling.';
-  const user = `Live numbers:\n${JSON.stringify(facts, null, 2)}\n\nSet limits for the next round. Each artist (${studio.artists.length}) makes up to images_per_wake images (0 to 3) at draft quality, each wake also costs about two Claude calls per artist. Keep enough for final_reserve_needed. Return JSON only: {"images_per_wake":int,"draft_cap_per_artist":int,"final_quality":"high"|"xhigh","skip_round":bool,"reasoning":"one or two sentences"}`;
+  const user = `Live numbers:\n${JSON.stringify(facts, null, 2)}\n\nArtists are building narrative series of ${studio.arc_spreads || 6} spreads (and may add more); the zine needs their full series, so more spreads are valuable. Keep at least 1 image per artist per wake unless the budget cannot cover the final reserve. Set limits for the next round. Each artist (${studio.artists.length}) makes up to images_per_wake images (0 to 3) at draft quality, each wake also costs about two Claude calls per artist. Keep enough for final_reserve_needed. Return JSON only: {"images_per_wake":int,"draft_cap_per_artist":int,"final_quality":"high"|"xhigh","skip_round":bool,"reasoning":"one or two sentences"}`;
   log('curator', 'budget.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
   let d;
   try {
@@ -153,11 +153,11 @@ export async function curatorBudget(round) {
   }
   // Hard clamps in code.
   const next = {
-    images_per_wake: clamp(parseInt(d.images_per_wake ?? cur.images_per_wake, 10) || 0, 0, 3),
-    draft_cap_per_artist: clamp(parseInt(d.draft_cap_per_artist ?? cur.draft_cap_per_artist, 10) || 0, 0, 60),
+    images_per_wake: clamp(parseInt(d.images_per_wake ?? cur.images_per_wake, 10) || 0, 1, 3),
+    draft_cap_per_artist: clamp(parseInt(d.draft_cap_per_artist ?? cur.draft_cap_per_artist, 10) || 0, (studio.arc_spreads || 6) + 4, 60),
     final_quality: ['high', 'xhigh'].includes(d.final_quality) ? d.final_quality : 'high',
     finals_count: cur.finals_count || 10,
-    skip_round: !!d.skip_round,
+    skip_round: false, // only the reserve clamp below may skip a round
   };
   // Never plan a round that would eat the finals reserve.
   const draftPrice = PRICE[runtime.draftQuality] || PRICE.low;
@@ -354,11 +354,11 @@ export async function artistWake(a, round, lim) {
   const system = artistSystem(a);
   const fmt = `Format: each image is ONE two-page zine spread, A3 landscape (two A4 pages side by side, gutter in the middle). The left and right edges (outer 5% each side) will be trimmed, so keep all text and key content well inside them. Design the whole spread: imagery, layout and the words on it. Use text where it carries your point: a headline, a short line of body text, labels or captions. At most 30 words of text on a spread. In the prompt, put every word that must appear in double quotes, spelled exactly, and say where it sits. The spread must make your point, not just show the subject.`;
   const thesisLine = state.thesis[a.id]?.text
-    ? `Your point (you chose it, keep arguing it): "${state.thesis[a.id].text}"`
+    ? `Your argument (keep arguing it): "${state.thesis[a.id].text}"`
     : thesis ? `Your point to argue across every spread today: "${thesis}". Restate it in your own words as "thesis".`
     : `You have not chosen your point yet. From the brief, decide ONE strong point you will argue across every spread today, in one sentence, and return it as "thesis".`;
   const researchLine = research ? `\nYour research:\n${research.findings.map(f => '- ' + f).join('\n')}\nStrongest point against you: ${research.counter}\nUse your research: name real references on the spread where they help.\n` : '';
-  const arcLine = `\nYour series: "${arc.series_title}"\n${arc.beats.map((b, i) => `${i + 1}. ${b}${i + 1 < beatNo ? ' (made)' : i + 1 === beatNo ? '  <- next' : ''}`).join('\n')}\nMake the next beat${n > 1 ? 's in order' : ''}. If what you have made so far changes the story, you may revise the remaining beats: return them as "arc" (full list).\n`;
+  const arcLine = `\nYour series: "${arc.series_title}"\n${arc.beats.map((b, i) => `${i + 1}. ${b}${i + 1 < beatNo ? ' (made)' : i + 1 === beatNo ? '  <- next' : ''}`).join('\n')}\n${beatNo > arc.beats.length ? 'Your planned series is complete. Make an extra spread that sharpens, tests or answers your argument; you may extend the arc with new beats.' : `Make the next beat${n > 1 ? 's in order' : ''}.`} If what you have made so far changes the story, you may revise the remaining beats: return them as "arc" (full list).\n`;
   const text = `Brief:\n${currentBrief()}\n\n${fmt}\n\n${thesisLine}\n${researchLine}${arcLine}${direction ? `\nDirection from the Curator: ${direction}\n` : ''}${takeaway ? `\nAfter the debate you said you would: ${takeaway}\n` : ''}\nThis is wake ${round}. You may make ${n} spread${n > 1 ? 's' : ''} this wake. Each spread should advance your point; together they should read as a sequence.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"thesis":"your one-sentence point","arc":["optional: revised full list of beats"],"review":"one sentence on your previous spreads","keep":["task ids you select from your own images"],"intent":"one sentence: what this spread argues and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
   const content = [{ type: 'text', text }, ...(await imageParts(shown, 512))];
   log(a.id, 'artist.plan.request', { round, prompt: text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { shown: shown.map(s => s.task_id) } });
