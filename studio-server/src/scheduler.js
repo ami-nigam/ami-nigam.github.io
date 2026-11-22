@@ -35,7 +35,7 @@ export async function runRound(trigger = 'schedule') {
   if (busy) { log('system', 'round.skipped', { data: { message: `${busy} still running` } }); return false; }
   if (isStopped()) { log('system', 'round.skipped', { data: { message: 'paused or ceiling reached' } }); return false; }
   busy = 'round';
-  const round = (state.round || 0) + 1; state.round = round; saveState();
+  const round = (state.round || 0) + 1; state.round = round; state.roundRunning = round; saveState();
   log('system', 'round.start', { round, data: { message: `round ${round} (${trigger})` } });
   try {
     await curatorWriteBrief(round);
@@ -47,7 +47,7 @@ export async function runRound(trigger = 'schedule') {
     log('system', 'round.end', { round });
   } catch (e) {
     log('system', e instanceof StopError ? 'round.stopped' : 'round.error', { round, data: { message: e.message } });
-  } finally { busy = null; }
+  } finally { busy = null; state.roundRunning = null; saveState(); }
   return true;
 }
 
@@ -124,6 +124,11 @@ export function startScheduler() {
   if (state.paused == null) { state.paused = process.env.AUTOSTART !== '1'; saveState(); } // first boot starts paused until Ami resumes
   limits(); schedule();
   if (state.final?.status === 'running') { state.final.status = 'interrupted'; saveState(); }
+  if (state.roundRunning) {
+    const r = state.roundRunning; state.roundRunning = null; saveState();
+    log('system', 'round.interrupted', { round: r, data: { message: `round ${r} was cut off by a restart; starting a fresh round` } });
+    if (!state.paused && !state.ceilingHit && state.debate?.status !== 'running') setTimeout(() => runRound('recover'), 8000);
+  }
   if (state.debate?.status === 'running') { log('system', 'debate.resume', { data: { message: 'resuming debate after restart' } }); setTimeout(runDebate, 8000); }
   log('system', 'scheduler.start', { data: { message: `date ${state.schedule.date}, start ${state.schedule.start}, last wake ${studio.schedule.last_artist_wake}, final ${studio.schedule.final}`, lastSlot: state.lastSlot || null } });
   setInterval(tick, 15000);

@@ -1,5 +1,5 @@
 // The debate: the only time the artists see or are aware of each other.
-// Curator + 5 artists, 5 turns each. Resumable after a restart.
+// Curator + the artists, 5 turns each. Resumable after a restart.
 import { studio, runtime } from './config.js';
 import { state, saveState, log, allImages } from './store.js';
 import { chat, StopError, isStopped } from './openrouter.js';
@@ -52,7 +52,7 @@ async function speak(step, idx, total, spreadsParts, round) {
       : 'Moderate: name the sharpest disagreement so far and put a pointed question to one or two artists by name.')
     : 'Make your case, answer what was said, and challenge others by name where you disagree. Stay in character.';
   const system = isCurator
-    ? `You are the Curator, moderating a live debate between five AI artists for ${studio.publication}, "${studio.title}". You write in Ami Nigam's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`
+    ? `You are the Curator, moderating a live debate between ${studio.artists.length} AI artists for ${studio.publication}, "${studio.title}". You write in Ami Nigam's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`
     : `${artistSystem(a)}\n\nThis is a live debate. For the first and only time today you can see the other artists and their work.`;
   const text = `Brief:\n${currentBrief()}\n\nParticipants:\n${roster()}\n\nTheir latest spreads are attached.\n\nTranscript so far:\n${transcript() || '(nothing yet)'}\n\nThis is your turn ${myTurn} of ${TURNS()}. ${stage}\nAt most ${isCurator && step.round === 1 ? WORDS() * 2 : WORDS()} words. Spoken words only, no stage directions, no name prefix.${isCurator || amiVoice(a) ? ' No em-dashes.' : ''}`;
   log(step.speaker, 'debate.request', { round, prompt: text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { turn: idx + 1, of: total } });

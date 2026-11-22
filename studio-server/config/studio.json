@@ -52,11 +52,6 @@
       "id": "P1",
       "group": "persona",
       "persona": "ami"
-    },
-    {
-      "id": "P2",
-      "group": "persona",
-      "persona": "p2"
     }
   ],
   "personas": {

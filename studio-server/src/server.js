@@ -129,7 +129,7 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://x');
     const p = url.pathname;
 
-    if (p === '/health') return send(res, 200, { ok: true, key_configured: hasKey(), password_configured: !!env.password, paused: !!state.paused, ceiling_hit: !!state.ceilingHit, round: state.round || 0 });
+    if (p === '/health') { const ev = events(); const le = ev[ev.length - 1]; return send(res, 200, { ok: true, key_configured: hasKey(), password_configured: !!env.password, paused: !!state.paused, ceiling_hit: !!state.ceilingHit, round: state.round || 0, busy: isBusy(), uptime_s: Math.round(process.uptime()), last_event: le ? { ts: le.ts, agent: le.agent, type: le.type } : null, errors_last_hour: ev.filter(e => /error|failed/.test(e.type) && Date.now() - new Date(e.ts) < 3600000).length }); }
     if (env.requireHttps && req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] !== 'https') return send(res, 403, { error: 'https only' });
     if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
 

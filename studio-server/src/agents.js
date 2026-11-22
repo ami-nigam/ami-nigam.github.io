@@ -89,7 +89,7 @@ export async function curatorWriteBrief(round) {
   if (state.brief && state.briefVersion === version) return state.brief;
   if (state.brief) { state.briefHistory = [...(state.briefHistory || []), { version: state.briefVersion || 1, brief: state.brief, replaced: new Date().toISOString() }]; }
   const system = `You are the Curator of an AI art studio producing a submission for ${studio.publication}, working title "${studio.title}". You write in Ami Nigam's voice.\n\n${amiVoiceBlock()}`;
-  const user = `Write the shared brief that five AI artists will all receive, unchanged, for the whole day. Editorial stance (${studio.stance_status}): "${studio.stance}".
+  const user = `Write the shared brief that ${studio.artists.length} AI artists will all receive, unchanged, for the whole day. Editorial stance (${studio.stance_status}): "${studio.stance}".
 The brief must:
 - give ONE concrete, ordinary subject or situation from life that every artist works from (for example a person, a place, an object, a moment in a city). It must be specific enough that images can be compared, and open enough that interpretations can differ widely;
 - explicitly rule out illustrating the theme literally: no images about AI, machines, data, code, noise, probability, dice, patterns turning into paintings, glitch, or the act of image-making;
@@ -138,7 +138,7 @@ export async function curatorBudget(round) {
     draft_price: PRICE[runtime.draftQuality] || PRICE.low, draft_quality: runtime.draftQuality, final_reserve_needed: round4(finalReserve), suggested_split: studio.budget_split,
   };
   const system = 'You are the Curator of an AI art studio, managing a hard budget in real time. Be conservative. You may tighten or loosen limits only within the ceiling. You cannot raise the ceiling.';
-  const user = `Live numbers:\n${JSON.stringify(facts, null, 2)}\n\nSet limits for the next round. Each artist (5) makes up to images_per_wake images (0 to 3) at draft quality, each wake also costs about two Claude calls per artist. Keep enough for final_reserve_needed. Return JSON only: {"images_per_wake":int,"draft_cap_per_artist":int,"final_quality":"high"|"xhigh","skip_round":bool,"reasoning":"one or two sentences"}`;
+  const user = `Live numbers:\n${JSON.stringify(facts, null, 2)}\n\nSet limits for the next round. Each artist (${studio.artists.length}) makes up to images_per_wake images (0 to 3) at draft quality, each wake also costs about two Claude calls per artist. Keep enough for final_reserve_needed. Return JSON only: {"images_per_wake":int,"draft_cap_per_artist":int,"final_quality":"high"|"xhigh","skip_round":bool,"reasoning":"one or two sentences"}`;
   log('curator', 'budget.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
   let d;
   try {
@@ -160,9 +160,10 @@ export async function curatorBudget(round) {
   };
   // Never plan a round that would eat the finals reserve.
   const draftPrice = PRICE[runtime.draftQuality] || PRICE.low;
-  const roundEst = 5 * (next.images_per_wake * draftPrice * 1.1 + 0.06);
+  const nA = studio.artists.length;
+  const roundEst = nA * (next.images_per_wake * draftPrice * 1.1 + 0.06);
   if (s.remaining - roundEst < finalReserve) {
-    next.images_per_wake = Math.max(0, Math.floor(((s.remaining - finalReserve) / 5 - 0.06) / (draftPrice * 1.1)));
+    next.images_per_wake = Math.max(0, Math.floor(((s.remaining - finalReserve) / nA - 0.06) / (draftPrice * 1.1)));
     next.images_per_wake = clamp(next.images_per_wake, 0, 3);
     if (next.images_per_wake === 0) next.skip_round = true;
     d.reasoning = `${d.reasoning || ''} [code clamp: protecting finals reserve $${round4(finalReserve)}]`;
@@ -184,13 +185,13 @@ export async function curatorCheckpoint(round, label = 'checkpoint') {
   const review = recent.slice(-runtime.curatorReviewImages);
   const s = spend();
   const reflections = events().filter(e => e.type === 'artist.reflection').slice(-15).map(e => `${e.agent} r${e.round}: ${e.response}`).join('\n');
-  const system = `You are the Curator. You see all artists' work; they cannot see each other. Each artist has a point of view: ${studio.artists.map(x => `${x.id} ${persona(x).name || ''} = ${persona(x).label}, ${persona(x).personality || ''}`).join('; ')}. P1 and P2 carry Ami's voice. (In the first rounds of the day A1 to A3 were identical controls.) You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
+  const system = `You are the Curator. You see all artists' work; they cannot see each other. Each artist has a point of view: ${studio.artists.map(x => `${x.id} ${persona(x).name || ''} = ${persona(x).label}, ${persona(x).personality || ''}`).join('; ')}. ${studio.artists.filter(x => x.group === 'persona').map(x => x.id).join(' and ')} carries Ami's voice. (In the first rounds of the day A1 to A3 were identical controls.) You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
   const user = [
     { type: 'text', text: `Brief:\n${currentBrief()}\n\nSpend: $${s.spent} of $${CEILING}. Current shortlist: ${JSON.stringify(state.shortlist || [])}.\nRecent artist reflections:\n${reflections}\n\nEach artist argues one point (thesis) across zine spreads. Theses: ${JSON.stringify(state.thesis || {})}.
 Current directions: ${JSON.stringify(state.directions || {})}.
 Review the spreads below, then direct the artists. You may push them in the same direction or in different directions.
 Rules for directions: one note per artist about its own work and argument. Never describe or mention another artist's work. You may push them in the same direction or apart (e.g. sharpen the disagreement). One to three sentences each, plain words, no em-dashes.
-Return JSON only: {"notes":"4 to 8 sentences: what is working, where the five points of view clash or agree, whether each argument reads","shortlist":["task ids worth considering for the final 8 to 10, max 16, keep good earlier picks"],"directions":{"mode":"same or different","A1":"...","A2":"...","A3":"...","P1":"...","P2":"..."},"stance_unclear":"optional"}` },
+Return JSON only: {"notes":"4 to 8 sentences: what is working, where the points of view clash or agree, whether each argument reads","shortlist":["task ids worth considering for the final 8 to 10, max 16, keep good earlier picks"],"directions":{"mode":"same or different",${studio.artists.map(x => `"${x.id}":"..."`).join(',')}},"stance_unclear":"optional"}` },
     ...(await imageParts(review, 384)),
   ];
   log('curator', `${label}.request`, { round, prompt: user[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { images: review.map(r => r.task_id) } });
@@ -223,7 +224,7 @@ export async function curatorFinal(round) {
     const candidates = [...pool, ...extra].slice(0, 30);
     const system = `You are the Curator making the final selection for ${studio.publication}, "${studio.title}". Stance (${studio.stance_status}): "${studio.stance}".\n\n${amiVoiceBlock()}`;
     const user = [
-      { type: 'text', text: `Select ${L.finals_count >= 10 ? '8 to 10' : '8'} zine spreads for print, the ones whose argument reads most clearly, from the candidates below. Include each artist's strongest argument where possible, so the five points of view can be compared. Return JSON only: {"picks":[{"task_id":"...","title":"short descriptive title, 2 to 5 words","caption":"one or two plain sentences in Ami's voice, no em-dashes"}],"rationale":"3 sentences"}` },
+      { type: 'text', text: `Select ${L.finals_count >= 10 ? '8 to 10' : '8'} zine spreads for print, the ones whose argument reads most clearly, from the candidates below. Include each artist's strongest argument where possible, so the points of view can be compared. Return JSON only: {"picks":[{"task_id":"...","title":"short descriptive title, 2 to 5 words","caption":"one or two plain sentences in Ami's voice, no em-dashes"}],"rationale":"3 sentences"}` },
       ...(await imageParts(candidates, 384)),
     ];
     log('curator', 'final.select.request', { round, prompt: user[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { candidates: candidates.map(c => c.task_id) } });
@@ -268,7 +269,7 @@ export async function curatorWriteText(round) {
   const user = `Write about 1,500 words for ${studio.publication}, working title "${studio.title}". Markdown, with a title and a few section headings.
 Stance (${studio.stance_status}): "${studio.stance}"
 Core position: ${studio.ami.position}
-What happened: five AI artists worked from one brief through one day, waking every 30 minutes. In the morning A1, A2 and A3 were identical (same model, system prompt and brief) and could not see each other's work. From midday each artist was given a bias, researched its side and argued one point across zine spreads: ${studio.artists.map(x => `${persona(x).name || x.id} (${x.id}, ${persona(x).label}): ${state.thesis?.[x.id]?.text || ''}`).join('; ')}. P1 and P2 carried my voice. The Curator directed each artist at checkpoints. ${totalImages} drafts were made; the Curator chose ${picks.length}.
+What happened: AI artists worked from one brief through one day, waking every 30 minutes. In the morning A1, A2 and A3 were identical (same model, system prompt and brief) and could not see each other's work. From midday the studio was cut to ${studio.artists.length} artists; each was given a bias, researched its side and argued one point across zine spreads: ${studio.artists.map(x => `${persona(x).name || x.id} (${x.id}, ${persona(x).label}): ${state.thesis?.[x.id]?.text || ''}`).join('; ')}. ${studio.artists.filter(x => x.group === 'persona').map(x => persona(x).name || x.id).join(' and ')} carried my voice. The Curator directed each artist at checkpoints. ${totalImages} drafts were made; the Curator chose ${picks.length}.
 Brief:\n${currentBrief()}
 Curator notes through the day:\n${notes}\nMidway through the day the artists met once, in a debate (the only time they saw each other). Their takeaways: ${JSON.stringify(state.debate?.takeaways || {})}\nCurator's closing words: ${(state.debate?.turns || []).filter(t => t.speaker === 'curator').slice(-1)[0]?.text || '(no debate held)'}
 Artist reflections (sample):\n${reflections}
