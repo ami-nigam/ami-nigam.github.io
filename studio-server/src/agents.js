@@ -77,7 +77,7 @@ The brief must:
 - give ONE concrete, ordinary subject or situation from life that every artist works from (for example a person, a place, an object, a moment in a city). It must be specific enough that images can be compared, and open enough that interpretations can differ widely;
 - explicitly rule out illustrating the theme literally: no images about AI, machines, data, code, noise, probability, dice, patterns turning into paintings, glitch, or the act of image-making;
 - let the stance show through how the subject is treated, not what is depicted;
-- ask for single still images suitable for print in a magazine (portrait);
+- ask for two-page zine spreads (one landscape image per spread) that make an argument with image and short text together: headline, a line of body text, labels or captions where they help;
 - not mention the other artists or the study design.
 120 to 200 words. No em-dashes. Return only the brief text.`;
   log('curator', 'brief.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
@@ -117,10 +117,10 @@ export async function curatorBudget(round) {
     ceiling: CEILING, spend: s, key: key ? { usage: key.usage, limit: key.limit, limit_remaining: key.limit_remaining } : null,
     wakes_left_including_this: sch.wakes_left, minutes_to_final: sch.minutes_to_final,
     cost_by_round: costs, drafts_so_far: draftsSoFar, current_limits: cur,
-    draft_price_low: PRICE.low, final_reserve_needed: round4(finalReserve), suggested_split: studio.budget_split,
+    draft_price: PRICE[runtime.draftQuality] || PRICE.low, draft_quality: runtime.draftQuality, final_reserve_needed: round4(finalReserve), suggested_split: studio.budget_split,
   };
   const system = 'You are the Curator of an AI art studio, managing a hard budget in real time. Be conservative. You may tighten or loosen limits only within the ceiling. You cannot raise the ceiling.';
-  const user = `Live numbers:\n${JSON.stringify(facts, null, 2)}\n\nSet limits for the next round. Each artist (5) makes up to images_per_wake images (0 to 3) at the lowest quality, each wake also costs about two Claude calls per artist. Keep enough for final_reserve_needed. Return JSON only: {"images_per_wake":int,"draft_cap_per_artist":int,"final_quality":"high"|"xhigh","skip_round":bool,"reasoning":"one or two sentences"}`;
+  const user = `Live numbers:\n${JSON.stringify(facts, null, 2)}\n\nSet limits for the next round. Each artist (5) makes up to images_per_wake images (0 to 3) at draft quality, each wake also costs about two Claude calls per artist. Keep enough for final_reserve_needed. Return JSON only: {"images_per_wake":int,"draft_cap_per_artist":int,"final_quality":"high"|"xhigh","skip_round":bool,"reasoning":"one or two sentences"}`;
   log('curator', 'budget.request', { round, prompt: user, model: runtime.sonnetModel, endpoint: '/chat/completions' });
   let d;
   try {
@@ -141,9 +141,10 @@ export async function curatorBudget(round) {
     skip_round: !!d.skip_round,
   };
   // Never plan a round that would eat the finals reserve.
-  const roundEst = 5 * (next.images_per_wake * PRICE.low * 1.1 + 0.06);
+  const draftPrice = PRICE[runtime.draftQuality] || PRICE.low;
+  const roundEst = 5 * (next.images_per_wake * draftPrice * 1.1 + 0.06);
   if (s.remaining - roundEst < finalReserve) {
-    next.images_per_wake = Math.max(0, Math.floor(((s.remaining - finalReserve) / 5 - 0.06) / (PRICE.low * 1.1)));
+    next.images_per_wake = Math.max(0, Math.floor(((s.remaining - finalReserve) / 5 - 0.06) / (draftPrice * 1.1)));
     next.images_per_wake = clamp(next.images_per_wake, 0, 3);
     if (next.images_per_wake === 0) next.skip_round = true;
     d.reasoning = `${d.reasoning || ''} [code clamp: protecting finals reserve $${round4(finalReserve)}]`;
@@ -167,15 +168,24 @@ export async function curatorCheckpoint(round, label = 'checkpoint') {
   const reflections = events().filter(e => e.type === 'artist.reflection').slice(-15).map(e => `${e.agent} r${e.round}: ${e.response}`).join('\n');
   const system = `You are the Curator. You see all artists' work; they cannot see each other. A1, A2 and A3 are an identical control group (same model, prompt and brief); P1 and P2 carry Ami's voice. You do not make images. Write in Ami's voice: plain, short, no hype, no em-dashes.\n\n${amiVoiceBlock()}`;
   const user = [
-    { type: 'text', text: `Brief:\n${currentBrief()}\n\nSpend: $${s.spent} of $${CEILING}. Current shortlist: ${JSON.stringify(state.shortlist || [])}.\nRecent artist reflections:\n${reflections}\n\nReview the images below. Return JSON only: {"notes":"4 to 8 sentences: what is working, how the control artists diverge from each other, what P1 and P2 add","shortlist":["task ids worth considering for the final 8 to 10, max 16, keep good earlier picks"],"stance_unclear":"optional"}` },
+    { type: 'text', text: `Brief:\n${currentBrief()}\n\nSpend: $${s.spent} of $${CEILING}. Current shortlist: ${JSON.stringify(state.shortlist || [])}.\nRecent artist reflections:\n${reflections}\n\nEach artist argues one point (thesis) across zine spreads. Theses: ${JSON.stringify(state.thesis || {})}.
+Current directions: ${JSON.stringify(state.directions || {})}.
+Review the spreads below, then direct the artists. You may push them in the same direction or in different directions.
+Rules for directions: "controls" is ONE note sent identically to A1, A2 and A3; it must not describe or hint at any artist's images. "P1" and "P2" may be specific to that artist's own work, never mention other artists' work. One to three sentences each, plain words, no em-dashes.
+Return JSON only: {"notes":"4 to 8 sentences: what is working, how the control artists diverge, what P1 and P2 add, whether the argument reads","shortlist":["task ids worth considering for the final 8 to 10, max 16, keep good earlier picks"],"directions":{"mode":"same or different","controls":"...","P1":"...","P2":"..."},"stance_unclear":"optional"}` },
     ...(await imageParts(review, 384)),
   ];
   log('curator', `${label}.request`, { round, prompt: user[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { images: review.map(r => r.task_id) } });
-  const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.12, maxTokens: 900 });
+  const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: user }], agent: 'curator', round, estimate: 0.12, maxTokens: 1400 });
   const d = parseJsonReply(r.text);
   const known = new Set(imgs.map(i => i.task_id));
   state.shortlist = (d.shortlist || []).filter(id => known.has(id)).slice(0, 16);
-  state.curatorNotes = [...(state.curatorNotes || []), { ts: new Date().toISOString(), round, label, notes: noDashes(d.notes), stance_unclear: d.stance_unclear || null }];
+  state.curatorNotes = [...(state.curatorNotes || []), { ts: new Date().toISOString(), round, label, notes: noDashes(d.notes), stance_unclear: d.stance_unclear || null, directions: d.directions || null }];
+  if (d.directions && label === 'checkpoint') {
+    const dir = d.directions; const ts = new Date().toISOString();
+    state.directions = { mode: dir.mode || null, round, ts, A1: noDashes(dir.controls || ''), A2: noDashes(dir.controls || ''), A3: noDashes(dir.controls || ''), P1: noDashes(dir.P1 || ''), P2: noDashes(dir.P2 || '') };
+    log('curator', 'direction', { round, response: JSON.stringify(state.directions), data: { message: `${dir.mode || ''} direction. Controls: "${dir.controls || ''}"`, directions: state.directions } });
+  }
   saveState();
   log('curator', `${label}.result`, { round, response: r.text, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost, data: { shortlist: state.shortlist } });
   return d;
@@ -194,7 +204,7 @@ export async function curatorFinal(round) {
     const candidates = [...pool, ...extra].slice(0, 30);
     const system = `You are the Curator making the final selection for ${studio.publication}, "${studio.title}". Stance (${studio.stance_status}): "${studio.stance}".\n\n${amiVoiceBlock()}`;
     const user = [
-      { type: 'text', text: `Select ${L.finals_count >= 10 ? '8 to 10' : '8'} images for print from the candidates below. Include at least one round where the three control artists can be compared if possible. Return JSON only: {"picks":[{"task_id":"...","title":"short descriptive title, 2 to 5 words","caption":"one or two plain sentences in Ami's voice, no em-dashes"}],"rationale":"3 sentences"}` },
+      { type: 'text', text: `Select ${L.finals_count >= 10 ? '8 to 10' : '8'} zine spreads for print, the ones whose argument reads most clearly, from the candidates below. Include at least one round where the three control artists can be compared if possible. Return JSON only: {"picks":[{"task_id":"...","title":"short descriptive title, 2 to 5 words","caption":"one or two plain sentences in Ami's voice, no em-dashes"}],"rationale":"3 sentences"}` },
       ...(await imageParts(candidates, 384)),
     ];
     log('curator', 'final.select.request', { round, prompt: user[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { candidates: candidates.map(c => c.task_id) } });
@@ -258,13 +268,24 @@ export async function artistWake(a, round, lim) {
   const doneThisWake = mine.filter(i => i.round === round).length; // engineer retries do not add extra images
   const n = Math.min(lim.images_per_wake - doneThisWake, Math.max(0, cap - mine.length), 3);
   if (n <= 0) { log(a.id, 'artist.skip', { round, data: { message: `no images allowed (made ${mine.length}, cap ${cap}, per wake ${lim.images_per_wake})` } }); return; }
-  const history = events().filter(e => e.agent === a.id && ['artist.plan', 'artist.reflection'].includes(e.type)).slice(-12)
+  const bv = state.briefVersion || 1;
+  const cur = mine.filter(i => (i.brief_version || 1) === bv);
+  state.thesis = state.thesis || {};
+  if (state.thesis[a.id] && state.thesis[a.id].brief_version !== bv) delete state.thesis[a.id];
+  const thesis = persona(a).point || '';
+  const direction = state.directions?.[a.id] || '';
+  const history = events().filter(e => e.agent === a.id && ['artist.plan', 'artist.reflection'].includes(e.type) && (e.data?.brief_version || 1) === bv).slice(-12)
     .map(e => e.type === 'artist.plan' ? `r${e.round} plan: ${e.data?.intent || ''}` : `r${e.round} reflection: ${e.response}`).join('\n');
   const favs = new Set(state.favourites?.[a.id] || []);
-  const shown = [...mine.filter(i => favs.has(i.task_id)).slice(-2), ...mine.slice(-runtime.artistHistoryImages)]
+  const shown = [...cur.filter(i => favs.has(i.task_id)).slice(-2), ...cur.slice(-runtime.artistHistoryImages)]
     .filter((v, i, arr) => arr.findIndex(x => x.task_id === v.task_id) === i).slice(-runtime.artistHistoryImages);
   const system = artistSystem(a);
-  const text = `Brief:\n${currentBrief()}\n\nThis is wake ${round}. You may make ${n} image${n > 1 ? 's' : ''} this wake.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"review":"one sentence on your previous images","keep":["task ids you select from your own images"],"intent":"one sentence on what you will make next and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
+  const fmt = `Format: each image is ONE two-page zine spread, landscape. Design the whole spread: imagery, layout and the words on it. Use text where it carries your point: a headline, a short line of body text, labels or captions. At most 30 words of text on a spread. In the prompt, put every word that must appear in double quotes, spelled exactly, and say where it sits. The spread must make your point, not just show the subject.`;
+  const thesisLine = state.thesis[a.id]?.text
+    ? `Your point (you chose it, keep arguing it): "${state.thesis[a.id].text}"`
+    : thesis ? `Your point to argue across every spread today: "${thesis}". Restate it in your own words as "thesis".`
+    : `You have not chosen your point yet. From the brief, decide ONE strong point you will argue across every spread today, in one sentence, and return it as "thesis".`;
+  const text = `Brief:\n${currentBrief()}\n\n${fmt}\n\n${thesisLine}\n${direction ? `\nDirection from the Curator: ${direction}\n` : ''}\nThis is wake ${round}. You may make ${n} spread${n > 1 ? 's' : ''} this wake. Each spread should advance your point; together they should read as a sequence.\nYour notes so far:\n${history || '(none, this is your first wake)'}\n\nYour previous images${shown.length ? ' are below' : ': none yet'}. Look at them, select the ones you want to keep building on, then decide what to make next. Do not repeat a composition you have already made unless you are deliberately developing a kept image.\n\nReturn JSON only:\n{"thesis":"your one-sentence point","review":"one sentence on your previous spreads","keep":["task ids you select from your own images"],"intent":"one sentence: what this spread argues and why","images":[{"title":"2 to 5 word descriptive title","prompt":"full prompt for the image model"}]${a.persona !== 'control' ? ',"stance_unclear":"optional: where Ami\'s stance is unclear for this decision"' : ''}}\nGive exactly ${n} item${n > 1 ? 's' : ''} in "images".`;
   const content = [{ type: 'text', text }, ...(await imageParts(shown, 512))];
   log(a.id, 'artist.plan.request', { round, prompt: text, model: runtime.sonnetModel, endpoint: '/chat/completions', data: { shown: shown.map(s => s.task_id) } });
   const r = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content }], agent: a.id, round, estimate: 0.06, maxTokens: 1200 });
@@ -272,8 +293,12 @@ export async function artistWake(a, round, lim) {
   const known = new Set(mine.map(m => m.task_id));
   state.favourites = state.favourites || {};
   state.favourites[a.id] = [...new Set([...(state.favourites[a.id] || []), ...(d.keep || []).filter(k => known.has(k))])].slice(-8);
+  if (!state.thesis[a.id] && d.thesis) {
+    state.thesis[a.id] = { text: a.persona === 'control' ? String(d.thesis) : noDashes(d.thesis), round, brief_version: bv };
+    log(a.id, 'artist.thesis', { round, response: state.thesis[a.id].text, data: { message: state.thesis[a.id].text } });
+  }
   saveState();
-  log(a.id, 'artist.plan', { round, response: r.text, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost, data: { intent: d.intent, review: d.review, keep: d.keep, stance_unclear: d.stance_unclear || null } });
+  log(a.id, 'artist.plan', { round, response: r.text, model: r.model, endpoint: '/chat/completions', task_id: r.id, cost: r.cost, data: { intent: d.intent, review: d.review, keep: d.keep, thesis: state.thesis[a.id]?.text || null, direction: direction || null, brief_version: bv, stance_unclear: d.stance_unclear || null } });
 
   const made = [];
   for (const img of (d.images || []).slice(0, n)) {
@@ -284,17 +309,17 @@ export async function artistWake(a, round, lim) {
     log(a.id, 'image.request', { round, prompt: img.prompt, model: runtime.imageModel, endpoint: '/images', task_id: taskId, data: { title: img.title, quality } });
     const g = await generateImage({ prompt: img.prompt, quality, agent: a.id, round });
     const file = await saveImage(g.buf, taskId);
-    const rec = { task_id: taskId, kind: 'draft', artist: a.id, group: a.group, persona: a.persona, round, title: img.title, slug, prompt: img.prompt, quality, model: runtime.imageModel, endpoint: '/images', request: g.request, response_meta: g.response_meta, seed: g.seed, cost: g.cost, cost_estimated: g.costEstimated, ts: new Date().toISOString(), file: path.basename(file), openrouter_id: g.id };
+    const rec = { task_id: taskId, kind: 'draft', artist: a.id, group: a.group, persona: a.persona, round, brief_version: bv, title: img.title, slug, prompt: img.prompt, quality, model: runtime.imageModel, endpoint: '/images', request: g.request, response_meta: g.response_meta, seed: g.seed, cost: g.cost, cost_estimated: g.costEstimated, ts: new Date().toISOString(), file: path.basename(file), openrouter_id: g.id };
     addImage(rec); made.push(rec);
     log(a.id, 'image.result', { round, prompt: img.prompt, model: runtime.imageModel, endpoint: '/images', task_id: taskId, cost: g.cost, file: rec.file, data: { title: img.title, request: g.request, seed: g.seed, cost_estimated: g.costEstimated } });
   }
 
   if (made.length) {
-    const rc = [{ type: 'text', text: `You just made these. Write one line of reflection (max 25 words): what came out, versus what you intended. Plain text only.` }, ...(await imageParts(made, 512))];
+    const rc = [{ type: 'text', text: `You just made these spreads. Write one line of reflection (max 25 words): does the spread make your point, and is the text legible? Plain text only.` }, ...(await imageParts(made, 512))];
     log(a.id, 'artist.reflection.request', { round, prompt: rc[0].text, model: runtime.sonnetModel, endpoint: '/chat/completions' });
     const rr = await chat({ model: runtime.sonnetModel, system, messages: [{ role: 'user', content: rc }], agent: a.id, round, estimate: 0.03, maxTokens: 120 });
     const line = (a.persona === 'control' ? rr.text : noDashes(rr.text)).trim().split('\n')[0];
-    log(a.id, 'artist.reflection', { round, response: line, model: rr.model, endpoint: '/chat/completions', task_id: rr.id, cost: rr.cost });
+    log(a.id, 'artist.reflection', { round, response: line, model: rr.model, endpoint: '/chat/completions', task_id: rr.id, cost: rr.cost, data: { brief_version: bv } });
   }
 }
 

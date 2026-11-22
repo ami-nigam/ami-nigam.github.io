@@ -49,6 +49,8 @@ export const ENGINEER_EDITABLE = [
   'curatorReviewImages', 'chatMaxTokens',
 ];
 for (const [k, v] of Object.entries(RUNTIME_DEFAULTS)) if (!(k in runtime)) runtime[k] = v;
+// One-time migration to zine spreads: landscape, medium drafts so text is legible.
+if ((runtime.formatVersion || 1) < 3) { runtime.aspectRatio = '3:2'; runtime.draftQuality = 'medium'; runtime.formatVersion = 3; }
 // Env overrides always win over persisted values.
 if (process.env.IMAGE_MODEL) runtime.imageModel = process.env.IMAGE_MODEL;
 if (process.env.SONNET_MODEL) runtime.sonnetModel = process.env.SONNET_MODEL;

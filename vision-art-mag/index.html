@@ -70,7 +70,7 @@ th{font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.08em;
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem}
 @media(min-width:640px){.grid{grid-template-columns:repeat(3,1fr)}}
 .card{border:1px solid var(--border-faint);border-radius:6px;overflow:hidden;background:var(--card-bg)}
-.card img,.ph{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:var(--border-faint)}
+.card img,.ph{width:100%;aspect-ratio:3/2;object-fit:contain;display:block;background:var(--border-faint)}
 .card .cap{padding:.45rem .55rem;font-size:12px;line-height:1.4}
 .card .cap b{font-weight:500}
 .tag{display:inline-block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--border-tertiary);border-radius:999px;padding:0 .4rem;margin-right:.25rem}
@@ -116,8 +116,10 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .st-error .dot{background:var(--bad)}
 .st-idle .dot{background:var(--ok)}
 @keyframes pulse{50%{transform:scale(1.6);opacity:.5}}
-.canvas{position:relative;border-radius:6px;overflow:hidden;background:var(--border-faint);aspect-ratio:4/5}
-.canvas img{width:100%;height:100%;object-fit:cover;display:block}
+.canvas{position:relative;border-radius:6px;overflow:hidden;background:var(--border-faint);aspect-ratio:3/2}
+.canvas img{width:100%;height:100%;object-fit:contain;display:block}
+.thesis{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;line-height:1.35;margin:.1rem 0 .45rem}
+.direction{font-size:11px;border-left:2px solid var(--accent);padding-left:.45rem;margin:.45rem 0 0;color:var(--text-secondary)}
 .canvas .empty{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;color:var(--text-secondary);text-align:center;padding:.5rem}
 .canvas.gen::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.35) 50%,transparent 80%);background-size:250% 100%;animation:shimmer 1.4s linear infinite}
 [data-theme="dark"] .canvas.gen::after{background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.12) 50%,transparent 80%);background-size:250% 100%}
@@ -179,6 +181,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     <div class="controls">
       <button id="pauseBtn" class="danger">Pause all</button>
       <button id="runBtn">Run round now</button>
+      <button id="reviewBtn">Curator review now</button>
       <button id="checkBtn">Connection check</button>
       <button id="exportBtn">Export zip</button>
       <button id="logoutBtn">Log out</button>
@@ -327,6 +330,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     render();
   };
   $('#runBtn').onclick = async () => { try { await json('/api/run-round', { method: 'POST' }); setTimeout(refresh, 1500); } catch (e) { alert(e.message); } };
+  $('#reviewBtn').onclick = async () => { try { await json('/api/run-checkpoint', { method: 'POST' }); setTimeout(refresh, 1500); } catch (e) { alert(e.message); } };
   $('#checkBtn').onclick = async () => {
     $('#checkBtn').disabled = true; $('#checkOut').innerHTML = '<p class="small muted">Running connection check (about a minute)…</p>';
     try { const r = await json('/api/admin/check', { method: 'POST' }); renderCheck(r); } catch (e) { $('#checkOut').innerHTML = `<p class="bad small">${esc(e.message)}</p>`; }
@@ -398,6 +402,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     'checkpoint.request': ['reviewing', 'Reviewing everyone'], 'checkpoint.result': ['idle', 'Notes written'],
     'final.select.request': ['reviewing', 'Choosing the finals'], 'final.select.result': ['idle', 'Picks made'],
     'final.render.request': ['painting', 'Re-rendering a final'], 'final.render.result': ['painting', 'Final rendered'],
+    'direction': ['idle', 'Directed the artists'],
     'text.request': ['writing', 'Writing the text'], 'text.result': ['idle', 'Text drafted'], 'final.done': ['idle', 'Final done'],
   };
   const ENG_MAP = {
@@ -471,6 +476,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       html += `
       <div class="room st-${s2.st} ${ACTIVE.includes(s2.st) ? 'active' : ''} ${watched ? 'watched' : ''} ${s2.st === 'error' || openInc.some(i => i.agent === a.id) ? 'err' : ''}" id="n-${a.id}">
         <div class="room-h"><b>${esc(a.id)}</b><span class="role">${a.group === 'control' ? 'Control' : 'Ami voice'}<br>${esc(a.group === 'control' ? 'identical setup' : a.persona.replace(/^Ami voice:\s*/, ''))}</span></div>
+        ${st.thesis?.[a.id] ? `<div class="thesis">“${esc(st.thesis[a.id].text)}”</div>` : '<div class="thesis muted">No point chosen yet.</div>'}
         <div class="pill"><span class="dot"></span>${esc(s2.label)}</div>
         <div class="canvas ${genReq ? 'gen' : ''}" ${latest ? `data-open="${esc(latest.task_id)}" style="cursor:zoom-in"` : ''}>
           ${latest ? `<img data-src="/api/image/${esc(latest.task_id)}?thumb=1" alt="" class="${isNew ? 'new' : ''}">` : '<div class="empty">Blank canvas</div>'}
@@ -478,6 +484,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
         </div>
         ${prev.length ? `<div class="strip">${prev.map(i => `<img data-src="/api/image/${esc(i.task_id)}?thumb=1" data-open="${esc(i.task_id)}" alt="" class="${kept.has(i.task_id) ? 'kept' : ''}">`).join('')}</div>` : ''}
         <div class="bubble">${bubble}</div>
+        ${st.directions?.[a.id] ? `<div class="direction">Curator: ${esc(st.directions[a.id])}</div>` : ''}
         <div class="room-f"><span>${mine.length} drafts</span><span>${money(spentA)}</span></div>
       </div>`;
     }
@@ -493,6 +500,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     if (cur.st === 'reviewing') artistIds.forEach(id => S.wires.push(['n-curator', 'n-' + id, 'eye']));
     if (cur.st === 'thinking' || cur.st === 'writing') artistIds.forEach(id => S.wires.push(['n-curator', 'n-' + id, 'brief']));
     st.agents.forEach(a => { const x = agentState(a.id, ARTIST_MAP); if (x.st === 'thinking' && x.last?.type === 'artist.plan.request') S.wires.push(['n-brief', 'n-' + a.id, 'brief']); });
+    if (cur.last?.type === 'direction' && Date.now() - new Date(cur.last.ts) < 120000) artistIds.forEach(id => S.wires.push(['n-curator', 'n-' + id, 'eye']));
     openInc.forEach(i => S.wires.push(['n-engineer', 'n-' + i.agent, 'fix']));
     if (eng.st === 'fixing' && eng.last?.data?.agent) S.wires.push(['n-engineer', 'n-' + eng.last.data.agent, 'fix']);
     drawWires();
@@ -534,6 +542,8 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       case 'round.skip': case 'round.skipped': return `Round skipped. ${d.message || ''}`;
       case 'brief.result': return 'Pinned a new brief on the wall.';
       case 'budget.set': return `Set ${d.limits?.images_per_wake} image(s) per artist. ${d.message || ''}`;
+      case 'direction': return d.message || 'Sent directions.';
+      case 'artist.thesis': return `Commits to a point: “${e.response}”`;
       case 'checkpoint.result': return `Reviewed the floor. Shortlist now ${(d.shortlist || []).length}.`;
       case 'artist.plan': return `“${d.intent || ''}”`;
       case 'image.result': return `Finished “${d.title || ''}” (${money(e.cost)}).`;
