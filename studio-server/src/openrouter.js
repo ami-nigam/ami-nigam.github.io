@@ -116,17 +116,23 @@ async function call(path, body, { estimate, timeoutMs, agent, round, kind }) {
 
 // ---- Chat ----
 export async function chat({ model, system, messages, maxTokens, agent, round, estimate = 0.08, temperature, plugins }) {
-  const body = {
-    model, max_tokens: maxTokens || runtime.chatMaxTokens,
-    messages: [{ role: 'system', content: system }, ...messages],
-  };
-  if (temperature != null) body.temperature = temperature;
-  if (plugins) body.plugins = plugins;
-  const { json, cost } = await call('/chat/completions', body, { estimate, timeoutMs: runtime.chatTimeoutMs, agent, round, kind: 'chat' });
-  const content = json.choices?.[0]?.message?.content;
-  const text = Array.isArray(content) ? content.map(c => c.text || '').join('') : (content || '');
-  const annotations = json.choices?.[0]?.message?.annotations || [];
-  return { text, cost: round4(cost), id: json.id, model: json.model || model, usage: json.usage, annotations };
+  // Floor of 1500 tokens: reasoning models can spend a small allowance before writing any text.
+  let max = Math.max(maxTokens || runtime.chatMaxTokens, runtime.chatMinTokens || 1500);
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    const body = { model, max_tokens: max, messages: [{ role: 'system', content: system }, ...messages] };
+    if (temperature != null) body.temperature = temperature;
+    if (plugins) body.plugins = plugins;
+    const { json, cost } = await call('/chat/completions', body, { estimate, timeoutMs: runtime.chatTimeoutMs, agent, round, kind: 'chat' });
+    const choice = json.choices?.[0] || {};
+    const content = choice.message?.content;
+    const text = Array.isArray(content) ? content.map(c => c.text || '').join('') : (content || '');
+    const annotations = choice.message?.annotations || [];
+    if (text.trim()) return { text, cost: round4(cost), id: json.id, model: json.model || model, usage: json.usage, annotations };
+    const diag = { finish_reason: choice.finish_reason || choice.native_finish_reason || null, max_tokens: max, completion_tokens: json.usage?.completion_tokens ?? null, reasoning_tokens: json.usage?.completion_tokens_details?.reasoning_tokens ?? null, has_reasoning: !!choice.message?.reasoning, error: choice.error || json.error || null, attempt };
+    log(agent, 'chat.empty', { round, model, endpoint: '/chat/completions', data: { message: `empty reply (finish: ${diag.finish_reason}, tokens ${diag.completion_tokens}/${max})`, ...diag } });
+    max = Math.min(max * 2, 8000);
+  }
+  throw new Error('empty reply after retry');
 }
 
 // ---- Images ----
