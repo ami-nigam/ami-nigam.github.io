@@ -252,7 +252,8 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
 .zchip.l{left:1.4cqw}.zchip.r{right:1.4cqw}
 .zchip.b{bottom:3.6cqw}
 .zchip b{font-family:'Archivo Black';font-weight:400;color:var(--c)}
-.zcenter{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:30cqw;max-height:52cqw;overflow:hidden;background:var(--c);color:#fff;padding:1.8cqw 2cqw;z-index:3;display:flex;flex-direction:column;gap:.7cqw}
+.zcenterwrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none}
+.zcenter{position:relative;width:30cqw;max-height:52cqw;overflow:hidden;background:var(--c);color:#fff;padding:1.8cqw 2cqw;z-index:3;display:flex;flex-direction:column;gap:.7cqw}
 .zcenter b.n{font-family:'Archivo Black';font-weight:400;font-size:4cqw;line-height:.95;text-transform:uppercase}
 .zcenter .zargtxt{font-weight:800;font-size:1.35cqw;line-height:1.25}
 .zcenter .zframe{font-size:1.05cqw;line-height:1.4;opacity:.92}
@@ -274,6 +275,9 @@ dialog .dinfo{padding:.75rem 1rem;font-size:13px}
   body.printing #zine{position:absolute;left:0;top:0;margin:0;gap:0;display:block}
   body.printing .zs{width:420mm;height:297mm;aspect-ratio:auto;border:none;border-radius:0;break-after:page;page-break-after:always;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+.pdfmode .zs{border:none;border-radius:0}
+#pdfOverlay{position:fixed;inset:0;z-index:9999;background:var(--primary-bg);display:grid;place-items:center;text-align:center;padding:16px}
+#pdfOverlay p{font-size:15px}
 footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border-tertiary)}
 </style>
 </head>
@@ -344,7 +348,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
 
     <section class="view hidden" id="v-zine">
       <p id="zineHead" class="small muted"></p>
-      <div class="controls"><button id="zineBtn">Build zine now</button><button id="printBtn">Print / save PDF</button></div>
+      <div class="controls"><button id="zineBtn">Build zine now</button><button id="pdfBtn" class="primary">Download PDF</button><button id="printBtn">Print</button></div>
       <div id="zine"></div>
     </section>
 
@@ -480,6 +484,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   };
   $('#zineBtn').onclick = async () => { try { await json('/api/run-zine', { method: 'POST' }); $('#zineHead').textContent = 'The Curator is building the flatplan (about a minute)…'; setTimeout(refresh, 45000); } catch (e) { alert(e.message); } };
   $('#printBtn').onclick = () => printZine();
+  $('#pdfBtn').onclick = () => downloadZinePdf();
   $('#reviewBtn').onclick = async () => { try { await json('/api/run-checkpoint', { method: 'POST' }); setTimeout(refresh, 1500); } catch (e) { alert(e.message); } };
   $('#checkBtn').onclick = async () => {
     $('#checkBtn').disabled = true; $('#checkOut').innerHTML = '<p class="small muted">Running connection check (about a minute)…</p>';
@@ -837,7 +842,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
     const imgs = S.images.filter(i => i.kind === 'draft' && (i.brief_version || 1) === Z.brief_version);
     const folio = `<div class="zfolio l mono">${pad(sp.n)} / ${pad(total)}</div><div class="zfolio r mono">Stochastic by Design</div>`;
     const t = sp.template;
-    if (t === 'opener') return `<section class="zs z-opener"><div class="pg l ink"><div class="mono">${esc(Z.publication)}</div><h1 class="mega">Stoch&shy;astic<br>by<br>Design</h1></div>
+    if (t === 'opener') return `<section class="zs z-opener"><div class="pg l ink"><div class="mono">${esc(Z.publication)}</div><h1 class="mega">Stoch-<br>astic<br>by<br>Design</h1></div>
       <div class="pg r"><p class="zq">${esc(sp.body || Z.question)}</p><p class="mono">Four AI artists, built for this experiment, answer it:</p><ol class="zcast">${cast.map(c => `<li><i style="background:${ZC[c.id]}"></i><b>${esc(c.name)}</b><span class="mono">${esc(c.label)}</span><em>${esc(firstSentence(c.argument))}</em></li>`).join('')}</ol><div class="mono zfoot">Made by AI artists. Curated by an AI. Edited by Ami Nigam.</div></div>${folio}</section>`;
     if (t === 'method' || t === 'setup') {
       const sc = Z.schedule || {};
@@ -864,7 +869,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       if (ids.length < 4) { const pool = mine.map(m => m.task_id).filter(x => !ids.includes(x)); const need = 4 - ids.length; const step = pool.length / need; for (let k = 0; k < need && pool.length; k++) ids.push(pool[Math.min(pool.length - 1, Math.floor(k * step + (need === pool.length ? 0 : step / 2)))]); ids = [...new Set(ids)]; }
       const caps = ids.map((x, k) => sp.captions?.[k] || (Z.notes || {})[x]?.intent || (Z.notes || {})[x]?.beat_text || '');
       return `<section class="zs z-argument" style="--c:${ZC[c?.id] || '#111'}"><div class="zmosaic">${Array.from({ length: 4 }).map((_, k) => `<figure>${zImg(ids[k], finals)}${caps[k] ? `<figcaption class="zchip ${k % 2 ? 'r' : 'l'} ${k > 1 ? 'b' : ''}"><b>${pad(k + 1)}</b><span>${esc(caps[k])}</span></figcaption>` : ''}</figure>`).join('')}</div>
-        <div class="zcenter"><div class="mono">AI artist · ${esc(c?.label)}</div><b class="n">${esc(c?.name)}</b><p class="zargtxt">${esc(c?.argument)}</p>${sp.body ? `<p class="zframe">${esc(sp.body)}</p>` : ''}</div>${folio}</section>`;
+        <div class="zcenterwrap"><div class="zcenter"><div class="mono">AI artist · ${esc(c?.label)}</div><b class="n">${esc(c?.name)}</b><p class="zargtxt">${esc(c?.argument)}</p>${sp.body ? `<p class="zframe">${esc(sp.body)}</p>` : ''}</div></div>${folio}</section>`;
     }
     if (t === 'artist') {
       const c = A(sp.artist) || cast[0]; const mine = imgs.filter(i => i.artist === c?.id);
@@ -933,6 +938,44 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
         }
       });
     });
+  }
+  function loadScript(src) {
+    return new Promise((res, rej) => { if (document.querySelector(`script[src="${src}"]`)) return res(); const sc = document.createElement('script'); sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error('could not load ' + src)); document.head.appendChild(sc); });
+  }
+  // Builds an A3 landscape PDF in the browser (works on phones: no printer needed).
+  async function downloadZinePdf() {
+    const btn = $('#pdfBtn'); btn.disabled = true;
+    const ov = document.createElement('div'); ov.id = 'pdfOverlay'; ov.innerHTML = '<div><p><b>Building the PDF</b></p><p id="pdfProg" class="muted">Loading…</p></div>'; document.body.appendChild(ov);
+    const prog = t => { const el = document.getElementById('pdfProg'); if (el) el.textContent = t; };
+    let holder;
+    try {
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+      await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      const imgs = [...document.querySelectorAll('#zine img[data-src]')];
+      prog(`Loading ${imgs.length} images…`);
+      await Promise.all(imgs.map(el => loadImg(el)));
+      await Promise.all(imgs.map(el => el.complete ? 0 : new Promise(r => { el.onload = el.onerror = r; })));
+      holder = document.createElement('div'); holder.className = 'pdfmode';
+      holder.style.cssText = 'position:fixed;left:0;top:0;width:1240px;z-index:9998;background:#fff';
+      holder.innerHTML = $('#zine').innerHTML; document.body.appendChild(holder);
+      const hImgs = [...holder.querySelectorAll('img')];
+      await Promise.all(hImgs.map(el => el.complete ? 0 : new Promise(r => { el.onload = el.onerror = r; })));
+      if (document.fonts?.ready) await document.fonts.ready;
+      fitZine(holder);
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a3', compress: true });
+      const spreads = [...holder.querySelectorAll('.zs')];
+      for (let i = 0; i < spreads.length; i++) {
+        prog(`Rendering spread ${i + 1} of ${spreads.length}…`);
+        const cv = await html2canvas(spreads[i], { scale: 2, backgroundColor: '#ffffff', logging: false, useCORS: true });
+        if (i) pdf.addPage('a3', 'landscape');
+        pdf.addImage(cv.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 420, 297, undefined, 'FAST');
+        cv.width = cv.height = 0;
+      }
+      prog('Saving…');
+      pdf.save('stochastic-by-design.pdf');
+    } catch (e) { alert('PDF failed: ' + e.message); }
+    finally { holder?.remove(); ov.remove(); btn.disabled = false; }
   }
   async function printZine() {
     const imgs = [...document.querySelectorAll('#zine img[data-src]')];
