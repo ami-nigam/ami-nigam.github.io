@@ -348,7 +348,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
 
     <section class="view hidden" id="v-zine">
       <p id="zineHead" class="small muted"></p>
-      <div class="controls"><button id="zineBtn">Build zine now</button><button id="pdfBtn" class="primary">Download PDF</button><button id="printBtn">Print</button></div>
+      <div class="controls"><button id="zineBtn">Build zine now</button><button id="pdfBtn" class="primary">Download PDF</button><button id="zipBtn">Export zine zip</button><button id="printBtn">Print</button></div>
       <div id="zine"></div>
     </section>
 
@@ -485,6 +485,7 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
   $('#zineBtn').onclick = async () => { try { await json('/api/run-zine', { method: 'POST' }); $('#zineHead').textContent = 'The Curator is building the flatplan (about a minute)…'; setTimeout(refresh, 45000); } catch (e) { alert(e.message); } };
   $('#printBtn').onclick = () => printZine();
   $('#pdfBtn').onclick = () => downloadZinePdf();
+  $('#zipBtn').onclick = () => exportZineZip();
   $('#reviewBtn').onclick = async () => { try { await json('/api/run-checkpoint', { method: 'POST' }); setTimeout(refresh, 1500); } catch (e) { alert(e.message); } };
   $('#checkBtn').onclick = async () => {
     $('#checkBtn').disabled = true; $('#checkOut').innerHTML = '<p class="small muted">Running connection check (about a minute)…</p>';
@@ -939,6 +940,39 @@ footer{padding:2rem 0;font-size:12px;color:var(--text-secondary);border-top:1px 
       });
     });
   }
+  // All images, the floor-plan diagram and every piece of text used in the zine, as one zip.
+  async function exportZineZip() {
+    const btn = $('#zipBtn'); const label = btn.textContent; btn.disabled = true; btn.textContent = 'Preparing…';
+    try {
+      if (!$('#zine .zs')) renderZine();
+      const slug = t => String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+      const sections = [...$('#zine').querySelectorAll('.zs')];
+      const images = []; const seenIds = new Set();
+      const copy = [`# ${Z_TITLE()}\n\nZine copy, spread by spread, exactly as laid out.\n`];
+      sections.forEach((sec, i) => {
+        const t = (sec.className.match(/\bz-(\w+)/) || [])[1] || 'spread';
+        let k = 0;
+        sec.querySelectorAll('img[data-src]').forEach(im => {
+          const id = im.dataset.src.split('/').pop().split('?')[0]; if (seenIds.has(id)) return; seenIds.add(id); k++;
+          const m = S.images.find(x => x.task_id === id) || {};
+          images.push({ id, name: [pad(i + 1), t, slug(nameOf(m.artist || '')), k, slug(m.title || id)].filter(Boolean).join('-') + '.png' });
+        });
+        copy.push(`## ${pad(i + 1)} · ${t}\n\n${sec.innerText.replace(/\n{3,}/g, '\n\n').trim()}`);
+      });
+      const Z = S.zineData || {};
+      const cast = (Z.cast || []).map(c => `## ${c.name} · ${c.label}\n\n**Argument:** ${c.argument}\n\n**Personality:** ${c.personality}\n\n**Series:** ${c.series || ''}\n${(c.beats || []).map((b, j) => `${j + 1}. ${b}`).join('\n')}\n\n**Research:**\n${(c.research || []).map(f => '- ' + f).join('\n')}\n\n**Against:** ${c.counter || ''}${c.takeaway ? `\n\n**After the debate:** ${c.takeaway}` : ''}`).join('\n\n---\n\n');
+      let plan = null; try { plan = planSnapshot(); } catch {}
+      const body = { images, plan_png: plan, files: [
+        { name: 'zine-copy.md', content: copy.join('\n\n---\n\n') + '\n' },
+        { name: 'cast.md', content: `# The four AI artists\n\nQuestion: ${Z.question || ''}\n\n${cast}\n` },
+      ] };
+      btn.textContent = `Zipping ${images.length} images…`;
+      const r = await json('/api/zine-export', { method: 'POST', body: JSON.stringify(body) });
+      const a = document.createElement('a'); a.href = API + r.path; a.rel = 'noopener'; document.body.appendChild(a); a.click(); a.remove();
+    } catch (e) { alert('Export failed: ' + e.message); }
+    finally { btn.disabled = false; btn.textContent = label; }
+  }
+  const Z_TITLE = () => (S.zineData?.title || 'Stochastic by Design');
   function loadScript(src) {
     return new Promise((res, rej) => { if (document.querySelector(`script[src="${src}"]`)) return res(); const sc = document.createElement('script'); sc.src = src; sc.onload = res; sc.onerror = () => rej(new Error('could not load ' + src)); document.head.appendChild(sc); });
   }

@@ -12,6 +12,7 @@ import { debatePlan } from './debate.js';
 import { currentBrief, limits } from './agents.js';
 import { streamZip, exportManifest, creditsCsv, textMd } from './export.js';
 import { round4 } from './util.js';
+import { createZineExport, streamZineExport } from './zinezip.js';
 
 if (!env.password || env.password.length < 8) console.warn('WARNING: STUDIO_PASSWORD missing or shorter than 8 chars; login disabled.');
 const SECRET = crypto.createHash('sha256').update(`vam-session:${env.sessionSecret}`).digest();
@@ -63,7 +64,7 @@ function send(res, code, obj) {
 }
 async function readBody(req, max = 10000) {
   let s = '';
-  for await (const c of req) { s += c; if (s.length > max) throw new Error('body too large'); }
+  for await (const c of req) { s += c; if (s.length > max) { const e = new Error('body too large'); e.status = 413; throw e; } }
   try { return s ? JSON.parse(s) : {}; } catch { return {}; }
 }
 const clientIp = req => (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.socket.remoteAddress;
@@ -133,6 +134,7 @@ const server = http.createServer(async (req, res) => {
     if (p === '/health') { const ev = events(); const le = ev[ev.length - 1]; return send(res, 200, { ok: true, key_configured: hasKey(), password_configured: !!env.password, paused: !!state.paused, ceiling_hit: !!state.ceilingHit, round: state.round || 0, busy: isBusy(), drafts: allImages().filter(i => i.kind === 'draft').length, limits: state.limits || null, limits_reason: String(state.limitsReason || '').slice(0, 300), spent: spend().spent, next_wake: nextWake(), round_events: ev.filter(e => /^(round\.|artist\.skip|budget\.set|scheduler\.start|paused|resumed)/.test(e.type)).slice(-12).map(e => ({ ts: e.ts, agent: e.agent, type: e.type, round: e.round, message: String(e.data?.message || '').slice(0, 160) })), drafts_by_artist: Object.fromEntries(studio.artists.map(a => [a.id, allImages().filter(i => i.kind === 'draft' && i.artist === a.id).length])), uptime_s: Math.round(process.uptime()), last_event: le ? { ts: le.ts, agent: le.agent, type: le.type } : null, errors_last_hour: ev.filter(e => /error|failed/.test(e.type) && Date.now() - new Date(e.ts) < 3600000).length, recent_errors: ev.filter(e => /error|failed|empty|incident\.open|retry/.test(e.type)).slice(-8).map(e => ({ ts: e.ts, agent: e.agent, type: e.type, message: String(e.data?.message || '').slice(0, 240), finish: e.data?.finish_reason, tokens: e.data?.completion_tokens, reasoning: e.data?.reasoning_tokens })) }); }
     if (env.requireHttps && req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'] !== 'https') return send(res, 403, { error: 'https only' });
     if (req.method === 'OPTIONS') { res.writeHead(204); return res.end(); }
+    if (p.startsWith('/zine-export/') && req.method === 'GET') { const t = p.slice(13); if (!/^[A-Za-z0-9_-]{20,40}$/.test(t)) return send(res, 404, { error: 'not found' }); return streamZineExport(t, res); }
 
     if (p === '/api/login' && req.method === 'POST') {
       if (!env.password || env.password.length < 8) return send(res, 503, { error: 'password not configured' });
@@ -200,6 +202,7 @@ const server = http.createServer(async (req, res) => {
       const finals = Object.fromEntries(Object.entries(state.final?.renders || {}));
       return send(res, 200, { zine: state.zine || null, cast, finals, stats: zineStats(), notes: spreadNotes(), question: studio.question, stance: studio.stance, schedule: { start: state.schedule?.start || studio.schedule.start, last: studio.schedule.last_artist_wake, final: studio.schedule.final, interval: studio.schedule.interval_min }, title: studio.title, publication: studio.publication, brief_version: state.briefVersion || 1, debate_at: studio.schedule.debate_at, debate_done: state.debate?.status === 'done', debate_ended: state.debate?.ended || null });
     }
+    if (p === '/api/zine-export' && req.method === 'POST') { const body = await readBody(req, 15_000_000); return send(res, 200, createZineExport(body)); }
     if (p === '/api/run-zine' && req.method === 'POST') {
       if (isBusy()) return send(res, 409, { error: `${isBusy()} running, try when it finishes` });
       runZine(); return send(res, 202, { started: true });

@@ -32,6 +32,7 @@ export function exportManifest() {
 }
 
 export function creditsCsv(rows) {
+  rows = rows || [];
   const cols = ['filename', 'artist', 'model', 'endpoint', 'prompt', 'seed', 'task_id', 'timestamp', 'draft_task_id', 'quality', 'cost_usd', 'request', 'caption'];
   return [cols.join(','), ...rows.map(r => cols.map(c => csvCell(r[c])).join(','))].join('\n') + '\n';
 }
